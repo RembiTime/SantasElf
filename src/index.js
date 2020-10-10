@@ -32,12 +32,12 @@ class SantasElf extends AkairoClient {
 		});
 	}
 
-	async login() {
-		await new Promise((resolve, reject) => this.mysql.connect(err => err ? reject(err) : resolve()));
-		console.log("MySQL connected with thread id " + this.mysql.threadId);
-		return super.login();
+	async login(token) {
+		await new Promise((resolve, reject) => this.database.connect(err => err ? reject(err) : resolve()));
+		console.log("MySQL connected with thread id " + this.database.threadId);
+		return super.login(token);
 	}
 }
 
 const client = new SantasElf();
-client.login(process.env.token);
+client.login(process.env.TOKEN);
