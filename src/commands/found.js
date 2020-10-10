@@ -26,18 +26,33 @@ class FoundCommand extends Command {
     else {*/
 		let query = connection.query(`SELECT * FROM presents WHERE code = "${args[0]}"`, (err, result) => {
 			if (err) throw err;
-			console.log(result);
 			if (result.length == 0) {
 				message.channel.send("That present does not exist!");
 			} else {
-				let temvar = 1;
-				let query = connection.query(`SELECT presentLevel FROM presents WHERE code = '${args[0]}'`, (err, result) => {
+				let query = connection.query(`SELECT presentLevel, timesFound FROM presents WHERE code = '${args[0]}'`, (err, result) => {
 					if (err) throw err;
 					console.log(result);
 				});
+
+        if (result[0].timesFound == 0) {
+          let timesFound = result[0].timesFound
+          timesFound = timesFound + 1
+          let query = connection.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${args[0]}'`, (err, result) => {
+	           if(err) throw err;
+	           console.log(result);
+            })
+          message.channel.send("You were the first one to find this present! It had a difficulty of `" + result[0].presentLevel + "`.")
+        } else {
+          let timesFound = result[0].timesFound
+          timesFound = timesFound + 1
+          let query = connection.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${args[0]}'`, (err, result) => {
+             if(err) throw err;
+             console.log(result);
+            })
 				message.channel.send("You just claimed the present! It had a difficulty of `" + result[0].presentLevel + "`.");
-			}
+      }
 		}
+  }
 		);
 	}
 }

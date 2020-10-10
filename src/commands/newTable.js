@@ -19,13 +19,13 @@ class DBNewTableCommand extends Command {
 		super("newTable", {
 			aliases: ["newTable"],
 			description: "Creates a new table",
-			ownerOnly: true
+			//ownerOnly: true
 		});
 	}
 
 	async exec(message) {
 
-		const args = message.content.slice(1).trim().split(" ");
+		const args = message.content.slice(9).trim().split(" ");
 
 		if (!args.length) {
 			return message.channel.send(`You didn't provide any arguments, ${message.author}!`);
@@ -39,7 +39,7 @@ class DBNewTableCommand extends Command {
 			}
 
 			else {
-				let table1 = `CREATE TABLE ${args[0]}(id int AUTO_INCREMENT, code VARCHAR(255), serverID int, channelID int, hiddenByID int, presentLevel int, timesFound int, PRIMARY KEY(id))`;
+				let table1 = `CREATE TABLE ${args[0]}(id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID decimal(20,0), channelName VARCHAR(255), channelID decimal(20,0), hiddenByName VARCHAR(255), hiddenByID decimal(20,0), PRIMARY KEY(id))`;
 				connection.query(table1, (err, result) => {
 					if (err) throw err;
 					console.log(result);
