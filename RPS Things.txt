@@ -1,0 +1,34 @@
+/* Create table
+let table1 = 'CREATE TABLE tester(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))';
+connection.query(table1, (err, result) => {
+	if(err) throw err;
+	console.log(result);
+}) */
+
+/*Insert data
+let tspecs = {title: 'Tester 2', body: 'This is the second test'};
+let query = connection.query('INSERT INTO tester SET ?', tspecs, (err, result) => {
+	if(err) throw err;
+	console.log(result);
+}) */
+
+/*Select posts
+let temvar = 1
+let query = connection.query(`SELECT * FROM tester WHERE id = ${temvar}`, (err, result) => {
+	if(err) throw err;
+	console.log(result);
+})*/
+
+/*Update post
+let temvar = 1
+let query = connection.query(`UPDATE tester SET id = ${temvar} WHERE id = ${temvar}`, (err, result) => {
+	if(err) throw err;
+	console.log(result);
+})*/
+
+/*Delte post
+let temvar = 1
+let query = connection.query(`DELETE FROM tester WHERE id = ${temvar}`, (err, result) => {
+	if(err) throw err;
+	console.log(result);
+})*/
