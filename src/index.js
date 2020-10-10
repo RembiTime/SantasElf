@@ -11,7 +11,7 @@ class SantasElf extends AkairoClient {
 
 		this.commandHandler = new CommandHandler(this, {
 			directory: path.join(__dirname, "commands"),
-			prefix: "s!"
+			prefix: ","
 		});
 
 		this.listenerHandler = new ListenerHandler(this, {
