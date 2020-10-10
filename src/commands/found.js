@@ -4,19 +4,21 @@ class FoundCommand extends Command {
 	constructor() {
 		super("found", {
 			aliases: ["found"],
-			description: "Command to be used when you find a present"
+			description: "Command to be used when you find a present",
+			args: [{
+				id: "presentName",
+				type: "string"
+			}]
 		});
 	}
 
-	async exec(message) {
-		const args = message.content.slice(6).trim().split(" ");
-
-		this.client.database.query(`SELECT * FROM presents WHERE code = "${args[0]}"`, (err, result) => {
+	async exec(message, { presentName }) {
+		this.client.database.query(`SELECT * FROM presents WHERE code = "${presentName}"`, (err, result) => {
 			if (err) throw err;
 			if (result.length == 0) {
 				message.channel.send("That present does not exist!");
 			} else {
-				this.client.database.query(`SELECT presentLevel, timesFound FROM presents WHERE code = '${args[0]}'`, (err, result) => {
+				this.client.database.query(`SELECT presentLevel, timesFound FROM presents WHERE code = '${presentName}'`, (err, result) => {
 					if (err) throw err;
 					console.log(result);
 				});
@@ -24,7 +26,7 @@ class FoundCommand extends Command {
 				if (result[0].timesFound == 0) {
 					let timesFound = result[0].timesFound;
 					timesFound = timesFound + 1;
-					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${args[0]}'`, (err, result) => {
+					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${presentName}'`, (err, result) => {
 						if (err) throw err;
 						console.log(result);
 					});
@@ -32,7 +34,7 @@ class FoundCommand extends Command {
 				} else {
 					let timesFound = result[0].timesFound;
 					timesFound = timesFound + 1;
-					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${args[0]}'`, (err, result) => {
+					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${presentName}'`, (err, result) => {
 						if (err) throw err;
 						console.log(result);
 					});
