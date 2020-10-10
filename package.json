@@ -1,0 +1,26 @@
+{
+	"name": "santas-elf",
+	"version": "Epsilon",
+	"description": "A Discord bot that has things!",
+	"main": "src/index.js",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RPS1222/SantasElf.git"
+	},
+	"author": "",
+	"bugs": {
+		"url": "https://github.com/RPS1222/SantasElf/issues"
+	},
+	"homepage": "https://github.com/RPS1222/SantasElf#readme",
+	"dependencies": {
+		"discord-akairo": "^8.1.0",
+		"discord.js": "^12.3.1",
+		"dotenv": "^8.2.0"
+	},
+	"devDependencies": {
+		"eslint": "^7.11.0"
+	}
+}
