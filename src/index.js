@@ -1,8 +1,8 @@
 require("dotenv").config();
 
 const { AkairoClient, CommandHandler, ListenerHandler } = require("discord-akairo");
-const mysql = require("mysql");
 const path = require("path");
+const Database = require("./Database");
 
 class SantasElf extends AkairoClient {
 	constructor() {
@@ -12,7 +12,7 @@ class SantasElf extends AkairoClient {
 
 		this.commandHandler = new CommandHandler(this, {
 			directory: path.join(__dirname, "commands"),
-			prefix: ","
+			prefix: "*"
 		});
 
 		this.listenerHandler = new ListenerHandler(this, {
@@ -23,7 +23,7 @@ class SantasElf extends AkairoClient {
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.loadAll();
 
-		this.database = mysql.createConnection({
+		this.database = new Database({
 			host: process.env.MYSQL_HOST,
 			port: parseInt(process.env.MYSQL_PORT),
 			user: process.env.MYSQL_USERNAME,
@@ -33,8 +33,7 @@ class SantasElf extends AkairoClient {
 	}
 
 	async login(token) {
-		await new Promise((resolve, reject) => this.database.connect(err => err ? reject(err) : resolve()));
-		console.log("MySQL connected with thread id " + this.database.threadId);
+		await this.database.init();
 		return super.login(token);
 	}
 }

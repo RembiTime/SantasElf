@@ -6,43 +6,28 @@ class FoundCommand extends Command {
 			aliases: ["found"],
 			description: "Command to be used when you find a present",
 			args: [{
-				id: "presentName",
+				id: "code",
 				type: "string"
 			}]
 		});
 	}
 
-	async exec(message, { presentName }) {
-		this.client.database.query(`SELECT * FROM presents WHERE code = "${presentName}"`, (err, result) => {
-			if (err) throw err;
-			if (result.length == 0) {
-				message.channel.send("That present does not exist!");
-			} else {
-				this.client.database.query(`SELECT presentLevel, timesFound FROM presents WHERE code = '${presentName}'`, (err, result) => {
-					if (err) throw err;
-					console.log(result);
-				});
+	async exec(message, { code }) {
+		const present = await this.client.database.getPresent({ code, serverID: message.guild.id });
 
-				if (result[0].timesFound == 0) {
-					let timesFound = result[0].timesFound;
-					timesFound = timesFound + 1;
-					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${presentName}'`, (err, result) => {
-						if (err) throw err;
-						console.log(result);
-					});
-					message.channel.send("You were the first one to find this present! It had a difficulty of `" + result[0].presentLevel + "`.");
-				} else {
-					let timesFound = result[0].timesFound;
-					timesFound = timesFound + 1;
-					this.client.database.query(`UPDATE presents SET timesFound = ${timesFound} WHERE code = '${presentName}'`, (err, result) => {
-						if (err) throw err;
-						console.log(result);
-					});
-					message.channel.send("You just claimed the present! It had a difficulty of `" + result[0].presentLevel + "`.");
-				}
-			}
+		if (present === null) {
+			message.channel.send("That present does not exist!");
+			return;
 		}
-		);
+
+		this.client.database.incrementPresentFindCount(present.id);
+
+		// TODO: fix this race condition
+		if (present.timesFound === 0) {
+			message.channel.send("You were the first one to find this present! It had a difficulty of `" + present.presentLevel + "`.");
+		} else {
+			message.channel.send("You just claimed the present! It had a difficulty of `" + present.presentLevel + "`.");
+		}
 	}
 }
 

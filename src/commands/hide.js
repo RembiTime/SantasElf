@@ -19,18 +19,19 @@ class HideCommand extends Command {
 	}
 
 	async exec(message, { code, level }) {
-		let serverID = message.guild.id;
-		let serverName = message.guild.name;
-		let channelID = message.channel.id;
-		let channelName = message.channel.name;
-		let userID = message.author.id;
-		let userName = message.member.user.tag;
-		let tspecs = { code: code, presentLevel: level, timesFound: 0, serverName: `${serverName}`, serverID: serverID, channelName: `${channelName}`, channelID: channelID, hiddenByName: `${userName}`, hiddenByID: userID };
-		this.client.database.query("INSERT INTO presents SET ?", tspecs, (err, result) => {
-			message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.");
-			if (err) throw err;
-			console.log(result);
+		await this.client.database.addPresent({
+			code,
+			presentLevel: level,
+			timesFound: 0,
+			serverName: message.guild.name,
+			serverID: message.guild.id,
+			channelName: message.channel.name,
+			channelID: message.channel.id,
+			hiddenByName: message.member.user.tag,
+			hiddenByID: message.author.id
 		});
+
+		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.");
 	}
 }
 
