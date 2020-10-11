@@ -26,6 +26,46 @@ class Database {
 		}
 	}
 
+	async checkNewServer(options) {
+		if ("id" in options) {
+			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
+			return results.length ? results[0] : null;
+		} else if ("code" in options && "serverID" in options) {
+			//Check if server is new
+			const [newServer] = await this.pool.execute("SELECT * FROM presents WHERE serverID = ?", [options.serverID]);
+			return newServer.length ? newServer[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async findIfDupe(options) {
+		//if ("id" in options) {
+			const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
+			return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async findIfFirstPresent(options) {
+		//if ("id" in options) {
+			const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
+			return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async getGlobalStats() {
+		//if ("id" in options) {
+			const [results] = await this.pool.execute("SELECT * FROM globalStats WHERE id = 'a'");
+			return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
 	async addPresent({ code, presentLevel, timesFound, serverName, serverID, channelName, channelID, hiddenByName, hiddenByID }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
@@ -41,9 +81,77 @@ class Database {
 			`, [code, presentLevel, timesFound, serverName, serverID, channelName, channelID, hiddenByName, hiddenByID]);
 	}
 
+	async presentFound({ userID, userName, presentCode }) {
+		await this.pool.execute(`
+			INSERT INTO foundPresents SET
+				userID = ?,
+				userName = ?,
+				presentCode = ?
+			`, [userID, userName, presentCode]);
+	}
+
+	async addNewUser({ userID, userName }) {
+		await this.pool.execute(`
+			INSERT INTO userData SET
+				userID = ?,
+				userName = ?,
+				wrongGuesses = 0,
+				firstFinder = 0,
+				totalPresents = 0,
+				lvl1Presents = 0,
+				lvl2Presents = 0,
+				lvl3Presents = 0,
+				item1 = 0,
+				item2 = 0,
+				item3 = 0
+			`, [userID, userName]);
+	}
+
+	/* Used to create global stats -- Uneeded
+	async startGlobalStats({ id }) {
+		await this.pool.execute(`
+			INSERT INTO globalStats SET
+				id = ?,
+				wrongGuesses = 0,
+				usersWithPresents = 0,
+				guildsWithPresents = 0,
+				presentsFound = 0
+			`, [id]);
+	}*/
+
 	async incrementPresentFindCount(id) {
 		await this.pool.execute("UPDATE presents SET timesFound = timesFound + 1 WHERE id = ?", [id]);
 	}
+
+	async incrementUserWrongGuesses(userID) {
+		await this.pool.execute("UPDATE userData SET wrongGuesses = wrongGuesses + 1 WHERE userID = ?", [userID]);
+	}
+
+	async incrementGlobalWrongGuesses() {
+		await this.pool.execute("UPDATE globalStats SET wrongGuesses = wrongGuesses + 1 WHERE id = 'a'");
+	}
+
+	async incrementUserFirstFinder(userID) {
+		await this.pool.execute("UPDATE userData SET firstFinder = firstFinder + 1 WHERE userID = ?", [userID]);
+	}
+
+	async incrementUserTotalPresents(userID) {
+		await this.pool.execute("UPDATE userData SET totalPresents = totalPresents + 1 WHERE userID = ?", [userID]);
+	}
+
+	async incrementGlobalUsersWithPresents() {
+		await this.pool.execute("UPDATE globalStats SET usersWithPresents = usersWithPresents + 1 WHERE id = 'a'");
+	}
+
+//TODO:
+	async incrementGlobalGuildsWithPresents() {
+		await this.pool.execute("UPDATE globalStats SET guildsWithPresents = guildsWithPresents + 1 WHERE id = 'a'");
+	}
+
+	async incrementGlobalPresentsFound() {
+		await this.pool.execute("UPDATE globalStats SET presentsFound = presentsFound + 1 WHERE id = 'a'");
+	}
+
 }
 
 module.exports = Database;
