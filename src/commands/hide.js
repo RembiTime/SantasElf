@@ -30,7 +30,7 @@ class HideCommand extends Command {
 		if (checkNewServer === null) {
 			this.client.database.incrementGlobalGuildsWithPresents();
 			newServer = true;
-			}
+		}
 		await this.client.database.addPresent({
 			code,
 			presentLevel: level,
@@ -45,9 +45,10 @@ class HideCommand extends Command {
 
 		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.");
 		if (newServer == true) {
-			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!")
-		} else { //TODO: add amount of presents in a server
-			console.log("'" + message.guild.name + "' just created a present! There are now " + globalStats.guildsWithPresents + " servers participating!")
+			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!");
+		} else {
+			//TODO: add amount of presents in a server
+			console.log("'" + message.guild.name + "' just created a present! There are now " + globalStats.guildsWithPresents + " servers participating!");
 		}
 	}
 }

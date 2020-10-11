@@ -41,8 +41,8 @@ class Database {
 
 	async findIfDupe(options) {
 		//if ("id" in options) {
-			const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
-			return results.length ? results[0] : null;
+		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
+		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -50,8 +50,8 @@ class Database {
 
 	async findIfFirstPresent(options) {
 		//if ("id" in options) {
-			const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
-			return results.length ? results[0] : null;
+		const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
+		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -59,8 +59,8 @@ class Database {
 
 	async getGlobalStats() {
 		//if ("id" in options) {
-			const [results] = await this.pool.execute("SELECT * FROM globalStats WHERE id = 'a'");
-			return results.length ? results[0] : null;
+		const [results] = await this.pool.execute("SELECT * FROM globalStats WHERE id = 'a'");
+		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -143,7 +143,7 @@ class Database {
 		await this.pool.execute("UPDATE globalStats SET usersWithPresents = usersWithPresents + 1 WHERE id = 'a'");
 	}
 
-//TODO:
+	//TODO:
 	async incrementGlobalGuildsWithPresents() {
 		await this.pool.execute("UPDATE globalStats SET guildsWithPresents = guildsWithPresents + 1 WHERE id = 'a'");
 	}

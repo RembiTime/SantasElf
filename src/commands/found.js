@@ -33,13 +33,13 @@ class FoundCommand extends Command {
 		//Check if the finder is also the hider
 
 		if (message.author.id == present.hiddenByID) {
-			isHider = true
+			isHider = true;
 		}
 
 		if (present === null) {
 			this.client.database.incrementUserWrongGuesses(message.author.id);
 			this.client.database.incrementGlobalWrongGuesses();
-			console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total")
+			console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total");
 			message.channel.send("That present does not exist!");
 			return;
 		}
@@ -49,7 +49,7 @@ class FoundCommand extends Command {
 			return;
 		}
 
-		if (isHider == true){
+		if (isHider == true) {
 			message.channel.send("You can't claim a present that you hid!");
 			return;
 		}
@@ -57,18 +57,18 @@ class FoundCommand extends Command {
 		//Need it twice because top allows for Wrong Guess Count, this is for amount of users with one present
 		if (newUserCheck === null) {
 			this.client.database.incrementGlobalUsersWithPresents();
-			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!")
+			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!");
 		}
 
 		this.client.database.incrementPresentFindCount(present.id);
 		this.client.database.incrementUserTotalPresents(message.author.id);
 		this.client.database.incrementGlobalPresentsFound();
-		console.log(newUserCheck.userName + " found present code '" + code + "' in " + present.serverName + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.")
+		console.log(newUserCheck.userName + " found present code '" + code + "' in " + present.serverName + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
 
 		// TODO: fix this race condition
-		 if (present.timesFound === 0) {
+		if (present.timesFound === 0) {
 			this.client.database.incrementUserFirstFinder(message.author.id);
-			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.serverName + " first! They've found " + newUserCheck.firstFinder + " presents first!")
+			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.serverName + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({
 				userID: message.author.id,
 				userName: message.member.user.tag,
