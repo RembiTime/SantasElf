@@ -1,6 +1,6 @@
 {
 	"name": "santas-elf",
-	"version": "epsilon",
+	"version": "0.0.0-epsilon",
 	"description": "A Discord bot that has things!",
 	"main": "src/index.js",
 	"scripts": {
