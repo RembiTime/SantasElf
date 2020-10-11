@@ -16,17 +16,17 @@ class EvalCommand extends Command {
 				{
 					id: "silent",
 					match: "flag",
-					prefix: "--silent"
+					flag: "--silent"
 				},
 				{
 					id: "delsrc",
 					match: "flag",
-					prefix: "--delsrc"
+					flag: "--delsrc"
 				},
 				{
 					id: "depth",
-					match: "prefix",
-					prefix: "--depth=",
+					match: "option",
+					flag: "--depth=",
 					type: "integer",
 					default: 0
 				},
