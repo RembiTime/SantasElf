@@ -7,9 +7,9 @@ class Database {
 
 	async init() {
 		await Promise.all([
-			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID decimal(20,0), channelName VARCHAR(255), channelID decimal(20,0), hiddenByName VARCHAR(255), hiddenByID decimal(20,0), PRIMARY KEY(id))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID decimal(20,0), userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID decimal(20,0), userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED, PRIMARY KEY(id))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID BIGINT UNSIGNED, userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID BIGINT UNSIGNED, userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
 		]);
 	}
 
