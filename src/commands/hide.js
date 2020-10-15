@@ -33,7 +33,6 @@ class HideCommand extends Command {
 		}
 		/* Move to end
 		if (checkNewServer === null) {
-			this.client.database.incrementGlobalGuildsWithPresents();
 			newServer = true;
 		}
 		await this.client.database.addPresent({

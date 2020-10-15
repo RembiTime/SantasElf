@@ -62,15 +62,6 @@ class Database {
 		}*/
 	}
 
-	async getGlobalStats() {
-		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM globalStats WHERE id = 'a'");
-		return results.length ? results[0] : null;
-		/*} else {
-			throw new Error("Invalid findIfDupe() call");
-		}*/
-	}
-
 	async addPresent({ code, presentLevel, timesFound, serverName, serverID, channelName, channelID, hiddenByName, hiddenByID }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
@@ -124,43 +115,36 @@ class Database {
 			`, [id]);
 	}
 
-	async incrementPresentFindCount(id) {
-		await this.pool.execute("UPDATE presents SET timesFound = timesFound + 1 WHERE id = ?", [id]);
+	async getGlobalStats() {
+		const [wrongGuesses, usersWithPresents, guildsWithPresents, presentsFound] = await Promise.all([
+			this.getGlobalWrongGuesses(),
+			this.getGlobalUsersWithPresents(),
+			this.getGlobalGuildsWithPresents(),
+			this.getGlobalPresentsFound()
+		]);
+
+		return { wrongGuesses, usersWithPresents, guildsWithPresents, presentsFound };
 	}
 
-	async incrementUserWrongGuesses(userID) {
-		await this.pool.execute("UPDATE userData SET wrongGuesses = wrongGuesses + 1 WHERE userID = ?", [userID]);
+	async getGlobalWrongGuesses() {
+		const [[result]] = await this.pool.execute("SELECT SUM(wrongGuesses) FROM userData");
+		return result;
 	}
 
-	async incrementGlobalWrongGuesses() {
-		await this.pool.execute("UPDATE globalStats SET wrongGuesses = wrongGuesses + 1 WHERE id = 'a'");
+	async getGlobalUsersWithPresents() {
+		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT userID) FROM foundPresents");
+		return result;
 	}
 
-	async incrementUserFirstFinder(userID) {
-		await this.pool.execute("UPDATE userData SET firstFinder = firstFinder + 1 WHERE userID = ?", [userID]);
+	async getGlobalGuildsWithPresents() {
+		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT guildID) FROM presents");
+		return result;
 	}
 
-	async incrementUserTotalPresents(userID) {
-		await this.pool.execute("UPDATE userData SET totalPresents = totalPresents + 1 WHERE userID = ?", [userID]);
+	async getGlobalPresentsFound() {
+		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT presentCode) FROM foundPresents");
+		return result;
 	}
-
-	async incrementGlobalUsersWithPresents() {
-		await this.pool.execute("UPDATE globalStats SET usersWithPresents = usersWithPresents + 1 WHERE id = 'a'");
-	}
-
-	//TODO:
-	async incrementGlobalGuildsWithPresents() {
-		await this.pool.execute("UPDATE globalStats SET guildsWithPresents = guildsWithPresents + 1 WHERE id = 'a'");
-	}
-
-	async incrementGlobalPresentsFound() {
-		await this.pool.execute("UPDATE globalStats SET presentsFound = presentsFound + 1 WHERE id = 'a'");
-	}
-
-	async incrementlvlPresentsFound(level) {
-		await this.pool.execute(`UPDATE userData SET lvl${level}Presents = lvl${level}Presents + 1 AND lvl${level}Total = lvl${level}Total + 1 WHERE id = 'a'`);
-	}
-
 }
 
 module.exports = Database;
