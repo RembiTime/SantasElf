@@ -7,7 +7,7 @@ class Database {
 
 	async init() {
 		await Promise.all([
-			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED, PRIMARY KEY(id))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, guildName VARCHAR(255), guildID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED, PRIMARY KEY(id))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID BIGINT UNSIGNED, userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID BIGINT UNSIGNED, userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
 		]);
@@ -17,22 +17,22 @@ class Database {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
 			return results.length ? results[0] : null;
-		} else if ("code" in options && "serverID" in options) {
+		} else if ("code" in options && "guildID" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
-			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ? AND serverID = ?", [options.code, options.serverID]);
+			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ? AND guildID = ?", [options.code, options.guildID]);
 			return results.length ? results[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
 	}
 
-	async checkNewServer(options) {
+	async checkNewGuild(options) {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
 			return results.length ? results[0] : null;
-		} else if ("code" in options && "serverID" in options) {
-			//Check if server is new
-			const [newServer] = await this.pool.execute("SELECT * FROM presents WHERE serverID = ?", [options.serverID]);
+		} else if ("code" in options && "guildID" in options) {
+			//Check if guild is new
+			const [newServer] = await this.pool.execute("SELECT * FROM presents WHERE guildID = ?", [options.guildID]);
 			return newServer.length ? newServer[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -57,19 +57,19 @@ class Database {
 		}*/
 	}
 
-	async addPresent({ code, presentLevel, timesFound, serverName, serverID, channelName, channelID, hiddenByName, hiddenByID }) {
+	async addPresent({ code, presentLevel, timesFound, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
 				code = ?,
 				presentLevel = ?,
 				timesFound = ?,
-				serverName = ?,
-				serverID = ?,
+				guildName = ?,
+				guildID = ?,
 				channelName = ?,
 				channelID = ?,
 				hiddenByName = ?,
 				hiddenByID = ?
-			`, [code, presentLevel, timesFound, serverName, serverID, channelName, channelID, hiddenByName, hiddenByID]);
+			`, [code, presentLevel, timesFound, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
 	}
 
 	async presentFound({ userID, userName, presentCode }) {

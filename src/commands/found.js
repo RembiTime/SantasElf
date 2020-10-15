@@ -13,7 +13,7 @@ class FoundCommand extends Command {
 	}
 
 	async exec(message, { code }) {
-		const present = await this.client.database.getPresent({ code, serverID: message.guild.id });
+		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
 		const dupeCheck = await this.client.database.findIfDupe({ userID: message.author.id, presentCode: code });
 		const newUserCheck = await this.client.database.findIfFirstPresent({ userID: message.author.id });
 		const globalStats = await this.client.database.getGlobalStats();
@@ -57,11 +57,11 @@ class FoundCommand extends Command {
 			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!");
 		}
 
-		console.log(newUserCheck.userName + " found present code '" + code + "' in " + present.serverName + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
+		console.log(newUserCheck.userName + " found present code '" + code + "' in " + present.guildName + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
 
 		// TODO: fix this race condition
 		if (present.timesFound === 0) {
-			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.serverName + " first! They've found " + newUserCheck.firstFinder + " presents first!");
+			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.guildName + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({
 				userID: message.author.id,
 				userName: message.member.user.tag,

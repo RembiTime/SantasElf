@@ -19,10 +19,10 @@ class HideCommand extends Command {
 	}
 
 	async exec(message, { code, level }) {
-		const present = await this.client.database.getPresent({ code, serverID: message.guild.id });
-		const checkNewServer = await this.client.database.checkNewServer({ code, serverID: message.guild.id });
+		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
+		const checkNewGuild = await this.client.database.checkNewGuild({ code, guildID: message.guild.id });
 		const globalStats = await this.client.database.getGlobalStats();
-		let newServer = false;
+		let newGuild = false;
 		if (present !== null) {
 			message.channel.send("That code already exists!");
 			return;
@@ -32,15 +32,15 @@ class HideCommand extends Command {
 			return;
 		}
 		/* Move to end
-		if (checkNewServer === null) {
-			newServer = true;
+		if (checkNewGuild === null) {
+			newGuild = true;
 		}
 		await this.client.database.addPresent({
 			code,
 			presentLevel: level,
 			timesFound: 0,
-			serverName: message.guild.name,
-			serverID: message.guild.id,
+			guildName: message.guild.name,
+			guildID: message.guild.id,
 			channelName: message.channel.name,
 			channelID: message.channel.id,
 			hiddenByName: message.member.user.tag,
@@ -52,10 +52,10 @@ class HideCommand extends Command {
 		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.").then(() => {
 			message.channel.awaitMessages()
 		})
-		if (newServer == true) {
+		if (newGuild == true) {
 			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!");
 		} else {
-			//TODO: add amount of presents in a server
+			//TODO: add amount of presents in a guild
 			console.log("'" + message.guild.name + "' just created a present! There are now " + globalStats.guildsWithPresents + " servers participating!");
 		}
 	}
