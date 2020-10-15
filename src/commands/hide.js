@@ -1,4 +1,5 @@
 const { Command, Argument } = require("discord-akairo");
+const { MessageEmbed, SnowflakeUtil } = require("discord.js");
 
 class HideCommand extends Command {
 	constructor() {
@@ -24,7 +25,7 @@ class HideCommand extends Command {
 		});
 	}
 
-	async exec(message, { code, level }) {
+	async exec(message, { code, level, description }) {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
 		const globalStats = await this.client.database.getGlobalStats();
 		let newGuild = false;
@@ -36,12 +37,12 @@ class HideCommand extends Command {
 			message.channel.send("Please enter a difficult level of 1-3.");
 			return;
 		}*/
-		/* Move to end
 		const checkNewGuild = await this.client.database.checkNewGuild({ code, guildID: message.guild.id });
 
 		if (checkNewGuild === null) {
 			newGuild = true;
 		}
+		/* Move to end
 		await this.client.database.addPresent({
 			code,
 			presentLevel: level,
@@ -54,13 +55,23 @@ class HideCommand extends Command {
 			hiddenByID: message.author.id
 		});*/
 		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.");
-		if (newGuild == true) {
-			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!");
-		} else {
-			//TODO: add amount of presents in a guild
-			console.log("'" + message.guild.name + "' just created a present! There are now " + globalStats.guildsWithPresents + " servers participating!");
+		const staffQueue = this.client.channels.cache.get("766143817497313331");
+		let invite = await message.channel.createInvite(
+			{
+				maxAge: 0,
+				unique: true
+			})
+		const queueEmbed = new MessageEmbed()
+			.setColor("#FF5A5A")
+			.setTitle("New present hidden!")
+			.setDescription(message.guild.name)
+			.setTimestamp()
+			.setAuthor("Submitted by " + message.member.user.tag + ' || ID: ' + message.author.id, message.guild.iconURL(), message.guild.iconURL())
+			.addField("Guild Info:", "0 Previous Submits (TODO)\n" + message.guild.memberCount + ' Members\n' + "Created on " + SnowflakeUtil.deconstruct(message.guild.id).timestamp)
+			.addField("How to find:", description)
+			.addField("Invite:", invite);
+		staffQueue.send("Pingrole", queueEmbed)
 		}
 	}
-}
 
 module.exports = HideCommand;

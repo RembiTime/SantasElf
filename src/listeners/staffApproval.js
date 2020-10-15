@@ -8,8 +8,19 @@ class StaffApprovalListener extends Listener {
 		});
 	}
 
-	exec(reaction, user) {
-		// things go here
+	async exec(reaction, user) {
+		if (reaction.message.channel.id !== "766143817497313331") {
+			console.log("Wrong channel");
+			return;
+		}
+
+		const checkMessageID = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+
+		if (checkMessageID === null) {
+			console.log("No ID Check Stored")
+			return;
+		}
+		console.log(reaction._emoji.name)
 	}
 }
 

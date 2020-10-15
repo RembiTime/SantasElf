@@ -10,6 +10,7 @@ class Database {
 			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, guildName VARCHAR(255), guildID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED, PRIMARY KEY(id))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID BIGINT UNSIGNED, userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID BIGINT UNSIGNED, userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS staffApproval (messageID BIGINT UNSIGNED)"),
 		]);
 	}
 
@@ -33,6 +34,16 @@ class Database {
 		} else if ("code" in options && "guildID" in options) {
 			//Check if guild is new
 			const [newGuild] = await this.pool.execute("SELECT * FROM presents WHERE guildID = ?", [options.guildID]);
+			return newGuild.length ? newGuild[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async checkStaffApprovalIDs(options) {
+	 	if ("messageID" in options) {
+			//Check if message is stored
+			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -96,6 +107,13 @@ class Database {
 				item2 = 0,
 				item3 = 0
 			`, [userID, userName]);
+	}
+
+	async addStaffApprovalID({ messageID }) {
+		await this.pool.execute(`
+			INSERT INTO staffApproval SET
+				messageID = ?
+			`, [messageID]);
 	}
 
 	async getGlobalStats() {
