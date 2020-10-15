@@ -13,10 +13,6 @@ class Database {
 		]);
 	}
 
-	async randomNum(maxNum) {
-		return Math.floor(Math.random() * Math.floor(maxNum));
-	}
-
 	async getPresent(options) {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);

@@ -11,13 +11,8 @@ class GlobalStatsCommand extends Command {
 
 	async exec(message) {
 		const globalStats = await this.client.database.getGlobalStats();
-		let hexColor = "";
-		let randomNum = Math.floor(Math.random() * Math.floor(2));
-		if (randomNum === 0) {
-			hexColor = "#FF5A5A";
-		} else {
-			hexColor = "#8DFF5A";
-		}
+		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
+
 		const gstatsEmbed = new Discord.MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("Global Statistics")

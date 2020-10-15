@@ -11,13 +11,8 @@ class InventoryCommand extends Command {
 
 	async exec(message) {
 		const userData = await this.client.database.findIfFirstPresent({ userID: message.author.id });
-		let hexColor = "";
-		let randomNum = this.client.database.randomNum(2);
-		if (randomNum == 0) {
-			hexColor = "#FF5A5A";
-		} else {
-			hexColor = "#8DFF5A";
-		}
+		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
+
 		const inventoryEmbed = new Discord.MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("Your inventory")
