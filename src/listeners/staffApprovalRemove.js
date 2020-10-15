@@ -10,6 +10,8 @@ class StaffApprovalRemoveListener extends Listener {
 	}
 
 	async exec(reaction, user) {
+		if (reaction.message.partial) { await reaction.message.fetch(); }
+
 		if (reaction.message.channel.id !== "766143817497313331") {
 			return;
 		}

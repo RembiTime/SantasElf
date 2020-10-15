@@ -6,9 +6,13 @@ const Database = require("./Database");
 
 class SantasElf extends AkairoClient {
 	constructor() {
-		super({
-			ownerID: process.env.OWNER_IDS.split(",")
-		});
+		super(
+			{
+				ownerID: process.env.OWNER_IDS.split(",")
+			}, {
+				partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ]
+			}
+		);
 
 		this.commandHandler = new CommandHandler(this, {
 			directory: path.join(__dirname, "commands"),
