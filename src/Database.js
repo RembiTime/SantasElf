@@ -32,8 +32,8 @@ class Database {
 			return results.length ? results[0] : null;
 		} else if ("code" in options && "guildID" in options) {
 			//Check if guild is new
-			const [newServer] = await this.pool.execute("SELECT * FROM presents WHERE guildID = ?", [options.guildID]);
-			return newServer.length ? newServer[0] : null;
+			const [newGuild] = await this.pool.execute("SELECT * FROM presents WHERE guildID = ?", [options.guildID]);
+			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
