@@ -27,10 +27,11 @@ class HideCommand extends Command {
 			message.channel.send("That code already exists!");
 			return;
 		}
-		if (level > 3) {
-			message.channel.send("Please enter a difficult level of under 3.");
+		if ( !(level <= 3) || !(level >= 1) ) {
+			message.channel.send("Please enter a difficult level of 1-3.");
 			return;
 		}
+		/* Move to end
 		if (checkNewServer === null) {
 			this.client.database.incrementGlobalGuildsWithPresents();
 			newServer = true;
@@ -45,9 +46,13 @@ class HideCommand extends Command {
 			channelID: message.channel.id,
 			hiddenByName: message.member.user.tag,
 			hiddenByID: message.author.id
-		});
-
-		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.");
+		});*/
+		const filter = (reaction, user) => {
+			return reaction.emoji.name === '👍' && user.id === message.author.id;
+ 		};
+		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.").then(() => {
+			message.channel.awaitMessages()
+		})
 		if (newServer == true) {
 			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!");
 		} else {
