@@ -20,7 +20,6 @@ class HideCommand extends Command {
 
 	async exec(message, { code, level }) {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
-		const checkNewGuild = await this.client.database.checkNewGuild({ code, guildID: message.guild.id });
 		const globalStats = await this.client.database.getGlobalStats();
 		let newGuild = false;
 		if (present !== null) {
@@ -32,6 +31,8 @@ class HideCommand extends Command {
 			return;
 		}
 		/* Move to end
+		const checkNewGuild = await this.client.database.checkNewGuild({ code, guildID: message.guild.id });
+
 		if (checkNewGuild === null) {
 			newGuild = true;
 		}
@@ -45,13 +46,15 @@ class HideCommand extends Command {
 			channelID: message.channel.id,
 			hiddenByName: message.member.user.tag,
 			hiddenByID: message.author.id
-		});*/
+		});
 		const filter = (reaction, user) => {
-			return reaction.emoji.name === '👍' && user.id === message.author.id;
- 		};
+			return reaction.emoji.name === "👍" && user.id === message.author.id;
+		};
+		*/
+
 		await message.channel.send("Created a present with the code of `" + code + "` and a difficulty of `" + level + "`.").then(() => {
-			message.channel.awaitMessages()
-		})
+			message.channel.awaitMessages();
+		});
 		if (newGuild == true) {
 			console.log("'" + message.guild.name + "' just created their first present! There are now " + globalStats.guildsWithPresents + " servers participating!");
 		} else {
