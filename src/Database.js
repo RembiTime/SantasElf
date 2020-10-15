@@ -8,9 +8,14 @@ class Database {
 	async init() {
 		await Promise.all([
 			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID decimal(20,0), channelName VARCHAR(255), channelID decimal(20,0), hiddenByName VARCHAR(255), hiddenByID decimal(20,0), PRIMARY KEY(id))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID decimal(20,0), totalPresents int, lvl1Presents int, lvl2Presents int, lvl3Presents int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID decimal(20,0), presentCode VARCHAR(255), PRIMARY KEY(id))")
+			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID decimal(20,0), userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID decimal(20,0), userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS globalStats (wrongGuesses int, usersWithPresents int, guildsWithPresents int, presentsFound int)")
 		]);
+	}
+
+	async randomNum(maxNum) {
+		return Math.floor(Math.random() * Math.floor(maxNum));
 	}
 
 	async getPresent(options) {
@@ -107,7 +112,7 @@ class Database {
 			`, [userID, userName]);
 	}
 
-	/* Used to create global stats -- Uneeded
+	// Used to create global stats -- Uneeded
 	async startGlobalStats({ id }) {
 		await this.pool.execute(`
 			INSERT INTO globalStats SET
@@ -117,7 +122,7 @@ class Database {
 				guildsWithPresents = 0,
 				presentsFound = 0
 			`, [id]);
-	}*/
+	}
 
 	async incrementPresentFindCount(id) {
 		await this.pool.execute("UPDATE presents SET timesFound = timesFound + 1 WHERE id = ?", [id]);
@@ -150,6 +155,10 @@ class Database {
 
 	async incrementGlobalPresentsFound() {
 		await this.pool.execute("UPDATE globalStats SET presentsFound = presentsFound + 1 WHERE id = 'a'");
+	}
+
+	async incrementlvlPresentsFound(level) {
+		await this.pool.execute(`UPDATE userData SET lvl${level}Presents = lvl${level}Presents + 1 AND lvl${level}Total = lvl${level}Total + 1 WHERE id = 'a'`);
 	}
 
 }

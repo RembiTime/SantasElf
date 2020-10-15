@@ -12,7 +12,7 @@ class InventoryCommand extends Command {
 	async exec(message) {
 		const userData = await this.client.database.findIfFirstPresent({ userID: message.author.id });
 		let hexColor = "";
-		let randomNum = Math.floor(Math.random() * Math.floor(2));
+		let randomNum = this.client.database.randomNum(2);
 		if (randomNum == 0) {
 			hexColor = "#FF5A5A";
 		} else {

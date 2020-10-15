@@ -27,6 +27,10 @@ class HideCommand extends Command {
 			message.channel.send("That code already exists!");
 			return;
 		}
+		if (level > 3) {
+			message.channel.send("Please enter a difficult level of under 3.");
+			return;
+		}
 		if (checkNewServer === null) {
 			this.client.database.incrementGlobalGuildsWithPresents();
 			newServer = true;

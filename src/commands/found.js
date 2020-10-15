@@ -68,6 +68,7 @@ class FoundCommand extends Command {
 		// TODO: fix this race condition
 		if (present.timesFound === 0) {
 			this.client.database.incrementUserFirstFinder(message.author.id);
+			this.client.database.incrementlvlPresentsFound(present.presentLevel);
 			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.serverName + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({
 				userID: message.author.id,
