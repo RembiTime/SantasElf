@@ -32,16 +32,16 @@ class FoundCommand extends Command {
 
 		//Check if the finder is also the hider
 
-		if (message.author.id == present.hiddenByID) {
-			isHider = true;
-		}
-
 		if (present === null) {
-			this.client.database.incrementUserWrongGuesses(message.author.id);
-			this.client.database.incrementGlobalWrongGuesses();
+			await this.client.database.incrementUserWrongGuesses(message.author.id);
+			await this.client.database.incrementGlobalWrongGuesses();
 			console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total");
 			message.channel.send("That present does not exist!");
 			return;
+		}
+
+		if (message.author.id == present.hiddenByID) {
+			isHider = true;
 		}
 
 		if (dupeCheck !== null) {
