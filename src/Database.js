@@ -10,7 +10,6 @@ class Database {
 			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, serverName VARCHAR(255), serverID decimal(20,0), channelName VARCHAR(255), channelID decimal(20,0), hiddenByName VARCHAR(255), hiddenByID decimal(20,0), PRIMARY KEY(id))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID decimal(20,0), userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID decimal(20,0), userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS globalStats (id VARCHAR(5), wrongGuesses int, usersWithPresents int, guildsWithPresents int, presentsFound int)")
 		]);
 	}
 
@@ -101,18 +100,6 @@ class Database {
 				item2 = 0,
 				item3 = 0
 			`, [userID, userName]);
-	}
-
-	// Used to create global stats -- Uneeded
-	async startGlobalStats({ id }) {
-		await this.pool.execute(`
-			INSERT INTO globalStats SET
-				id = ?,
-				wrongGuesses = 0,
-				usersWithPresents = 0,
-				guildsWithPresents = 0,
-				presentsFound = 0
-			`, [id]);
 	}
 
 	async getGlobalStats() {
