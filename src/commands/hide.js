@@ -60,18 +60,25 @@ class HideCommand extends Command {
 			{
 				maxAge: 0,
 				unique: true
-			})
+			});
 		const queueEmbed = new MessageEmbed()
-			.setColor("#FF5A5A")
+			.setColor("#FE7E01")
 			.setTitle("New present hidden!")
-			.setDescription(message.guild.name)
-			.setTimestamp()
-			.setAuthor("Submitted by " + message.member.user.tag + ' || ID: ' + message.author.id, message.guild.iconURL(), message.guild.iconURL())
-			.addField("Guild Info:", "0 Previous Submits (TODO)\n" + message.guild.memberCount + ' Members\n' + "Created on " + SnowflakeUtil.deconstruct(message.guild.id).timestamp)
+			.setThumbnail("https://images-ext-2.discordapp.net/external/ruZlz9t0ScVKeriIpD8l8mSsZ7ACks9CR7qz7aksJ4M/https/pbs.twimg.com/media/Dq3swg5W4AAnAXV.jpg%3Alarge?width=671&height=671")
+			.addField("Present Info:", "Present Code: " + code + "\nDifficulty: " + level)
+			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: 0 (TODO)\nMembers: " + message.guild.memberCount + "\nCreated on: " + message.guild.createdAt)
+			.addField("Submitter Info:", "Submitted by: " + message.member.user.tag + "\nID: " + message.author.id)
 			.addField("How to find:", description)
 			.addField("Invite:", invite);
-		staffQueue.send("Pingrole", queueEmbed)
-		}
+		let sent = await staffQueue.send("Pingrole", queueEmbed);
+		await this.client.database.addStaffApprovalID({
+			messageID: sent.id
+		});
+		const approvalMessage = await staffQueue.messages.fetch(sent.id);
+		approvalMessage.react("❗");
+		approvalMessage.react("✅");
+		approvalMessage.react("❌");
 	}
+}
 
 module.exports = HideCommand;

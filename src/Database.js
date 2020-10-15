@@ -41,7 +41,7 @@ class Database {
 	}
 
 	async checkStaffApprovalIDs(options) {
-	 	if ("messageID" in options) {
+		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
 			return newGuild.length ? newGuild[0] : null;
