@@ -15,9 +15,9 @@ class StaffApprovalRemoveListener extends Listener {
 		if (reaction.message.channel.id !== "766143817497313331") {
 			return;
 		}
-		const checkMessageID = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+		const checkApprovalIfOngoing = await this.client.database.checkApprovalIfOngoing({ messageID: reaction.message.id });
 
-		if (checkMessageID === null) {
+		if (checkApprovalIfOngoing === null) {
 			return;
 		}
 

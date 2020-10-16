@@ -125,7 +125,6 @@ class Database {
 	}
 
 	async addStaffApprovalID({ messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID }) {
-		console.dir([messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
 		await this.pool.execute(`
 			INSERT INTO staffApproval SET
 				messageID = ?,
@@ -181,6 +180,16 @@ class Database {
 
 	async getGlobalPresentsFound() {
 		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT presentCode) FROM foundPresents");
+		return result;
+	}
+
+	async checkGuildDeniedAmount({ guildID }) {
+		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM staffApproval WHERE status = 'DENIED' AND guildID = ?", [guildID]);
+		return result;
+	}
+
+	async checkIfPendingPresent({ guildID }) {
+		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM staffApproval WHERE status = 'ONGOING' AND guildID = ?", [guildID]);
 		return result;
 	}
 }

@@ -32,14 +32,15 @@ class HideCommand extends Command {
 			message.channel.send("That code already exists!");
 			return;
 		}
-		/*if ( !(level <= 3) || !(level >= 1) ) {
-			message.channel.send("Please enter a difficult level of 1-3.");
+		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
+		if (guildDeniedAmount.count > 3) {
+			message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.")
 			return;
-		}*/
-		const checkNewGuild = await this.client.database.checkNewGuild({ code, guildID: message.guild.id });
-
-		if (checkNewGuild === null) {
-			newGuild = true;
+		}
+		const checkPending = await this.client.database.checkIfPendingPresent({ guildID: message.guild.id });
+		if (checkPending.count !== 0) {
+			message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.")
+			return;
 		}
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");
 		const staffQueue = this.client.channels.cache.get("766143817497313331");
