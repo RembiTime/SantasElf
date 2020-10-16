@@ -25,10 +25,15 @@ class StaffApprovalRemoveListener extends Listener {
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
 		if (reaction._emoji.name === "❗") {
+			const findIfClaimedBy = await this.client.database.findIfClaimedBy({ messageID: reaction.message.id });
+			if (findIfClaimedBy.claimedByID !== user.id) {
+				return;
+			}
+			this.client.database.notClaimed({ messageID: reaction.message.id });
 			const oldEmbed = approvalMessage.embeds[0];
 			const editedEmbed = new MessageEmbed(oldEmbed)
 				.setColor("#FE7E01");
-			editedEmbed.footer = null
+			editedEmbed.footer = null;
 			approvalMessage.edit(editedEmbed);
 		}
 	}

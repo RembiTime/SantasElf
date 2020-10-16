@@ -2,7 +2,7 @@ const mysql = require("mysql2");
 
 class Database {
 	constructor(options) {
-		this.pool = mysql.createPool(options).promise();
+		this.pool = mysql.createPool({ ...options, supportBigNumbers: true, bigNumberStrings: true }).promise();
 	}
 
 	async init() {
@@ -10,7 +10,7 @@ class Database {
 			this.pool.execute("CREATE TABLE IF NOT EXISTS presents (id int AUTO_INCREMENT, code VARCHAR(255), presentLevel int, timesFound int, guildName VARCHAR(255), guildID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED, PRIMARY KEY(id))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS userData (userID BIGINT UNSIGNED, userName VARCHAR(255), wrongGuesses int, firstFinder int, totalPresents int, lvl1Presents int, lvl1Total int, lvl2Presents int, lvl2Total int, lvl3Presents int, lvl3Total int, item1 int, item2 int, item3 int, PRIMARY KEY(userID))"),
 			this.pool.execute("CREATE TABLE IF NOT EXISTS foundPresents (id int AUTO_INCREMENT, userID BIGINT UNSIGNED, userName VARCHAR(255), presentCode VARCHAR(255), PRIMARY KEY(id))"),
-			this.pool.execute("CREATE TABLE IF NOT EXISTS staffApproval (messageID BIGINT UNSIGNED)"),
+			this.pool.execute("CREATE TABLE IF NOT EXISTS staffApproval (messageID BIGINT UNSIGNED, status ENUM('ONGOING', 'ACCEPTED', 'DENIED'), claimedByID BIGINT UNSIGNED, code VARCHAR(255), presentLevel int, guildName VARCHAR(255), guildID BIGINT UNSIGNED, channelName VARCHAR(255), channelID BIGINT UNSIGNED, hiddenByName VARCHAR(255), hiddenByID BIGINT UNSIGNED)"),
 		]);
 	}
 
@@ -28,22 +28,28 @@ class Database {
 	}
 
 	async checkNewGuild(options) {
-		if ("id" in options) {
-			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
-			return results.length ? results[0] : null;
-		} else if ("code" in options && "guildID" in options) {
-			//Check if guild is new
-			const [newGuild] = await this.pool.execute("SELECT * FROM presents WHERE guildID = ?", [options.guildID]);
-			return newGuild.length ? newGuild[0] : null;
-		} else {
-			throw new Error("Invalid getPresent() call");
-		}
+		//if ("id" in options) {
+		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
 	}
 
 	async checkStaffApprovalIDs(options) {
 		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
+			return newGuild.length ? newGuild[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async checkApprovalIfOngoing(options) {
+		if ("messageID" in options) {
+			//Check if message is stored
+			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ? AND status = 'ONGOING'", [options.messageID]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -62,6 +68,15 @@ class Database {
 	async findIfFirstPresent(options) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async findIfClaimedBy({messageID}) {
+		//if ("id" in options) {
+		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
 		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -109,11 +124,33 @@ class Database {
 			`, [userID, userName]);
 	}
 
-	async addStaffApprovalID({ messageID }) {
+	async addStaffApprovalID({ messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID }) {
+		console.dir([messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
 		await this.pool.execute(`
 			INSERT INTO staffApproval SET
-				messageID = ?
-			`, [messageID]);
+				messageID = ?,
+				status = ?,
+				code = ?,
+				presentLevel = ?,
+				guildName = ?,
+				guildID = ?,
+				channelName = ?,
+				channelID = ?,
+				hiddenByName = ?,
+				hiddenByID = ?
+			`, [messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
+	}
+
+	async notClaimed({ messageID }) {
+		await this.pool.execute("UPDATE staffApproval SET claimedByID = NULL WHERE messageID = ?", [messageID]);
+	}
+
+	async claimedUpdate({ userID, messageID }) {
+		await this.pool.execute("UPDATE staffApproval SET claimedByID = ? WHERE messageID = ?", [userID, messageID]);
+	}
+
+	async approvalStatusUpdate({ status, messageID }) {
+		await this.pool.execute("UPDATE staffApproval SET status = ? WHERE messageID = ?", [status, messageID]);
 	}
 
 	async getGlobalStats() {
