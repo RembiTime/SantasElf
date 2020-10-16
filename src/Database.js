@@ -2,7 +2,7 @@ const mysql = require("mysql2");
 
 class Database {
 	constructor(options) {
-		this.pool = mysql.createPool(options).promise();
+		this.pool = mysql.createPool({ ...options, supportBigNumbers: true, bigNumberStrings: true }).promise();
 	}
 
 	async init() {
