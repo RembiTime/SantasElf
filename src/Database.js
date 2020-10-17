@@ -13,11 +13,8 @@ class Database {
 					code          VARCHAR(255),
 					presentLevel  INTEGER,
 					timesFound    INTEGER,
-					guildName     VARCHAR(255),
 					guildID       BIGINT UNSIGNED,
-					channelName   VARCHAR(255),
 					channelID     BIGINT UNSIGNED,
-					hiddenByName  VARCHAR(255),
 					hiddenByID    BIGINT UNSIGNED,
 					PRIMARY KEY(id)
 				)
@@ -57,11 +54,8 @@ class Database {
 					claimedByID   BIGINT UNSIGNED,
 					code          VARCHAR(255),
 					presentLevel  INTEGER,
-					guildName     VARCHAR(255),
 					guildID       BIGINT UNSIGNED,
-					channelName   VARCHAR(255),
 					channelID     BIGINT UNSIGNED,
-					hiddenByName  VARCHAR(255),
 					hiddenByID    BIGINT UNSIGNED
 				)
 			`)
@@ -137,19 +131,16 @@ class Database {
 		}*/
 	}
 
-	async addPresent({ code, presentLevel, timesFound, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID }) {
+	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
 				code = ?,
 				presentLevel = ?,
 				timesFound = ?,
-				guildName = ?,
 				guildID = ?,
-				channelName = ?,
 				channelID = ?,
-				hiddenByName = ?,
 				hiddenByID = ?
-			`, [code, presentLevel, timesFound, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
+			`, [code, presentLevel, timesFound, guildID, channelID, hiddenByID]);
 	}
 
 	async presentFound({ userID, userName, presentCode }) {
@@ -178,20 +169,17 @@ class Database {
 			`, [userID, userName]);
 	}
 
-	async addStaffApprovalID({ messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID }) {
+	async addStaffApprovalID({ messageID, status, code, presentLevel, guildID, channelID, hiddenByID }) {
 		await this.pool.execute(`
 			INSERT INTO staffApproval SET
 				messageID = ?,
 				status = ?,
 				code = ?,
 				presentLevel = ?,
-				guildName = ?,
 				guildID = ?,
-				channelName = ?,
 				channelID = ?,
-				hiddenByName = ?,
 				hiddenByID = ?
-			`, [messageID, status, code, presentLevel, guildName, guildID, channelName, channelID, hiddenByName, hiddenByID]);
+			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
 	async notClaimed({ messageID }) {

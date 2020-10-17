@@ -65,11 +65,8 @@ class HideCommand extends Command {
 			status: "ONGOING",
 			code: code,
 			presentLevel: level,
-			guildName: message.guild.name,
 			guildID: message.guild.id,
-			channelName: message.channel.name,
 			channelID: message.channel.id,
-			hiddenByName: message.member.user.tag,
 			hiddenByID: message.author.id
 		});
 		const approvalMessage = await staffQueue.messages.fetch(sent.id);

@@ -57,11 +57,11 @@ class FoundCommand extends Command {
 			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!");
 		}
 
-		console.log(newUserCheck.userName + " found present code '" + code + "' in " + present.guildName + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
+		console.log(newUserCheck.userName + " found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
 
 		// TODO: fix this race condition
 		if (present.timesFound === 0) {
-			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + present.guildName + " first! They've found " + newUserCheck.firstFinder + " presents first!");
+			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({
 				userID: message.author.id,
 				userName: message.member.user.tag,
