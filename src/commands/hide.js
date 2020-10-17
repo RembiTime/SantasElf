@@ -1,5 +1,5 @@
 const { Command, Argument } = require("discord-akairo");
-const { MessageEmbed, SnowflakeUtil } = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 
 class HideCommand extends Command {
 	constructor() {
@@ -27,19 +27,26 @@ class HideCommand extends Command {
 
 	async exec(message, { code, level, description }) {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
-		let newGuild = false;
-		if (present !== null) {
+		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
+		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
+		if (checkNewGuild === null) {
+			await this.client.database.addNewGuild({
+				guildID: message.guild.id,
+				trueFalse: "FALSE"
+			});
+		}
+		if (present !== null || queuePresent !== null) {
 			message.channel.send("That code already exists!");
 			return;
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount.count > 3) {
-			message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.")
+			message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 			return;
 		}
 		const checkPending = await this.client.database.checkIfPendingPresent({ guildID: message.guild.id });
-		if (checkPending.count !== 0) {
-			message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.")
+		if (checkPending.count !== "0") {
+			message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.");
 			return;
 		}
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");

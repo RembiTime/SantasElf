@@ -58,6 +58,12 @@ class Database {
 					channelID     BIGINT UNSIGNED  NOT NULL,
 					hiddenByID    BIGINT UNSIGNED  NOT NULL
 				)
+			`),
+			this.pool.execute(`
+				CREATE TABLE IF NOT EXISTS guildData (
+					guildID				BIGINT UNSIGNED  NOT NULL,
+					isPartner     ENUM('TRUE', 'FALSE')  NOT NULL
+				)
 			`)
 		]);
 	}
@@ -75,9 +81,18 @@ class Database {
 		}
 	}
 
-	async checkNewGuild(options) {
+	async checkNewGuild({guildID}) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
+		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async checkIfPartner({guildID}) {
+		//yes, it's the exact same as above but with a different name :<
+		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -98,6 +113,16 @@ class Database {
 		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ? AND status = 'ONGOING'", [options.messageID]);
+			return newGuild.length ? newGuild[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async checkOngoingIfCodeDupe(options) {
+		if ("code" in options) {
+			//Check if message is stored
+			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE code = ? AND status = 'ONGOING'", [options.code]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -125,6 +150,15 @@ class Database {
 	async findIfClaimedBy({messageID}) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async findIfGuildExists({guildID}) {
+		//if ("id" in options) {
+		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -182,6 +216,14 @@ class Database {
 			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
+	async addNewGuild({ trueFalse, guildID }) {
+		await this.pool.execute(`
+			INSERT INTO guildData SET
+				guildID = ?,
+				isPartner = ?
+			`, [trueFalse, guildID]);
+	}
+
 	async notClaimed({ messageID }) {
 		await this.pool.execute("UPDATE staffApproval SET claimedByID = NULL WHERE messageID = ?", [messageID]);
 	}
@@ -192,6 +234,10 @@ class Database {
 
 	async approvalStatusUpdate({ status, messageID }) {
 		await this.pool.execute("UPDATE staffApproval SET status = ? WHERE messageID = ?", [status, messageID]);
+	}
+
+	async addPartner({ guildID }) {
+		await this.pool.execute("UPDATE guildData SET isPartner = 'TRUE' WHERE guildID = ?", [guildID]);
 	}
 
 	async getGlobalStats() {
