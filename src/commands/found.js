@@ -16,7 +16,6 @@ class FoundCommand extends Command {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
 		const dupeCheck = await this.client.database.findIfDupe({ userID: message.author.id, presentCode: code });
 		const newUserCheck = await this.client.database.findIfFirstPresent({ userID: message.author.id });
-		const globalStats = await this.client.database.getGlobalStats();
 		let isHider = false;
 
 		// Used to create global stats -- Uneeded: await this.client.database.startGlobalStats({id: code})
@@ -33,7 +32,7 @@ class FoundCommand extends Command {
 		//Check if the finder is also the hider
 
 		if (present === null) {
-			console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total");
+			//console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total");
 			message.channel.send("That present does not exist!");
 			return;
 		}
@@ -53,15 +52,15 @@ class FoundCommand extends Command {
 		}
 
 		//Need it twice because top allows for Wrong Guess Count, this is for amount of users with one present
-		if (newUserCheck === null) {
+		/*if (newUserCheck === null) {
 			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!");
 		}
 
 		console.log(newUserCheck.userName + " found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
-
+		*/
 		// TODO: fix this race condition
 		if (present.timesFound === 0) {
-			console.log(newUserCheck.userName + " has found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + " first! They've found " + newUserCheck.firstFinder + " presents first!");
+			//console.log(newUserCheck.userName + " has found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({
 				userID: message.author.id,
 				userName: message.member.user.tag,

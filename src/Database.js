@@ -240,6 +240,10 @@ class Database {
 		await this.pool.execute("UPDATE guildData SET isPartner = 'TRUE' WHERE guildID = ?", [guildID]);
 	}
 
+	async changeLevel({ presentLevel, messageID }) {
+		await this.pool.execute("UPDATE staffApproval SET presentLevel = ? WHERE messageID = ?", [presentLevel, messageID]);
+	}
+
 	async getGlobalStats() {
 		const [wrongGuesses, usersWithPresents, guildsWithPresents, presentsFound] = await Promise.all([
 			this.getGlobalWrongGuesses(),
@@ -278,6 +282,11 @@ class Database {
 
 	async checkIfPendingPresent({ guildID }) {
 		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM staffApproval WHERE status = 'ONGOING' AND guildID = ?", [guildID]);
+		return result;
+	}
+
+	async checkPresentAmount({ guildID }) {
+		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM presents WHERE guildID = ?", [guildID]);
 		return result;
 	}
 }

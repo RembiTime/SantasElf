@@ -13,8 +13,8 @@ class HideCommand extends Command {
 				},
 				{
 					id: "level",
-					type: Argument.range("integer", 1, 3, true),
-					prompt: { start: "Please enter a difficulty level between 1-3", retry: "The difficulty must be a number between 1 and 3" }
+					type: Argument.range("integer", 1, 5, true),
+					prompt: { start: "Please enter a difficulty level between 1-3 (1-5 if you're a partner)", retry: "The difficulty must be a number between 1 and 3 (1 and 5 if you're a partner)" }
 				},
 				{
 					id: "description",
@@ -29,6 +29,7 @@ class HideCommand extends Command {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
 		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
+		const checkIfPartner = await this.client.database.checkIfPartner({ guildID: message.guild.id });
 		if (checkNewGuild === null) {
 			await this.client.database.addNewGuild({
 				guildID: message.guild.id,
@@ -38,6 +39,17 @@ class HideCommand extends Command {
 		if (present !== null || queuePresent !== null) {
 			message.channel.send("That code already exists!");
 			return;
+		}
+		if (checkIfPartner.isPartner === "FALSE") {
+			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
+			if (level > 3) {
+				message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
+				return;
+			}
+			if (presentAmount.count > 1) {
+				message.channel.send("Your server has reached the maximum amount of presents in your server. If you would like more, please apply to be a partner.");
+				return;
+			}
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount.count > 3) {
@@ -62,7 +74,7 @@ class HideCommand extends Command {
 			.setTitle("New present hidden!")
 			.setThumbnail("https://images-ext-2.discordapp.net/external/ruZlz9t0ScVKeriIpD8l8mSsZ7ACks9CR7qz7aksJ4M/https/pbs.twimg.com/media/Dq3swg5W4AAnAXV.jpg%3Alarge?width=671&height=671")
 			.addField("Present Info:", "Present Code: " + code + "\nDifficulty: " + level)
-			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: 0 (TODO)\nMembers: " + message.guild.memberCount + "\nDays Created: " + guildAge)
+			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: " + guildDeniedAmount.count + "\nMembers: " + message.guild.memberCount + "\nDays Created: " + guildAge + "\n Are they a partner? " + checkIfPartner.isPartner)
 			.addField("Submitter Info:", "Submitted by: " + message.member.user.tag + "\nID: " + message.author.id)
 			.addField("How to find:", description)
 			.addField("Invite:", invite);
