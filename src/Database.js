@@ -10,53 +10,53 @@ class Database {
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS presents (
 					id            INTEGER AUTO_INCREMENT,
-					code          VARCHAR(255),
-					presentLevel  INTEGER,
-					timesFound    INTEGER,
-					guildID       BIGINT UNSIGNED,
-					channelID     BIGINT UNSIGNED,
-					hiddenByID    BIGINT UNSIGNED,
+					code          VARCHAR(255)     NOT NULL,
+					presentLevel  INTEGER          NOT NULL,
+					timesFound    INTEGER          NOT NULL,
+					guildID       BIGINT UNSIGNED  NOT NULL,
+					channelID     BIGINT UNSIGNED  NOT NULL,
+					hiddenByID    BIGINT UNSIGNED  NOT NULL,
 					PRIMARY KEY(id)
 				)
 			`),
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS userData (
 					userID         BIGINT UNSIGNED,
-					userName       VARCHAR(255),
-					wrongGuesses   INTEGER,
-					firstFinder    INTEGER,
-					totalPresents  INTEGER,
-					lvl1Presents   INTEGER,
-					lvl1Total      INTEGER,
-					lvl2Presents   INTEGER,
-					lvl2Total      INTEGER,
-					lvl3Presents   INTEGER,
-					lvl3Total      INTEGER,
-					item1          INTEGER,
-					item2          INTEGER,
-					item3          INTEGER,
+					userName       VARCHAR(255)  NOT NULL,
+					wrongGuesses   INTEGER       NOT NULL,
+					firstFinder    INTEGER       NOT NULL,
+					totalPresents  INTEGER       NOT NULL,
+					lvl1Presents   INTEGER       NOT NULL,
+					lvl1Total      INTEGER       NOT NULL,
+					lvl2Presents   INTEGER       NOT NULL,
+					lvl2Total      INTEGER       NOT NULL,
+					lvl3Presents   INTEGER       NOT NULL,
+					lvl3Total      INTEGER       NOT NULL,
+					item1          INTEGER       NOT NULL,
+					item2          INTEGER       NOT NULL,
+					item3          INTEGER       NOT NULL,
 					PRIMARY KEY(userID)
 				)
 			`),
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS foundPresents (
 					id           INTEGER AUTO_INCREMENT,
-					userID       BIGINT UNSIGNED,
-					userName     VARCHAR(255),
-					presentCode  VARCHAR(255),
+					userID       BIGINT UNSIGNED  NOT NULL,
+					userName     VARCHAR(255)     NOT NULL,
+					presentCode  VARCHAR(255)     NOT NULL,
 					PRIMARY KEY(id)
 				)
 			`),
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS staffApproval (
 					messageID     BIGINT UNSIGNED,
-					status        ENUM('ONGOING', 'ACCEPTED', 'DENIED'),
+					status        ENUM('ONGOING', 'ACCEPTED', 'DENIED')  NOT NULL,
 					claimedByID   BIGINT UNSIGNED,
-					code          VARCHAR(255),
-					presentLevel  INTEGER,
-					guildID       BIGINT UNSIGNED,
-					channelID     BIGINT UNSIGNED,
-					hiddenByID    BIGINT UNSIGNED
+					code          VARCHAR(255)     NOT NULL,
+					presentLevel  INTEGER          NOT NULL,
+					guildID       BIGINT UNSIGNED  NOT NULL,
+					channelID     BIGINT UNSIGNED  NOT NULL,
+					hiddenByID    BIGINT UNSIGNED  NOT NULL
 				)
 			`)
 		]);
