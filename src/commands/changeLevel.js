@@ -4,7 +4,7 @@ const { MessageEmbed } = require("discord.js");
 class ChangeLevelCommand extends Command {
 	constructor() {
 		super("changeLevel", {
-			aliases: ["changeLevel, cl"],
+			aliases: ["changeLevel", "cl"],
 			description: "Mod-only command for changing the level of a present",
 			args: [
 				{
