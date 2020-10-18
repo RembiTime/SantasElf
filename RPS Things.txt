@@ -5,6 +5,7 @@ Level 3: Regular Present
 Level 4: Glowing Present
 Level 5: Legendary Present
 
+
 Item rarities:
 Negative (The Grinch):
 Coal
@@ -17,7 +18,6 @@ Plush
 Socks
 Rubber Duck
 Pencils
-Card
 Box
 Pumpkin
 Orange
@@ -48,7 +48,8 @@ Watch*
 Mysterious Part*
 Puppy
 Sword
-Guitar
+Simp
+Cat
 
 Legendary (Reindeer):
 Car
@@ -57,8 +58,57 @@ Role
 Spanner
 Slime
 Cyber Dragon
+Fractal
 
 Mythic (Santa):
 Ownership
 Glitch
 Corn
+
+Unique (Rudolph):
+Dupe Machine
+Music Disc
+Broken Plane
+Big Triangle
+
+
+Chances:
+Level 1:
+10% Negative
+45% Common
+25% Uncommon
+15% Rare
+4% Legendary
+1% Mythic
+
+Level 2:
+10% Negative
+35% Common
+25% Uncommon
+20% Rare
+8% Legendary
+2% Mythic
+
+Level 3:
+10% Negative
+25% Common
+25% Uncommon
+25% Rare
+12% Legendary
+3% Mythic
+
+Level 4:
+10% Negative
+15% Common
+20% Uncommon
+30% Rare
+20% Legendary
+5% Mythic
+
+Level 5:
+10% Negative
+10% Common
+15% Uncommon
+20% Rare
+30% Legendary
+15% Mythic
