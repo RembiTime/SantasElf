@@ -17,7 +17,7 @@ class HideCommand extends Command {
 						Argument.range("integer", 1, 3, true),
 						Argument.validate(
 							Argument.range("integer", 1, 5, true),
-							async message => (await this.client.database.checkIfPartner({ guildID: message.guild.id })).isPartner === "FALSE"
+							async message => !(await this.client.database.checkIfPartner({ guildID: message.guild.id })).isPartner
 						)
 					),
 					prompt: { start: "Please enter a difficulty level between 1-3 (1-5 if you're a partner)", retry: "The difficulty must be a number between 1 and 3 (1 and 5 if you're a partner)" }
@@ -39,14 +39,14 @@ class HideCommand extends Command {
 		if (checkNewGuild === null) {
 			await this.client.database.addNewGuild({
 				guildID: message.guild.id,
-				trueFalse: "FALSE"
+				trueFalse: false
 			});
 		}
 		if (present !== null || queuePresent !== null) {
 			message.channel.send("That code already exists!");
 			return;
 		}
-		if (checkIfPartner.isPartner === "FALSE") {
+		if (!checkIfPartner.isPartner) {
 			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
 			if (level > 3) {
 				message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
@@ -59,7 +59,7 @@ class HideCommand extends Command {
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount.count >= 3) {
-			if (checkNewGuild.appealed3Deny === "FALSE") {
+			if (!checkNewGuild.appealed3Deny) {
 				message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 				return;
 			} else if (guildDeniedAmount.count >= 5) {

@@ -20,6 +20,18 @@ class Database {
 				)
 			`),
 			this.pool.execute(`
+				CREATE TABLE IF NOT EXISTS presents (
+					id            INTEGER AUTO_INCREMENT,
+					code          VARCHAR(255)     NOT NULL,
+					presentLevel  INTEGER          NOT NULL,
+					timesFound    INTEGER          NOT NULL,
+					guildID       BIGINT UNSIGNED  NOT NULL,
+					channelID     BIGINT UNSIGNED  NOT NULL,
+					hiddenByID    BIGINT UNSIGNED  NOT NULL,
+					PRIMARY KEY(id)
+				)
+			`),
+			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS userData (
 					userID         BIGINT UNSIGNED,
 					userName       VARCHAR(255)  NOT NULL,
@@ -38,7 +50,7 @@ class Database {
 					lvl5Presents   INTEGER       NOT NULL,
 					lvl5Total      INTEGER       NOT NULL,
 					coalAmt        INTEGER       NOT NULL,
-					coalTotal			 INTEGER       NOT NULL,
+					coalTotal      INTEGER       NOT NULL,
 					treeAmt        INTEGER       NOT NULL,
 					treeTotal      INTEGER       NOT NULL,
 					paletteAmt     INTEGER       NOT NULL,
@@ -161,9 +173,9 @@ class Database {
 			`),
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS guildData (
-					guildID				BIGINT UNSIGNED  NOT NULL,
-					isPartner     ENUM('TRUE', 'FALSE')  NOT NULL,
-					appealed3Deny	ENUM('TRUE', 'FALSE')  NOT NULL
+					guildID	       BIGINT UNSIGNED  NOT NULL,
+					isPartner      BOOLEAN          NOT NULL,
+					appealed3Deny  BOOLEAN          NOT NULL
 				)
 			`)
 		]);
