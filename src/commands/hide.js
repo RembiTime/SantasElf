@@ -14,8 +14,11 @@ class HideCommand extends Command {
 				{
 					id: "level",
 					type: Argument.union(
-						Argument.range("integer", 1, 5, true),
-						//Argument.validate(Argument.range("integer", 1, 5, true), message => message.author.id === "224652587507384320")
+						Argument.range("integer", 1, 3, true),
+						Argument.validate(
+							Argument.range("integer", 1, 5, true),
+							async message => (await this.client.database.checkIfPartner({ guildID: message.guild.id })).isPartner === "FALSE"
+						)
 					),
 					prompt: { start: "Please enter a difficulty level between 1-3 (1-5 if you're a partner)", retry: "The difficulty must be a number between 1 and 3 (1 and 5 if you're a partner)" }
 				},

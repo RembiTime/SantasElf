@@ -1,34 +1,64 @@
-/* Create table
-let table1 = 'CREATE TABLE tester(id int AUTO_INCREMENT, title VARCHAR(255), body VARCHAR(255), PRIMARY KEY(id))';
-connection.query(table1, (err, result) => {
-	if(err) throw err;
-	console.log(result);
-}) */
+Present names:
+Level 1: Stocking
+Level 2: Small Present
+Level 3: Regular Present
+Level 4: Glowing Present
+Level 5: Legendary Present
 
-/*Insert data
-let tspecs = {title: 'Tester 2', body: 'This is the second test'};
-let query = connection.query('INSERT INTO tester SET ?', tspecs, (err, result) => {
-	if(err) throw err;
-	console.log(result);
-}) */
+Item rarities:
+Negative (The Grinch):
+Coal
+Goose
+Dirt
 
-/*Select posts
-let temvar = 1
-let query = connection.query(`SELECT * FROM tester WHERE id = ${temvar}`, (err, result) => {
-	if(err) throw err;
-	console.log(result);
-})*/
+Common (Snowflake):
+Ornament
+Plush
+Socks
+Rubber Duck
+Pencils
+Card
+Box
+Pumpkin
+Orange
+Shirt
+Chocolate
+Football
+Football2
 
-/*Update post
-let temvar = 1
-let query = connection.query(`UPDATE tester SET id = ${temvar} WHERE id = ${temvar}`, (err, result) => {
-	if(err) throw err;
-	console.log(result);
-})*/
+Uncommon (Snowman):
+Tree
+Giftcard
+Figurine
+Snowglobe
+Palette*
+Mistletoe*
+Meme*
+Pin
+Blanket
+Headphones
+Video game
+Keyboard*
 
-/*Delte post
-let temvar = 1
-let query = connection.query(`DELETE FROM tester WHERE id = ${temvar}`, (err, result) => {
-	if(err) throw err;
-	console.log(result);
-})*/
+Rare (Elf):
+Santa's Hat
+Console
+Computer
+Watch*
+Mysterious Part*
+Puppy
+Sword
+Guitar
+
+Legendary (Reindeer):
+Car
+Dragon Egg*
+Role
+Spanner
+Slime
+Cyber Dragon
+
+Mythic (Santa):
+Ownership
+Glitch
+Corn
