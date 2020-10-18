@@ -24,7 +24,7 @@ class StaffApprovalRemoveListener extends Listener {
 		const staffQueue = this.client.channels.cache.get("766143817497313331");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
-		if (reaction._emoji.name === "❗") {
+		if (reaction.emoji.name === "❗") {
 			const findIfClaimedBy = await this.client.database.findIfClaimedBy({ messageID: reaction.message.id });
 			if (findIfClaimedBy.claimedByID !== user.id) {
 				return;
