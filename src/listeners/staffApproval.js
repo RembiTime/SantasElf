@@ -65,9 +65,10 @@ class StaffApprovalListener extends Listener {
 		}
 		if (reaction._emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+			const deniedCount = await this.client.database.checkGuildDeniedAmount({ guildID: checkStaffApproval.guildID });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
-			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
 			this.client.database.approvalStatusUpdate({ status: "DENIED", messageID: reaction.message.id });
+			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + deniedCount.count + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
 			const oldEmbed = approvalMessage.embeds[0];
 			const editedEmbed = new MessageEmbed(oldEmbed)
 				.setColor("#FF5A5A")

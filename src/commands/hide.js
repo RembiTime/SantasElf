@@ -13,7 +13,10 @@ class HideCommand extends Command {
 				},
 				{
 					id: "level",
-					type: Argument.range("integer", 1, 5, true),
+					type: Argument.union(
+						Argument.range("integer", 1, 5, true),
+						//Argument.validate(Argument.range("integer", 1, 5, true), message => message.author.id === "224652587507384320")
+					),
 					prompt: { start: "Please enter a difficulty level between 1-3 (1-5 if you're a partner)", retry: "The difficulty must be a number between 1 and 3 (1 and 5 if you're a partner)" }
 				},
 				{
@@ -52,9 +55,14 @@ class HideCommand extends Command {
 			}
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
-		if (guildDeniedAmount.count > 3) {
-			message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
-			return;
+		if (guildDeniedAmount.count >= 3) {
+			if (checkNewGuild.appealed3Deny === "FALSE") {
+				message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
+				return;
+			} else if (guildDeniedAmount.count >= 5) {
+				message.channel.send("Your server has been denied 5 times already. Because you have already appealed, you can no longer submit any presents");
+				return;
+			}
 		}
 		const checkPending = await this.client.database.checkIfPendingPresent({ guildID: message.guild.id });
 		if (checkPending.count !== "0") {

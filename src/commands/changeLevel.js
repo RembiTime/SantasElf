@@ -1,5 +1,4 @@
 const { Command } = require("discord-akairo");
-const { MessageEmbed } = require("discord.js");
 
 class ChangeLevelCommand extends Command {
 	constructor() {
@@ -20,13 +19,15 @@ class ChangeLevelCommand extends Command {
 	}
 
 	async exec(message, { level, messageID }) {
-		console.log("hi")
-		const checkStaffApproval = await this.client.databse.checkStaffApprovalIDs({messageID});
+		if (message.channel.id !== "766143817497313331") {
+			return;
+		}
+		const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({messageID});
 		if (checkStaffApproval === null) {
 			message.channel.send("This message ID does not exist");
 			return;
 		}
-		this.client.database.changeLevel({level, messageID});
+		this.client.database.changeLevel({presentLevel: level, messageID: messageID});
 		const approvalMessage = await message.channel.messages.fetch(messageID);
 		const oldEmbed = approvalMessage.embeds[0];
 		for (const field of oldEmbed.fields) {

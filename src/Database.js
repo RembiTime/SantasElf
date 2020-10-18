@@ -62,7 +62,8 @@ class Database {
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS guildData (
 					guildID				BIGINT UNSIGNED  NOT NULL,
-					isPartner     ENUM('TRUE', 'FALSE')  NOT NULL
+					isPartner     ENUM('TRUE', 'FALSE')  NOT NULL,
+					appealed3Deny	ENUM('TRUE', 'FALSE')  NOT NULL
 				)
 			`)
 		]);
@@ -216,12 +217,13 @@ class Database {
 			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
-	async addNewGuild({ trueFalse, guildID }) {
+	async addNewGuild({ guildID, trueFalse }) {
 		await this.pool.execute(`
 			INSERT INTO guildData SET
 				guildID = ?,
-				isPartner = ?
-			`, [trueFalse, guildID]);
+				isPartner = ?,
+				appealed3Deny = 'FALSE'
+			`, [guildID, trueFalse]);
 	}
 
 	async notClaimed({ messageID }) {
@@ -242,6 +244,10 @@ class Database {
 
 	async changeLevel({ presentLevel, messageID }) {
 		await this.pool.execute("UPDATE staffApproval SET presentLevel = ? WHERE messageID = ?", [presentLevel, messageID]);
+	}
+
+	async appealAccept({ guildID }) {
+		await this.pool.execute("UPDATE guildData SET appealed3Deny = 'TRUE' WHERE guildID = ?", [guildID]);
 	}
 
 	async getGlobalStats() {
