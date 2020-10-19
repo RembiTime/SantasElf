@@ -7,12 +7,12 @@ Level 5: Legendary Present
 
 
 Item rarities:
-Negative (The Grinch - 0):
+Negative (The Grinch - 0/3):
 Coal
 Goose*
 Dirt
 
-Common (Snowflake - 1):
+Common (Snowflake - 1/12):
 Ornament
 Plush
 Socks
@@ -26,7 +26,7 @@ Chocolate
 Football
 Football2
 
-Uncommon (Snowman - 2):
+Uncommon (Snowman - 2/12):
 Tree
 Giftcard
 Figurine
@@ -40,7 +40,7 @@ Headphones
 Video game
 Keyboard*
 
-Rare (Elf - 3):
+Rare (Elf - 3/9):
 Santa's Hat
 Console
 Computer
@@ -51,7 +51,7 @@ Sword
 Simp
 Cat
 
-Legendary (Reindeer - 4):
+Legendary (Reindeer - 4/7):
 Car
 Dragon Egg*
 Role
@@ -60,12 +60,12 @@ Slime
 Cyber Dragon
 Fractal
 
-Mythic (Santa - 5):
+Mythic (Santa - 5/3):
 Ownership
 Glitch
 Corn
 
-Unique (Rudolph):
+Unique (Rudolph - 6/4):
 Dupe Machine
 Music Disc
 Broken Plane

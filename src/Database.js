@@ -83,7 +83,6 @@ class Database {
 					ownershipTotal INTEGER       NOT NULL,
 					memeAmt        INTEGER       NOT NULL,
 					memeTotal      INTEGER       NOT NULL,
-					glitchAmt      INTEGER       NOT NULL,
 					glitchTotal    INTEGER       NOT NULL,
 					pencilsAmt     INTEGER       NOT NULL,
 					pencilsTotal   INTEGER       NOT NULL,
@@ -95,7 +94,6 @@ class Database {
 					dragonEggAmt   INTEGER       NOT NULL,
 					dragonEggTotal INTEGER       NOT NULL,
 					mysteriousPart INTEGER       NOT NULL,
-					roleAmt        INTEGER       NOT NULL,
 					roleTotal      INTEGER       NOT NULL,
 					spannerAmt     INTEGER       NOT NULL,
 					spannerTotal   INTEGER       NOT NULL,
@@ -129,11 +127,9 @@ class Database {
 					footballTotal  INTEGER       NOT NULL,
 					football2Amt   INTEGER       NOT NULL,
 					football2Total INTEGER       NOT NULL,
-					keyboardAmt    INTEGER       NOT NULL,
 					keyboardTotal  INTEGER       NOT NULL,
 					cornAmt        INTEGER       NOT NULL,
 					cornTotal      INTEGER       NOT NULL,
-					simpAmt				 INTEGER       NOT NULL,
 					simpTotal      INTEGER       NOT NULL,
 					dupeAmt        INTEGER       NOT NULL,
 					dupeTotal      INTEGER       NOT NULL,
@@ -426,11 +422,30 @@ class Database {
 	}
 
 	async foundGoose({ userID, presentLevel }) {
-		let gooseAmt = "gooseAmt";
+		let gooseTotal = "gooseTotal";
 		presentLevel = "lvl" + presentLevel + "Presents";
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseAmt, gooseAmt, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseTotal, gooseTotal, userID]);
 		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [userID]);
+	}
+
+	async addItemSpecial({ itemName, userID, presentLevel}) {
+		let itemNameTotal = itemName + "Total";
+		presentLevel = "lvl" + presentLevel + "Presents";
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameTotal, itemNameTotal, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
+	}
+
+	async foundKeyboard({ winnerID }) {
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [winnerID]);
+	}
+
+	async foundSimp({ userID }) {
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [userID]);
+	}
+
+	async foundGlitch({ userID }) {
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [userID]);
 	}
 
 	async generateRarity({ presentLevel }) {
@@ -456,9 +471,8 @@ class Database {
 
 	async choosePresent({ message, presentLevel, userID }) {
 		const presentRarity = this.client.database.generateRarity({ presentLevel });
+		const rand = Math.random();
 		if (presentRarity == 0) {
-			const rand = Math.random();
-
 			if (rand < 1 / 3) {
 				this.client.database.addItem({ itemName: "coal", userID: userID, presentLevel: presentLevel });
 				message.channel.send("Uh oh... Looks like you got on the naughty list. You found coal");
@@ -469,8 +483,154 @@ class Database {
 				this.client.database.addItem({ itemName: "dirt", userID: userID, presentLevel: presentLevel });
 				message.channel.send("You open the present to find dirt... fun");
 			}
+		} if (presentRarity == 1) {
+			if (rand < 1 / 12) {
+				this.client.database.addItem({ itemName: "ornament", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found an ornament! That doesn't really do you much good since you've already decorated your tree though");
+			} else if (rand < 2 / 12) {
+				this.client.database.addItem({ itemName: "plush", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a stuffed animal! It isn't worth much, but it makes a good companion.");
+			} else if (rand < 3 / 12) {
+				this.client.database.addItem({ itemName: "socks", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a pair of socks! Why do people keep giving me socks as a gift??");
+			} else if (rand < 4 / 12) {
+				this.client.database.addItem({ itemName: "duck", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a rubber duck! Although it's a cheap plastic toy, you know that you still love rubber ducks");
+			} else if (rand < 5 / 12) {
+				this.client.database.addItem({ itemName: "pencils", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a box of pencils! Why would I want pencils as a gift?");
+			} else if (rand < 6 / 12) {
+				this.client.database.addItem({ itemName: "box", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You open the present to find a cardboard box! You feel compelled to go into it");
+			} else if (rand < 7 / 12) {
+				this.client.database.addItem({ itemName: "pumpkin", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a pumpkin! It's starting to rot because someone thought it would be funny to give you their Halloween pumpkin");
+			} else if (rand < 8 / 12) {
+				this.client.database.addItem({ itemName: "orange", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found an orange! Why do people put fruit in a present? I'll never understand");
+			} else if (rand < 9 / 12) {
+				this.client.database.addItem({ itemName: "shirt", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a shirt! Great, more clothes");
+			} else if (rand < 10 / 12) {
+				this.client.database.addItem({ itemName: "chocolate", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a box of chocolate! What is this, Valentine's day?");
+			} else if (rand < 11 / 12) {
+				this.client.database.addItem({ itemName: "football", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a football! Which football is this, though?");
+			} else {
+				this.client.database.addItem({ itemName: "football2", userID: userID, presentLevel: presentLevel });
+				message.channel.send("You found a football! Which football is this, though?");
+			}
+		} if (presentRarity == 2) {
+			if (rand < 1 / 12) {
+				this.client.database.addItem({ itemName: "tree", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found an entire tree! How did they even fit this into the present?");
+			} else if (rand < 2 / 12) {
+				this.client.database.addItem({ itemName: "giftcard", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a giftcard! It's worth 20 candy canes!");
+			} else if (rand < 3 / 12) {
+				this.client.database.addItem({ itemName: "figurine", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a figurine! Time to add that to your collection!");
+			} else if (rand < 4 / 12) {
+				this.client.database.addItem({ itemName: "snowglobe", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a snowglobe! You love shaking it and seeing the snow fly around everywhere!");
+			} else if (rand < 5 / 12) {
+				this.client.database.addItem({ itemName: "palette", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found an art palette! There's so many different colors to paint with!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**");
+			} else if (rand < 6 / 12) {
+				this.client.database.addItem({ itemName: "mistletoe", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found some mistletoe! Who would've left this for you?\n**This is a minigame item! When you would like to play, send the command `,use mistletoe`!**");
+			} else if (rand < 7 / 12) {
+				this.client.database.addItem({ itemName: "meme", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a fresh meme template! You really want to try it out on your favorite social media site and get some intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**");
+			} else if (rand < 8 / 12) {
+				this.client.database.addItem({ itemName: "pin", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a Pin! It's also authentic! Time to add it to your lanyard!");
+			} else if (rand < 9 / 12) {
+				this.client.database.addItem({ itemName: "blanket", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a blanket! This will keep you warm throughout the rest of winter!");
+			} else if (rand < 10 / 12) {
+				this.client.database.addItem({ itemName: "headphones", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a pair of headphones! They're pretty nice quality, and you're excited to try it out!");
+			} else if (rand < 11 / 12) {
+				this.client.database.addItem({ itemName: "game", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a video game! You've been wanting this game for a while and want to start playing it immediately!");
+			} else {
+				this.client.database.addItemSpecial({ itemName: "keyboard", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Nice! You found a keyboard! It seems to be rattling with anticipation");
+				// TODO: this.client.database.foundKeyboard({ winnerID: cmvlkamcac });
+			}
+		} if (presentRarity == 3) {
+			if (rand < 1 / 9) {
+				this.client.database.addItem({ itemName: "hat", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found Santa's hat! He'll probably pay a fortune to get it back");
+			} else if (rand < 2 / 9) {
+				this.client.database.addItem({ itemName: "console", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a console! You've been wanting the SwitchU forever now!");
+			} else if (rand < 3 / 9) {
+				this.client.database.addItem({ itemName: "computer", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a computer! Now people can't judge you for being a Mac gamer!");
+			} else if (rand < 4 / 9) {
+				this.client.database.addItem({ itemName: "watch", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a nice-looking watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**");
+			} else if (rand < 5 / 9) {
+				this.client.database.addItem({ itemName: "mysteriousPart", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a Mysterious Part! What could this be for?");
+				//Add in check command here
+			} else if (rand < 6 / 9) {
+				this.client.database.addItem({ itemName: "puppy", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a puppy! It jumps out and immediately starts licking your face! A puppy in a box just seems cruel, but you're too overjoyed to finally get a puppy to worry about it!");
+			} else if (rand < 7 / 9) {
+				this.client.database.addItem({ itemName: "sword", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a Sword! You wonder how it didn't cut the box open and if this is legal, but it's still really cool");
+			} else if (rand < 8 / 9) {
+				this.client.database.addItemSpecial({ itemName: "simp", userID: userID, presentLevel: presentLevel });
+				this.client.database.foundSimp({ userID: userID })
+				message.channel.send("Wow! You found a simp! You wonder why it was hiding in the box, but he gives you 50 candy canes hoping that you will notice it. You take the money and promptly ignore it");
+			} else {
+				this.client.database.addItem({ itemName: "cat", userID: userID, presentLevel: presentLevel });
+				message.channel.send("Wow! You found a cat! You wonder if this is just a present for you or if it trapped itself inside a box and you thought it was a present. Nevertheless, it's your's now.");
+			}
+		} if (presentRarity == 4) {
+			if (rand < 1 / 7) {
+				this.client.database.addItem({ itemName: "car", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a car! You don't know how you didn't see this before, but you're ecsatic.");
+			} else if (rand < 2 / 7) {
+				this.client.database.addItem({ itemName: "dragonEgg", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a dragon egg! You wonder if it will hatch\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**");
+			} else if (rand < 3 / 7) {
+				this.client.database.addItemSpecial({ itemName: "role", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a role! You feel special-er");
+				message.member.addRole("ROLE ID HERE");
+			} else if (rand < 4 / 7) {
+				this.client.database.addItem({ itemName: "spanner", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a spanner! It's like a wrench, but better! You can feel its magical powers flowing through it");
+			} else if (rand < 5 / 7) {
+				this.client.database.addItem({ itemName: "slime", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a slime! It's dark sky-blue and you can almost see a smiling face on it. It seems alive...");
+			} else if (rand < 6 / 7) {
+				this.client.database.addItem({ itemName: "cyberDragon", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a cyber dragon! It looks like a wireframe dragon figure with raw power pulsing through it");
+			} else {
+				this.client.database.addItem({ itemName: "fractal", userID: userID, presentLevel: presentLevel });
+				message.channel.send("WHA?? You found a fractal! It seems like a core to a magical symbol...");
+			}
+		} if (presentRarity == 5) {
+			if (rand < 1 / 3) {
+				this.client.database.addItem({ itemName: "ownership", userID: userID, presentLevel: presentLevel });
+				message.channel.send("YOU CAN'T BELIEVE YOUR EYES! You found the ownership of SMPEarth! How does that even work?");
+			} else if (rand < 2 / 3) {
+				this.client.database.addItemSpecial({ itemName: "glitch", userID: userID, presentLevel: presentLevel });
+				this.client.database.foundGlitch({ userID: userID })
+				message.channel.send("YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!");
+				//Make that text look glitchy
+			} else {
+				this.client.database.addItem({ itemName: "corn", userID: userID, presentLevel: presentLevel });
+				message.channel.send("YOU CAN'T BELIEVE YOUR EYES! You found a cob of corn! THIS IS THE BEST PRESENT YOU COULD HAVE GOTTEN! You show it to your friends and they can't believe that you got corn! They're shocked and they go to tell their friends that you found the mythical corn. Eventually, the legend spreads everywhere and legends are made about the person who found the corn. You become the most popular person on Earth with nearly unlimited wealth because of the simps. Congrats, you won the game");
+			}
 		}
 	}
+
 }
 
 module.exports = Database;
