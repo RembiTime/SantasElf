@@ -7,12 +7,12 @@ Level 5: Legendary Present
 
 
 Item rarities:
-Negative (The Grinch):
+Negative (The Grinch - 0):
 Coal
-Goose
+Goose*
 Dirt
 
-Common (Snowflake):
+Common (Snowflake - 1):
 Ornament
 Plush
 Socks
@@ -26,7 +26,7 @@ Chocolate
 Football
 Football2
 
-Uncommon (Snowman):
+Uncommon (Snowman - 2):
 Tree
 Giftcard
 Figurine
@@ -40,7 +40,7 @@ Headphones
 Video game
 Keyboard*
 
-Rare (Elf):
+Rare (Elf - 3):
 Santa's Hat
 Console
 Computer
@@ -51,7 +51,7 @@ Sword
 Simp
 Cat
 
-Legendary (Reindeer):
+Legendary (Reindeer - 4):
 Car
 Dragon Egg*
 Role
@@ -60,7 +60,7 @@ Slime
 Cyber Dragon
 Fractal
 
-Mythic (Santa):
+Mythic (Santa - 5):
 Ownership
 Glitch
 Corn
@@ -74,41 +74,41 @@ Big Triangle
 
 Chances:
 Level 1:
-10% Negative
-45% Common
-25% Uncommon
-15% Rare
-4% Legendary
-1% Mythic
+10% Negative (1-10)
+45% Common (11-55)
+25% Uncommon (56-80)
+15% Rare (81-95)
+4% Legendary (96-99)
+1% Mythic (100)
 
 Level 2:
-10% Negative
-35% Common
-25% Uncommon
-20% Rare
-8% Legendary
-2% Mythic
+10% Negative (1-10)
+35% Common (11-45)
+25% Uncommon (46-70)
+20% Rare (71-90)
+8% Legendary (91-98)
+2% Mythic (99-100)
 
 Level 3:
-10% Negative
-25% Common
-25% Uncommon
-25% Rare
-12% Legendary
-3% Mythic
+10% Negative (1-10)
+25% Common (11-35)
+25% Uncommon (36-60)
+25% Rare (61-85)
+12% Legendary (86-97)
+3% Mythic (98-100)
 
 Level 4:
-10% Negative
-15% Common
-20% Uncommon
-30% Rare
-20% Legendary
-5% Mythic
+10% Negative (1-10)
+15% Common (11-25)
+20% Uncommon (26-45)
+30% Rare (46-75)
+20% Legendary (76-95)
+5% Mythic (96-100)
 
 Level 5:
-10% Negative
-10% Common
-15% Uncommon
-20% Rare
-30% Legendary
-15% Mythic
+10% Negative (1-10)
+10% Common (11-20)
+15% Uncommon (21-35)
+20% Rare (36-55)
+30% Legendary (56-85)
+15% Mythic (86-100)

@@ -395,6 +395,130 @@ class Database {
 		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM presents WHERE guildID = ?", [guildID]);
 		return result;
 	}
+
+
+
+	//ITEM STUFF
+
+
+
+	async getRandomInt(max) {
+		return Math.floor(Math.random() * Math.floor(max)) + 1;
+	}
+
+	async addCandyCanes({ amount, userID }) {
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
+	}
+
+	async addItem({ itemName, userID, presentLevel }) {
+		let itemNameAmt = itemName + "Amt";
+		let itemNameTotal = itemName + "Total";
+		presentLevel = "lvl" + presentLevel + "Presents";
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameAmt, itemNameAmt, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameTotal, itemNameTotal, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
+	}
+
+	async foundGoose({ userID, presentLevel }) {
+		let gooseAmt = "gooseAmt";
+		presentLevel = "lvl" + presentLevel + "Presents";
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseAmt, gooseAmt, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [userID]);
+	}
+
+	async generateRarity({ presentLevel }) {
+		const randomNum = this.client.database.getRandomInt(100);
+		if (presentLevel === 1) {
+			if (randomNum <= 10) {
+				return 0;
+			} if (randomNum >= 11 && randomNum <= 55) {
+				return 1;
+			} if (randomNum >= 56 && randomNum <= 80) {
+				return 2;
+			} if (randomNum >= 81 && randomNum <= 95) {
+				return 3;
+			} if (randomNum >= 96 && randomNum <= 99) {
+				return 4;
+			} if (randomNum == 100) {
+				return 5;
+			}
+		} if (presentLevel === 2) {
+			if (randomNum <= 10) {
+				return 0;
+			} if (randomNum >= 11 && randomNum <= 45) {
+				return 1;
+			} if (randomNum >= 46 && randomNum <= 70) {
+				return 2;
+			} if (randomNum >= 71 && randomNum <= 90) {
+				return 3;
+			} if (randomNum >= 91 && randomNum <= 98) {
+				return 4;
+			} if (randomNum >= 99 && randomNum <= 100) {
+				return 5;
+			}
+		} if (presentLevel === 3) {
+			if (randomNum <= 10) {
+				return 0;
+			} if (randomNum >= 11 && randomNum <= 35) {
+				return 1;
+			} if (randomNum >= 36 && randomNum <= 60) {
+				return 2;
+			} if (randomNum >= 61 && randomNum <= 85) {
+				return 3;
+			} if (randomNum >= 86 && randomNum <= 97) {
+				return 4;
+			} if (randomNum >= 98 && randomNum <= 100) {
+				return 5;
+			}
+		} if (presentLevel === 4) {
+			if (randomNum <= 10) {
+				return 0;
+			} if (randomNum >= 11 && randomNum <= 25) {
+				return 1;
+			} if (randomNum >= 26 && randomNum <= 45) {
+				return 2;
+			} if (randomNum >= 46 && randomNum <= 75) {
+				return 3;
+			} if (randomNum >= 76 && randomNum <= 95) {
+				return 4;
+			} if (randomNum >= 96 && randomNum <= 100) {
+				return 5;
+			}
+		} if (presentLevel === 5) {
+			if (randomNum <= 10) {
+				return 0;
+			} if (randomNum >= 11 && randomNum <= 20) {
+				return 1;
+			} if (randomNum >= 21 && randomNum <= 35) {
+				return 2;
+			} if (randomNum >= 36 && randomNum <= 55) {
+				return 3;
+			} if (randomNum >= 56 && randomNum <= 85) {
+				return 4;
+			} if (randomNum >= 86 && randomNum <= 100) {
+				return 5;
+			}
+		}
+	}
+
+	async choosePresent({ message, presentLevel, userID }) {
+		const presentRarity = this.client.database.generateRarity({presentLevel});
+		if (presentRarity == 0) {
+			const randomNum = this.client.database.getRandomInt(3);
+			if (randomNum == 1) {
+				this.client.database.addItem({itemName: "coal", userID: userID, presentLevel: presentLevel});
+				message.channel.send("Uh oh... Looks like you got on the naughty list. You found coal");
+			} if (randomNum == 2) {
+				this.client.database.foundGoose({userID: userID, presentLevel: presentLevel});
+				message.channel.send("Honk honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes!");
+			} if (randomNum == 3) {
+				this.client.database.addItem({itemName: "dirt", userID: userID, presentLevel: presentLevel});
+				message.channel.send("You open the present to find dirt... fun");
+			}
+		}
+}
+
 }
 
 module.exports = Database;
