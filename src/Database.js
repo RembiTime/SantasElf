@@ -1,4 +1,5 @@
 const mysql = require("mysql2");
+const items = require("./items");
 
 class Database {
 	constructor(options) {
@@ -668,6 +669,10 @@ class Database {
 		}
 	}
 
+		// TODO: handle special items
+		await this.addItem({ itemName: item.id, userID, presentLevel });
+		await message.channel.send(item.response);
+	}
 }
 
 module.exports = Database;
