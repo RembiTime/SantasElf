@@ -247,7 +247,7 @@ class Database {
 		}*/
 	}
 
-	async findIfFirstPresent(options) {
+	async userDataCheck(options) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
 		return results.length ? results[0] : null;
@@ -436,8 +436,21 @@ class Database {
 		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
 	}
 
-	async foundKeyboard({ winnerID }) {
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [winnerID]);
+	async foundKeyboard({ message }) {
+		const rand = Math.random();
+		let prompt = "Type in the following for the keyboard to give you candy!\n\n";
+		if (rand < 1 / 3) {
+			prompt = prompt + "This is an example typing test";
+		} else if (rand < 2 / 3) {
+			prompt = prompt + "This is another example of a prompt";
+		} else {
+			prompt = prompt + "I've run out of ideas";
+		}
+		const filter = response => response.content === prompt;
+
+		message.channel.send(prompt);
+		const collected = await message.channel.awaitMessages(filter, {max: 1, time: 30000, errors: ["time"]}).catch(() => message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away"));
+		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
 	}
 
 	async foundSimp({ userID }) {
@@ -446,6 +459,21 @@ class Database {
 
 	async foundGlitch({ userID }) {
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [userID]);
+	}
+
+	async addBigTriangle({ userID }) {
+		let bigTriangleAmt = "bigTriangleAmt";
+		let bigTriangleTotal = "bigTriangleTotal";
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleAmt, bigTriangleAmt, userID]);
+		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleTotal, bigTriangleTotal, userID]);
+	}
+
+	async checkBigTriangle({ userID, message }) {
+		const userData = await this.client.database.userDataCheck({ userID: userID });
+		if (userData.mysteriousPartAmt >= 3 && userData.fractal >= 1 && userData.spanner >= 1 && userData.slime >= 1 && userData.cyberDragon >= 1) {
+			this.client.database.addBigTriangle({ userID: userID });
+			message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
+		}
 	}
 
 	async generateRarity({ presentLevel }) {
@@ -558,7 +586,7 @@ class Database {
 			} else {
 				this.client.database.addItemSpecial({ itemName: "keyboard", userID: userID, presentLevel: presentLevel });
 				message.channel.send("Nice! You found a keyboard! It seems to be rattling with anticipation");
-				// TODO: this.client.database.foundKeyboard({ winnerID: cmvlkamcac });
+				this.client.database.foundKeyboard({ message: message });
 			}
 		} if (presentRarity == 3) {
 			if (rand < 1 / 9) {
@@ -576,7 +604,8 @@ class Database {
 			} else if (rand < 5 / 9) {
 				this.client.database.addItem({ itemName: "mysteriousPart", userID: userID, presentLevel: presentLevel });
 				message.channel.send("Wow! You found a Mysterious Part! What could this be for?");
-				//Add in check command here
+
+				this.client.database.checkBigTriangle({ userID: message.author.id, message: message });
 			} else if (rand < 6 / 9) {
 				this.client.database.addItem({ itemName: "puppy", userID: userID, presentLevel: presentLevel });
 				message.channel.send("Wow! You found a puppy! It jumps out and immediately starts licking your face! A puppy in a box just seems cruel, but you're too overjoyed to finally get a puppy to worry about it!");
@@ -585,7 +614,7 @@ class Database {
 				message.channel.send("Wow! You found a Sword! You wonder how it didn't cut the box open and if this is legal, but it's still really cool");
 			} else if (rand < 8 / 9) {
 				this.client.database.addItemSpecial({ itemName: "simp", userID: userID, presentLevel: presentLevel });
-				this.client.database.foundSimp({ userID: userID })
+				this.client.database.foundSimp({ userID: userID });
 				message.channel.send("Wow! You found a simp! You wonder why it was hiding in the box, but he gives you 50 candy canes hoping that you will notice it. You take the money and promptly ignore it");
 			} else {
 				this.client.database.addItem({ itemName: "cat", userID: userID, presentLevel: presentLevel });
@@ -605,15 +634,23 @@ class Database {
 			} else if (rand < 4 / 7) {
 				this.client.database.addItem({ itemName: "spanner", userID: userID, presentLevel: presentLevel });
 				message.channel.send("WHA?? You found a spanner! It's like a wrench, but better! You can feel its magical powers flowing through it");
+
+				this.client.database.checkBigTriangle({ userID: message.author.id, message: message });
 			} else if (rand < 5 / 7) {
 				this.client.database.addItem({ itemName: "slime", userID: userID, presentLevel: presentLevel });
 				message.channel.send("WHA?? You found a slime! It's dark sky-blue and you can almost see a smiling face on it. It seems alive...");
+
+				this.client.database.checkBigTriangle({ userID: message.author.id, message: message });
 			} else if (rand < 6 / 7) {
 				this.client.database.addItem({ itemName: "cyberDragon", userID: userID, presentLevel: presentLevel });
 				message.channel.send("WHA?? You found a cyber dragon! It looks like a wireframe dragon figure with raw power pulsing through it");
+
+				this.client.database.checkBigTriangle({ userID: message.author.id, message: message });
 			} else {
 				this.client.database.addItem({ itemName: "fractal", userID: userID, presentLevel: presentLevel });
 				message.channel.send("WHA?? You found a fractal! It seems like a core to a magical symbol...");
+
+				this.client.database.checkBigTriangle({ userID: message.author.id, message: message });
 			}
 		} if (presentRarity == 5) {
 			if (rand < 1 / 3) {
@@ -621,7 +658,7 @@ class Database {
 				message.channel.send("YOU CAN'T BELIEVE YOUR EYES! You found the ownership of SMPEarth! How does that even work?");
 			} else if (rand < 2 / 3) {
 				this.client.database.addItemSpecial({ itemName: "glitch", userID: userID, presentLevel: presentLevel });
-				this.client.database.foundGlitch({ userID: userID })
+				this.client.database.foundGlitch({ userID: userID });
 				message.channel.send("YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!");
 				//Make that text look glitchy
 			} else {
