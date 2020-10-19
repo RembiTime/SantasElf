@@ -30,7 +30,7 @@ class StaffApprovalListener extends Listener {
 		const staffQueue = this.client.channels.cache.get("766143817497313331");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
-		if (reaction._emoji.name === "❗") {
+		if (reaction.emoji.name === "❗") {
 			const findIfClaimedBy = await this.client.database.findIfClaimedBy({ messageID: reaction.message.id });
 			if (findIfClaimedBy.claimedByID !== null) {
 				reaction.users.remove(user);
@@ -43,7 +43,7 @@ class StaffApprovalListener extends Listener {
 				.setFooter("Claimed by " + user.username + "#" + user.discriminator);
 			approvalMessage.edit(editedEmbed);
 		}
-		if (reaction._emoji.name === "✅") {
+		if (reaction.emoji.name === "✅") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			// TODO: handle bot not in guild
@@ -63,7 +63,7 @@ class StaffApprovalListener extends Listener {
 				.setFooter("Approved by " + user.username + "#" + user.discriminator);
 			approvalMessage.edit(editedEmbed);
 		}
-		if (reaction._emoji.name === "❌") {
+		if (reaction.emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
 			const deniedCount = await this.client.database.checkGuildDeniedAmount({ guildID: checkStaffApproval.guildID });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);

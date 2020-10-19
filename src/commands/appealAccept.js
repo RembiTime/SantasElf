@@ -19,7 +19,7 @@ class AppealAcceptCommand extends Command {
 			message.channel.send("This guild does not exist");
 			return;
 		}
-		if (guildData.appealed3Deny === "TRUE") {
+		if (guildData.appealed3Deny) {
 			message.channel.send("This server has already appealed.");
 			return;
 		}

@@ -14,7 +14,7 @@ class AddPartnerCommand extends Command {
 		if (findIfGuildExists === null) {
 			await this.client.database.addNewGuild({
 				guildID: message.guild.id,
-				trueFalse: "TRUE"
+				trueFalse: true
 			});
 		} else {
 			this.client.database.addPartner({ guildID: message.guild.id });
