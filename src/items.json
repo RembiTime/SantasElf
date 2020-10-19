@@ -1,0 +1,66 @@
+{
+	"negative": [
+		"Coal",
+		"Goose",
+		"Dirt"
+	],
+	"common": [
+		"Ornament",
+		"Plush",
+		"Socks",
+		"Rubber Duck",
+		"Pencils",
+		"Box",
+		"Pumpkin",
+		"Orange",
+		"Shirt",
+		"Chocolate",
+		"Football",
+		"Football2"
+	],
+	"uncommon": [
+		"Tree",
+		"Giftcard",
+		"Figurine",
+		"Snowglobe",
+		"Palette",
+		"Mistletoe",
+		"Meme",
+		"Pin",
+		"Blanket",
+		"Headphones",
+		"Video game",
+		"Keyboard"
+	],
+	"rare": [
+		"Santa's Hat",
+		"Console",
+		"Computer",
+		"Watch",
+		"Mysterious Part",
+		"Puppy",
+		"Sword",
+		"Simp",
+		"Cat"
+	],
+	"legendary": [
+		"Car",
+		"Dragon Egg",
+		"Role",
+		"Spanner",
+		"Slime",
+		"Cyber Dragon",
+		"Fractal"
+	],
+	"mythic": [
+		"Ownership",
+		"Glitch",
+		"Corn"
+	],
+	"unique": [
+		"Dupe Machine",
+		"Music Disc",
+		"Broken Plane",
+		"Big Triangle"
+	]
+}

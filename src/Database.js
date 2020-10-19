@@ -334,7 +334,7 @@ class Database {
 			INSERT INTO guildData SET
 				guildID = ?,
 				isPartner = ?,
-				appealed3Deny = 'FALSE'
+				appealed3Deny = FALSE
 			`, [guildID, trueFalse]);
 	}
 
@@ -351,7 +351,7 @@ class Database {
 	}
 
 	async addPartner({ guildID }) {
-		await this.pool.execute("UPDATE guildData SET isPartner = 'TRUE' WHERE guildID = ?", [guildID]);
+		await this.pool.execute("UPDATE guildData SET isPartner = TRUE WHERE guildID = ?", [guildID]);
 	}
 
 	async changeLevel({ presentLevel, messageID }) {
@@ -359,7 +359,7 @@ class Database {
 	}
 
 	async appealAccept({ guildID }) {
-		await this.pool.execute("UPDATE guildData SET appealed3Deny = 'TRUE' WHERE guildID = ?", [guildID]);
+		await this.pool.execute("UPDATE guildData SET appealed3Deny = TRUE WHERE guildID = ?", [guildID]);
 	}
 
 	async getGlobalStats() {
