@@ -194,7 +194,7 @@ class Database {
 		}
 	}
 
-	async checkNewGuild({guildID}) {
+	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
@@ -203,7 +203,7 @@ class Database {
 		}*/
 	}
 
-	async checkIfPartner({guildID}) {
+	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
@@ -260,7 +260,7 @@ class Database {
 		}*/
 	}
 
-	async findIfClaimedBy({messageID}) {
+	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
 		return results.length ? results[0] : null;
@@ -269,7 +269,7 @@ class Database {
 		}*/
 	}
 
-	async findIfGuildExists({guildID}) {
+	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
@@ -412,12 +412,6 @@ class Database {
 
 	//ITEM STUFF
 
-
-
-	async getRandomInt(max) {
-		return Math.floor(Math.random() * Math.floor(max)) + 1;
-	}
-
 	async addCandyCanes({ amount, userID }) {
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
 	}
@@ -440,97 +434,43 @@ class Database {
 	}
 
 	async generateRarity({ presentLevel }) {
-		const randomNum = this.client.database.getRandomInt(100);
-		if (presentLevel === 1) {
-			if (randomNum <= 10) {
-				return 0;
-			} if (randomNum >= 11 && randomNum <= 55) {
-				return 1;
-			} if (randomNum >= 56 && randomNum <= 80) {
-				return 2;
-			} if (randomNum >= 81 && randomNum <= 95) {
-				return 3;
-			} if (randomNum >= 96 && randomNum <= 99) {
-				return 4;
-			} if (randomNum == 100) {
-				return 5;
-			}
-		} if (presentLevel === 2) {
-			if (randomNum <= 10) {
-				return 0;
-			} if (randomNum >= 11 && randomNum <= 45) {
-				return 1;
-			} if (randomNum >= 46 && randomNum <= 70) {
-				return 2;
-			} if (randomNum >= 71 && randomNum <= 90) {
-				return 3;
-			} if (randomNum >= 91 && randomNum <= 98) {
-				return 4;
-			} if (randomNum >= 99 && randomNum <= 100) {
-				return 5;
-			}
-		} if (presentLevel === 3) {
-			if (randomNum <= 10) {
-				return 0;
-			} if (randomNum >= 11 && randomNum <= 35) {
-				return 1;
-			} if (randomNum >= 36 && randomNum <= 60) {
-				return 2;
-			} if (randomNum >= 61 && randomNum <= 85) {
-				return 3;
-			} if (randomNum >= 86 && randomNum <= 97) {
-				return 4;
-			} if (randomNum >= 98 && randomNum <= 100) {
-				return 5;
-			}
-		} if (presentLevel === 4) {
-			if (randomNum <= 10) {
-				return 0;
-			} if (randomNum >= 11 && randomNum <= 25) {
-				return 1;
-			} if (randomNum >= 26 && randomNum <= 45) {
-				return 2;
-			} if (randomNum >= 46 && randomNum <= 75) {
-				return 3;
-			} if (randomNum >= 76 && randomNum <= 95) {
-				return 4;
-			} if (randomNum >= 96 && randomNum <= 100) {
-				return 5;
-			}
-		} if (presentLevel === 5) {
-			if (randomNum <= 10) {
-				return 0;
-			} if (randomNum >= 11 && randomNum <= 20) {
-				return 1;
-			} if (randomNum >= 21 && randomNum <= 35) {
-				return 2;
-			} if (randomNum >= 36 && randomNum <= 55) {
-				return 3;
-			} if (randomNum >= 56 && randomNum <= 85) {
-				return 4;
-			} if (randomNum >= 86 && randomNum <= 100) {
-				return 5;
+		// Rows are weights for present ranks for different present levels
+		const weights = [
+			[10, 45, 25, 15,  4,  1],
+			[10, 35, 25, 20,  8,  2],
+			[10, 25, 25, 25, 12,  3],
+			[10, 15, 20, 30, 20,  5],
+			[10, 10, 15, 20, 30, 15]
+		][presentLevel + 1];
+
+		let num = Math.floor(Math.random() * 100) + 1;
+		for (let i = 0; i < weights; i++) {
+			num -= weights[i];
+			if (num <= 0) {
+				return i;
 			}
 		}
+
+		throw new Error("This should never be executed");
 	}
 
 	async choosePresent({ message, presentLevel, userID }) {
-		const presentRarity = this.client.database.generateRarity({presentLevel});
+		const presentRarity = this.client.database.generateRarity({ presentLevel });
 		if (presentRarity == 0) {
-			const randomNum = this.client.database.getRandomInt(3);
-			if (randomNum == 1) {
-				this.client.database.addItem({itemName: "coal", userID: userID, presentLevel: presentLevel});
+			const rand = Math.random();
+
+			if (rand < 1 / 3) {
+				this.client.database.addItem({ itemName: "coal", userID: userID, presentLevel: presentLevel });
 				message.channel.send("Uh oh... Looks like you got on the naughty list. You found coal");
-			} if (randomNum == 2) {
-				this.client.database.foundGoose({userID: userID, presentLevel: presentLevel});
+			} else if (rand < 2 / 3) {
+				this.client.database.foundGoose({ userID: userID, presentLevel: presentLevel });
 				message.channel.send("Honk honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes!");
-			} if (randomNum == 3) {
-				this.client.database.addItem({itemName: "dirt", userID: userID, presentLevel: presentLevel});
+			} else {
+				this.client.database.addItem({ itemName: "dirt", userID: userID, presentLevel: presentLevel });
 				message.channel.send("You open the present to find dirt... fun");
 			}
 		}
-}
-
+	}
 }
 
 module.exports = Database;
