@@ -15,7 +15,7 @@ class FoundCommand extends Command {
 	async exec(message, { code }) {
 		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
 		const dupeCheck = await this.client.database.findIfDupe({ userID: message.author.id, presentCode: code });
-		const newUserCheck = await this.client.database.findIfFirstPresent({ userID: message.author.id });
+		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
 		let isHider = false;
 
 		// Used to create global stats -- Uneeded: await this.client.database.startGlobalStats({id: code})

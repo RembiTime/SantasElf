@@ -302,15 +302,114 @@ class Database {
 			INSERT INTO userData SET
 				userID = ?,
 				userName = ?,
+				candyCanes = 0,
 				wrongGuesses = 0,
 				firstFinder = 0,
 				totalPresents = 0,
 				lvl1Presents = 0,
+				lvl1Total = 0,
 				lvl2Presents = 0,
+				lvl2Total = 0,
 				lvl3Presents = 0,
-				item1 = 0,
-				item2 = 0,
-				item3 = 0
+				lvl3Total = 0,
+				lvl4Presents = 0,
+				lvl4Total = 0,
+				lvl5Presents = 0,
+				lvl5Total = 0,
+				coalAmt = 0,
+				coalTotal = 0,
+				treeAmt = 0,
+				treeTotal = 0,
+				paletteAmt = 0,
+				paletteTotal = 0,
+				ornamentAmt = 0,
+				ornamentTotal = 0,
+				hatAmt = 0,
+				hatTotal = 0,
+				mistletoeAmt   = 0,
+				mistletoeTotal = 0,
+				watchAmt       = 0,
+				watchTotal     = 0,
+				giftcardAmt    = 0,
+				giftcardTotal  = 0,
+				consoleAmt     = 0,
+				consoleTotal   = 0,
+				computerAmt    = 0,
+				computerTotal  = 0,
+				plushAmt       = 0,
+				plushTotal     = 0,
+				figurineAmt    = 0,
+				figurineTotal  = 0,
+				socksAmt       = 0,
+				socksTotal     = 0,
+				duckAmt        = 0,
+				duckTotal      = 0,
+				carAmt         = 0,
+				carTotal       = 0,
+				ownershipAmt   = 0,
+				ownershipTotal = 0,
+				memeAmt        = 0,
+				memeTotal      = 0,
+				glitchTotal    = 0,
+				pencilsAmt     = 0,
+				pencilsTotal   = 0,
+				snowglobeAmt   = 0,
+				snowglobeTotal = 0,
+				boxAmt         = 0,
+				boxTotal       = 0,
+				gooseTotal     = 0,
+				dragonEggAmt   = 0,
+				dragonEggTotal = 0,
+				mysteriousPart = 0,
+				roleTotal      = 0,
+				spannerAmt     = 0,
+				spannerTotal   = 0,
+				pumpkinAmt     = 0,
+				pumpkinTotal   = 0,
+				pinAmt         = 0,
+				pinTotal       = 0,
+				orangeAmt      = 0,
+				orangeTotal    = 0,
+				slimeAmt       = 0,
+				slimeTotal     = 0,
+				dirtAmt        = 0,
+				dirtTotal      = 0,
+				puppyAmt       = 0,
+				puppyTotal     = 0,
+				blanketAmt     = 0,
+				blanketTotal   = 0,
+				shirtAmt       = 0,
+				shirtTotal     = 0,
+				swordAmt       = 0,
+				swordTotal     = 0,
+				chocolateAmt   = 0,
+				chocolateTotal = 0,
+				cyberDragonAmt = 0,
+				cyberDragonTotal = 0,
+				headphonesAmt  = 0,
+				headphonesTotal = 0,
+				gameAmt        = 0,
+				gameTotal      = 0,
+				footballAmt    = 0,
+				footballTotal  = 0,
+				football2Amt   = 0,
+				football2Total = 0,
+				keyboardTotal  = 0,
+				cornAmt        = 0,
+				cornTotal      = 0,
+				simpTotal      = 0,
+				dupeAmt        = 0,
+				dupeTotal      = 0,
+				discAmt        = 0,
+				discTotal      = 0,
+				fractalAmt     = 0,
+				fractalTotal   = 0,
+				bigTriangleAmt = 0,
+				bigTriangleTotal = 0,
+				catAmt         = 0,
+				catTotal       = 0,
+				brokenPlaneAmt = 0,
+				brokenPlaneTotal = 0
 			`, [userID, userName]);
 	}
 
@@ -421,6 +520,66 @@ class Database {
 		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameAmt, itemNameAmt, userID]);
 		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameTotal, itemNameTotal, userID]);
 		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
+	}
+
+	async removePresent({ userData, userID, presentLevel }) {
+		if (presentLevel == 1) {
+			if (userData.lvl1Presents < 1) {
+				return 0;
+			} else {
+				await this.pool.execute("UPDATE userData SET lvl1Presents = lvl1Presents - 1 WHERE userID = ?", [userID]);
+				return 1;
+			}
+		} else if (presentLevel == 2) {
+			if (userData.lvl2Presents < 1) {
+				return 0;
+			} else {
+				await this.pool.execute("UPDATE userData SET lvl2Presents = lvl2Presents - 1 WHERE userID = ?", [userID]);
+				return 1;
+			}
+		} else if (presentLevel == 3) {
+			if (userData.lvl3Presents < 1) {
+				return 0;
+			} else {
+				await this.pool.execute("UPDATE userData SET lvl3Presents = lvl3Presents - 1 WHERE userID = ?", [userID]);
+				return 1;
+			}
+		} else if (presentLevel == 4) {
+			if (userData.lvl4Presents < 1) {
+				return 0;
+			} else {
+				await this.pool.execute("UPDATE userData SET lvl4Presents = lvl4Presents - 1 WHERE userID = ?", [userID]);
+				return 1;
+			}
+		} else if (presentLevel == 5) {
+			if (userData.lvl5Presents < 1) {
+				return 0;
+			} else {
+				await this.pool.execute("UPDATE userData SET lvl5Presents = lvl5Presents - 1 WHERE userID = ?", [userID]);
+				return 1;
+			}
+		} else {
+			return 2;
+		}
+	}
+
+	async agivePresent({ message, userID, presentLevel}) {
+		if (presentLevel == 1) {
+			await this.pool.execute("UPDATE userData SET lvl1Presents = lvl1Presents + 1 WHERE userID = ?", [userID]);
+			message.channel.send("Added a level 1 present");
+		} else if (presentLevel == 2) {
+			await this.pool.execute("UPDATE userData SET lvl2Presents = lvl2Presents + 1 WHERE userID = ?", [userID]);
+			message.channel.send("Added a level 2 present");
+		} else if (presentLevel == 3) {
+			await this.pool.execute("UPDATE userData SET lvl3Presents = lvl3Presents + 1 WHERE userID = ?", [userID]);
+			message.channel.send("Added a level 3 present");
+		} else if (presentLevel == 4) {
+			await this.pool.execute("UPDATE userData SET lvl4Presents = lvl4Presents + 1 WHERE userID = ?", [userID]);
+			message.channel.send("Added a level 4 present");
+		} else if (presentLevel == 5) {
+			await this.pool.execute("UPDATE userData SET lvl5Presents = lvl5Presents + 1 WHERE userID = ?", [userID]);
+			message.channel.send("Added a level 5 present");
+		}
 	}
 
 	async checkBigTriangle({ userID, message }) {
