@@ -624,7 +624,7 @@ class Database {
 			[10, 25, 25, 25, 12,  3],
 			[10, 15, 20, 30, 20,  5],
 			[10, 10, 15, 20, 30, 15]
-		][presentLevel + 1];
+		][presentLevel - 1];
 
 		const cumulativeDist = weights.slice(1).reduce((result, val) => {
 			result.push(result[result.length - 1] + val);
