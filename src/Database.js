@@ -424,10 +424,36 @@ class Database {
 	}
 
 	async checkBigTriangle({ userID, message }) {
-		const userData = await this.client.database.userDataCheck({ userID: userID });
-		if (userData.mysteriousPartAmt >= 3 && userData.fractal >= 1 && userData.spanner >= 1 && userData.slime >= 1 && userData.cyberDragon >= 1) {
-			this.client.database.addBigTriangle({ userID: userID });
-			message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
+		// this doesn't work yet
+		if (process.env.TOKEN) { return false; }
+
+		const { result } = await this.pool.execute(`
+			START TRANSACTION;
+
+			SELECT (mysteriousPartAmt, fractalAmt, spannerAmt, slimeAmt, cyberDragonAmt)
+				INTO (parts, fractals, spanners, slimes, dragons)
+				FROM userData WHERE userID = ?
+				FOR UPDATE;
+
+			IF (parts >= 3 AND fractals >= 1 AND spanners >= 1 AND slimes >= 1 AND dragons >= 1) THEN
+				UPDATE userData SET
+					mysteriousPartAmt = mysteriousPartAmt - 3,
+					fractalAmt = fractalAmt - 1,
+					spannerAmt = spannerAmt - 1,
+					slimeAmt = slimeAmt - 1,
+					cyberDragonAmt = cyberDragonAmt - 1
+					bigTriangleAmt = bigTriangleAmt + 1;
+
+				SELECT TRUE AS result;
+			ELSE
+				SELECT FALSE AS result;
+			END IF
+
+			COMMIT;
+		`, [userID]);
+
+		if (result) {
+			await message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
 		}
 	}
 
