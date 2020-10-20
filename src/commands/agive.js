@@ -6,17 +6,22 @@ class AdminGiveCommand extends Command {
 			aliases: ["agive"],
 			description: "Gives a present",
 			ownerOnly: true,
-			args: [{
-				id: "presentLevel",
-				type: "string"
-			}]
+			args: [
+				{
+					id: "presentLevel",
+					type: "string"
+				},
+				{
+					id: "amount",
+					type: "integer"
+				}
+			]
 		});
 	}
 
-	async exec(message, {presentLevel}) {
-		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
-		this.client.database.agivePresent({ message: message, userID: message.author.id, presentLevel: presentLevel});
-}
+	async exec(message, {presentLevel, amount}) {
+		this.client.database.agivePresent({ message: message, userID: message.author.id, presentLevel: presentLevel, amount: amount});
+	}
 }
 
 module.exports = AdminGiveCommand;

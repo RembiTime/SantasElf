@@ -36,9 +36,8 @@ module.exports = [
 		response: "Honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			let gooseTotal = "gooseTotal";
-			await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseTotal, gooseTotal, message.author.id]);
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET gooseTotal = gooseTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
 		}
 	},
 	{
@@ -213,6 +212,8 @@ module.exports = [
 		response: "Nice! You found a keyboard! It's rattling with anticipation", // changed: reworded -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
+
+			await client.database.pool.execute("UPDATE userData SET keyboardTotal = keyboardTotal + 1 WHERE userID = ?", [message.author.id]);
 			const rand = Math.random();
 			let prompt = "Type in the following for the keyboard to give you candy!\n\n";
 			if (rand < 1 / 3) {
@@ -226,7 +227,7 @@ module.exports = [
 
 			message.channel.send(prompt);
 			const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] }).catch(() => message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away"));
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
+			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
 		}
 	},
 	{
@@ -283,7 +284,8 @@ module.exports = [
 		response: "Wow! You found a simp! You're a little concerned that he snuck into your house, but hey, he'll pay you 50 candy canes to notice him. You take the money and promptly ignore him. Nice try buddy.", // changed: reworded, also what the fuck? -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET simpTotal = simpTotal + 1 WHERE userID = ?", [message.author.id]);
 		}
 	},
 	{
@@ -313,7 +315,7 @@ module.exports = [
 		response: "WHA?? You found a role! You feel special-er.",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await this.pool.execute("UPDATE userData SET roleTotal = roleTotal + 174 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET roleTotal = roleTotal + 1 WHERE userID = ?", [message.author.id]);
 			// TODO: message.member.addRole("ROLE ID HERE");
 		}
 	},
@@ -361,7 +363,8 @@ module.exports = [
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET glitchTotal = glitchTotal + 1 WHERE userID = ?", [message.author.id]);
 		}
 	},
 	{

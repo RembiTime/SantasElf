@@ -517,9 +517,9 @@ class Database {
 		let itemNameAmt = itemName + "Amt";
 		let itemNameTotal = itemName + "Total";
 		presentLevel = "lvl" + presentLevel + "Presents";
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameAmt, itemNameAmt, userID]);
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameTotal, itemNameTotal, userID]);
-		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
+		await this.pool.execute(`UPDATE userData SET ${itemNameAmt} = ${itemNameAmt} + 1 WHERE userID = ?`, [userID]);
+		await this.pool.execute(`UPDATE userData SET ${itemNameTotal} = ${itemNameTotal} + 1 WHERE userID = ?`, [userID]);
+		await this.pool.execute(`UPDATE userData SET ${presentLevel} = ${presentLevel} - 1 WHERE userID = ?`, [userID]);
 	}
 
 	async removePresent({ userData, userID, presentLevel }) {
@@ -527,35 +527,35 @@ class Database {
 			if (userData.lvl1Presents < 1) {
 				return 0;
 			} else {
-				await this.pool.execute("UPDATE userData SET lvl1Presents = lvl1Presents - 1 WHERE userID = ?", [userID]);
+				//await this.pool.execute("UPDATE userData SET lvl1Presents = lvl1Presents - 1 WHERE userID = ?", [userID]);
 				return 1;
 			}
 		} else if (presentLevel == 2) {
 			if (userData.lvl2Presents < 1) {
 				return 0;
 			} else {
-				await this.pool.execute("UPDATE userData SET lvl2Presents = lvl2Presents - 1 WHERE userID = ?", [userID]);
+				//await this.pool.execute("UPDATE userData SET lvl2Presents = lvl2Presents - 1 WHERE userID = ?", [userID]);
 				return 1;
 			}
 		} else if (presentLevel == 3) {
 			if (userData.lvl3Presents < 1) {
 				return 0;
 			} else {
-				await this.pool.execute("UPDATE userData SET lvl3Presents = lvl3Presents - 1 WHERE userID = ?", [userID]);
+				//await this.pool.execute("UPDATE userData SET lvl3Presents = lvl3Presents - 1 WHERE userID = ?", [userID]);
 				return 1;
 			}
 		} else if (presentLevel == 4) {
 			if (userData.lvl4Presents < 1) {
 				return 0;
 			} else {
-				await this.pool.execute("UPDATE userData SET lvl4Presents = lvl4Presents - 1 WHERE userID = ?", [userID]);
+				//await this.pool.execute("UPDATE userData SET lvl4Presents = lvl4Presents - 1 WHERE userID = ?", [userID]);
 				return 1;
 			}
 		} else if (presentLevel == 5) {
 			if (userData.lvl5Presents < 1) {
 				return 0;
 			} else {
-				await this.pool.execute("UPDATE userData SET lvl5Presents = lvl5Presents - 1 WHERE userID = ?", [userID]);
+				//await this.pool.execute("UPDATE userData SET lvl5Presents = lvl5Presents - 1 WHERE userID = ?", [userID]);
 				return 1;
 			}
 		} else {
@@ -563,22 +563,22 @@ class Database {
 		}
 	}
 
-	async agivePresent({ message, userID, presentLevel}) {
+	async agivePresent({ message, userID, presentLevel, amount}) {
 		if (presentLevel == 1) {
-			await this.pool.execute("UPDATE userData SET lvl1Presents = lvl1Presents + 1 WHERE userID = ?", [userID]);
-			message.channel.send("Added a level 1 present");
+			await this.pool.execute(`UPDATE userData SET lvl1Presents = lvl1Presents + ${amount} WHERE userID = ?`, [userID]);
+			message.channel.send("Added " + amount + " level 1 present(s)");
 		} else if (presentLevel == 2) {
-			await this.pool.execute("UPDATE userData SET lvl2Presents = lvl2Presents + 1 WHERE userID = ?", [userID]);
-			message.channel.send("Added a level 2 present");
+			await this.pool.execute(`UPDATE userData SET lvl2Presents = lvl2Presents + ${amount} WHERE userID = ?`, [userID]);
+			message.channel.send("Added " + amount + " level 2 present(s)");
 		} else if (presentLevel == 3) {
-			await this.pool.execute("UPDATE userData SET lvl3Presents = lvl3Presents + 1 WHERE userID = ?", [userID]);
-			message.channel.send("Added a level 3 present");
+			await this.pool.execute(`UPDATE userData SET lvl3Presents = lvl3Presents + ${amount} WHERE userID = ?`, [userID]);
+			message.channel.send("Added " + amount + " level 3 present(s)");
 		} else if (presentLevel == 4) {
-			await this.pool.execute("UPDATE userData SET lvl4Presents = lvl4Presents + 1 WHERE userID = ?", [userID]);
-			message.channel.send("Added a level 4 present");
+			await this.pool.execute(`UPDATE userData SET lvl4Presents = lvl4Presents + ${amount} WHERE userID = ?`, [userID]);
+			message.channel.send("Added " + amount + " level 4 present(s)");
 		} else if (presentLevel == 5) {
-			await this.pool.execute("UPDATE userData SET lvl5Presents = lvl5Presents + 1 WHERE userID = ?", [userID]);
-			message.channel.send("Added a level 5 present");
+			await this.pool.execute(`UPDATE userData SET lvl5Presents = lvl5Presents + ${amount} WHERE userID = ?`, [userID]);
+			message.channel.send("Added " + amount + " level 5 present(s)");
 		}
 	}
 
@@ -616,7 +616,7 @@ class Database {
 		}
 	}
 
-	async generateRarity({ presentLevel }) {
+	generateRarity({ presentLevel }) {
 		// Rows are weights for present ranks for different present levels
 		const weights = [
 			[10, 45, 25, 15,  4,  1],
@@ -648,6 +648,7 @@ class Database {
 		const candidates = items.filter(e => e.rank === presentRarity);
 		const item = candidates[Math.floor(Math.random() * candidates.length)];
 
+		console.log(presentRarity);
 		if (item.defaultBehavior !== false) {
 			await this.addItem({ itemName: item.id, userID, presentLevel });
 		}
