@@ -626,15 +626,21 @@ class Database {
 			[10, 10, 15, 20, 30, 15]
 		][presentLevel + 1];
 
-		let num = Math.floor(Math.random() * 100) + 1;
-		for (let i = 0; i < weights; i++) {
-			num -= weights[i];
-			if (num <= 0) {
-				return i;
-			}
+		const cumulativeDist = weights.slice(1).reduce((result, val) => {
+			result.push(result[result.length - 1] + val);
+			return result;
+		}, [weights[0]]);
+
+		const max = cumulativeDist[cumulativeDist.length - 1];
+		const rand = Math.random() * max;
+
+		const result = cumulativeDist.findIndex(val => val >= rand);
+
+		if (result === -1) {
+			throw new Error("This should never be executed");
 		}
 
-		throw new Error("This should never be executed");
+		return result;
 	}
 
 	async choosePresent({ message, presentLevel, userID }) {
