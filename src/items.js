@@ -25,6 +25,7 @@ module.exports = [
 	{
 		id: "coal",
 		rank: 0,
+		worth: 0,
 		displayName: "Coal",
 		response: "Uh oh... Looks like you got on the naughty list. You found coal"
 	},
@@ -43,110 +44,127 @@ module.exports = [
 	{
 		id: "dirt",
 		rank: 0,
+		worth: 0,
 		displayName: "Dirt",
-		response: "You open the present to find dirt... fun"
+		response: "You open the present to find dirt... fun." //changed: punctuation -Walrus
 	},
 	{
 		id: "ornament",
 		rank: 1,
+		worth: 5,
 		displayName: "Ornament",
-		response: "You found an ornament! That doesn't really do you much good since you've already decorated your tree though"
+		response: "You found an ornament! That doesn't really do you much good since you've already decorated your tree." //changed: reworded -Walrus
 	},
 	{
 		id: "plush",
 		rank: 1,
+		worth: 8,
 		displayName: "Plush",
 		response: "You found a stuffed animal! It isn't worth much, but it makes a good companion."
 	},
 	{
 		id: "socks",
 		rank: 1,
+		worth: 2,
 		displayName: "Socks",
-		response: "You found a pair of socks! Why do people keep giving me socks as a gift??"
+		response: "You found a pair of socks! Why do people always give me socks?" //changed: reworded -Walrus
 	},
 	{
 		id: "duck",
 		rank: 1,
+		worth: 4,
 		displayName: "Rubber Duck",
-		response: "You found a rubber duck! Although it's a cheap plastic toy, you know that you still love rubber ducks"
+		response: "You found a rubber duck! Cheap plastic has never been so lovable! You will cherish your new friend forever." //changed: reworded -Walrus
 	},
 	{
 		id: "pencils",
 		rank: 1,
+		worth: 3,
 		displayName: "Pencils",
-		response: "You found a box of pencils! Why would I want pencils as a gift?"
+		response: "You found a box of pencils! Who does their christmas shopping at Office Depot?" //changed: reworked -Walrus
 	},
 	{
 		id: "box",
 		rank: 1,
+		worth: 1,
 		displayName: "Box",
-		response: "You open the present to find a cardboard box! You feel compelled to go into it"
+		response: "You found a cardboard box! You feel a deep primal urge to sit in it." //changed: reworded -Walrus
 	},
 	{
 		id: "pumpkin",
 		rank: 1,
+		worth: 2,
 		displayName: "Pumpkin",
-		response: "You found a pumpkin! It's starting to rot because someone thought it would be funny to give you their Halloween pumpkin"
+		response: "You found a pumpkin! Blech! It smells like it's been in there since Halloween." //changed: reworded -Walrus
 	},
 	{
 		id: "orange",
 		rank: 1,
+		worth: 3,
 		displayName: "Orange",
-		response: "You found an orange! Why do people put fruit in a present? I'll never understand"
+		response: "You found an orange! Why did someone feel the need to give you this? You take a minute to contemplate the subtle intricacies of human interaction." //changed highbrow humor aquired -Walrus
 	},
 	{
 		id: "shirt",
 		rank: 1,
+		worth: 6,
 		displayName: "Shirt",
-		response: "You found a shirt! Great, more clothes"
+		response: "You found a shirt! Great, more clothes. At least its clean." //changed: added a bit -Walrus
 	},
 	{
 		id: "chocolate",
 		rank: 1,
+		worth: 7,
 		displayName: "Chocolate",
-		response: "You found a box of chocolate! What is this, Valentine's day?"
+		response: "You found a box of chocolate! Well, that's Valentine's day sorted!" //changed: reworked -Walrus
 	},
 	{
 		id: "football",
 		rank: 1,
+		worth: 6,
 		displayName: "Football",
-		response: "You found a football! Which football is this, though?"
+		response: "You found a football! Which football is it, though?" //changed: Grammar -Walrus
 	},
 	{
 		id: "football2",
 		rank: 1,
+		worth: 6,
 		displayName: "Football2",
-		response: "You found a football! Which football is this, though?"
+		response: "You found a football! Which football is it, though?" //changed: Grammar -Walrus
 	},
 	{
 		id: "tree",
 		rank: 2,
+		worth: 13,
 		displayName: "Tree",
-		response: "Nice! You found an entire tree! How did they even fit this into the present?"
+		response: "Nice! You found an entire tree! How did they even fit this into the box?" //changed: reworded -Walrus
 	},
 	{
 		id: "giftcard",
 		rank: 2,
+		worth: 20,
 		displayName: "Giftcard",
 		response: "Nice! You found a giftcard! It's worth 20 candy canes!"
 	},
 	{
 		id: "figurine",
 		rank: 2,
+		worth: 18,
 		displayName: "Figurine",
-		response: "Nice! You found a figurine! Time to add that to your collection!"
+		response: "Nice! You found a figurine! A fine addition to your collection." //changed: prequelmeme -Walrus
 	},
 	{
 		id: "snowglobe",
 		rank: 2,
+		worth: 15,
 		displayName: "Snowglobe",
-		response: "Nice! You found a snowglobe! You love shaking it and seeing the snow fly around everywhere!"
+		response: "Nice! You found a snowglobe! It's a winter wonderland on the go!" //changed: reworked -Walrus
 	},
 	{
 		id: "palette",
 		rank: 2,
 		displayName: "Palette",
-		response: "Nice! You found an art palette! There's so many different colors to paint with!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**"
+		response: "Nice! You found an paint palette! Time to make some happy little trees!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**" //changed: Bob Ross -Walrus
 	},
 	{
 		id: "mistletoe",
@@ -158,37 +176,41 @@ module.exports = [
 		id: "meme",
 		rank: 2,
 		displayName: "Meme",
-		response: "Nice! You found a fresh meme template! You really want to try it out on your favorite social media site and get some intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**"
+		response: "Nice! You found a fresh meme template! Time to rake in that sweet sweet intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**" //changed: reworded -Walrus
 	},
 	{
 		id: "pin",
 		rank: 2,
+		worth: 16,
 		displayName: "Pin",
-		response: "Nice! You found a Pin! It's also authentic! Time to add it to your lanyard!"
+		response: "Nice! You found a Pin! And it's authentic! That's definitely going on your lanyard!" // changed: reworded -Walrus
 	},
 	{
 		id: "blanket",
 		rank: 2,
+		worth: 15,
 		displayName: "Blanket",
-		response: "Nice! You found a blanket! This will keep you warm throughout the rest of winter!"
+		response: "Nice! You found a blanket! You already feel yourself falling asleep in its soft, warm embrace!" // changed: reworded -Walrus
 	},
 	{
 		id: "headphones",
 		rank: 2,
+		worth: 13,
 		displayName: "Headphones",
-		response: "Nice! You found a pair of headphones! They're pretty nice quality, and you're excited to try it out!"
+		response: "Nice! You found a pair of headphones! Time to rock the night away to your favorite tunes!" // changed: reworked -Walrus
 	},
 	{
 		id: "game",
 		rank: 2,
+		worth: 19,
 		displayName: "Video game",
-		response: "Nice! You found a video game! You've been wanting this game for a while and want to start playing it immediately!"
+		response: "Nice! You found a video game! You've been eyeing this one for months, can't wait to give it a go!" // changed: reworded -Walrus
 	},
 	{
 		id: "keyboard",
 		rank: 2,
 		displayName: "Keyboard",
-		response: "Nice! You found a keyboard! It seems to be rattling with anticipation",
+		response: "Nice! You found a keyboard! It's rattling with anticipation", // changed: reworded -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			const rand = Math.random();
@@ -210,26 +232,29 @@ module.exports = [
 	{
 		id: "hat",
 		rank: 3,
+		worth: 35,
 		displayName: "Santa's Hat",
 		response: "Wow! You found Santa's hat! He'll probably pay a fortune to get it back"
 	},
 	{
 		id: "console",
 		rank: 3,
+		worth: 38,
 		displayName: "Console",
-		response: "Wow! You found a console! You've been wanting the SwitchU forever now!"
+		response: "Wow! You found a console! You've been wanting the SwitchU for forever now!" // changed: grammar -Walrus
 	},
 	{
 		id: "computer",
 		rank: 3,
+		worth: 45,
 		displayName: "Computer",
-		response: "Wow! You found a computer! Now people can't judge you for being a Mac gamer!"
+		response: "Wow! You found a computer! It looks like it's going to be quite the upgrade!" // changed: reworked -Walrus
 	},
 	{
 		id: "watch",
 		rank: 3,
 		displayName: "Watch",
-		response: "Wow! You found a nice-looking watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**"
+		response: "Wow! You found a nice watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**" // changed: reworded -Walrus
 	},
 	{
 		id: "mysteriousPart",
@@ -240,20 +265,22 @@ module.exports = [
 	{
 		id: "puppy",
 		rank: 3,
+		worth: 40,
 		displayName: "Puppy",
-		response: "Wow! You found a puppy! It jumps out and immediately starts licking your face! A puppy in a box just seems cruel, but you're too overjoyed to finally get a puppy to worry about it!"
+		response: "Wow! You found a puppy! It certainly looks happy to see you, that box must've been dark and scary! Take good care of your new friend!" // changed: reworked -Walrus
 	},
 	{
 		id: "sword",
 		rank: 3,
+		worth: 35,
 		displayName: "Sword",
-		response: "Wow! You found a Sword! You wonder how it didn't cut the box open and if this is legal, but it's still really cool"
+		response: "Wow! You found a Sword! It looks pretty sharp, and you question its legality. Still freakin awesome though!" // changed: reworded -Walrus
 	},
 	{
 		id: "simp",
 		rank: 3,
 		displayName: "Simp",
-		response: "Wow! You found a simp! You wonder why it was hiding in the box, but he gives you 50 candy canes hoping that you will notice it. You take the money and promptly ignore it",
+		response: "Wow! You found a simp! You're a little concerned that he snuck into your house, but hey, he'll pay you 50 candy canes to notice him. You take the money and promptly ignore him. Nice try buddy.", // changed: reworded, also what the fuck? -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
@@ -262,26 +289,33 @@ module.exports = [
 	{
 		id: "cat",
 		rank: 3,
+		worth: 39,
 		displayName: "Cat",
-		response: "Wow! You found a cat! You wonder if this is just a present for you or if it trapped itself inside a box and you thought it was a present. Nevertheless, it's your's now."
+		response: "Wow! You found a cat! It looks at you with indifference and goes back to sitting in the box. It's love at first sight!" // changed: reworded -Walrus
 	},
 	{
 		id: "car",
 		rank: 4,
+		worth: 115,
 		displayName: "Car",
-		response: "WHA?? You found a car! You don't know how you didn't see this before, but you're ecsatic."
+		response: "WHA?? You found a car! You can't wait to take it for a spin!" // changed: reworked -Walrus
 	},
 	{
 		id: "dragonEgg",
 		rank: 4,
 		displayName: "Dragon Egg",
-		response: "WHA?? You found a dragon egg! You wonder if it will hatch\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**"
+		response: "WHA?? You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**" //changed: NORBERT!! -Walrus
 	},
 	{
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "WHA?? You found a role! You feel special-er"
+		response: "WHA?? You found a role! You feel special-er.",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			await this.pool.execute("UPDATE userData SET roleTotal = roleTotal + 174 WHERE userID = ?", [message.author.id]);
+			// TODO: message.member.addRole("ROLE ID HERE");
+		}
 	},
 	{
 		id: "spanner",
@@ -307,9 +341,16 @@ module.exports = [
 		displayName: "Fractal",
 		response: "WHA?? You found a fractal! It seems like a core to a magical symbol..."
 	},
+	/*{ Keep this commented pls
+		id: "walrus",
+		rank: -4,
+		displayName: "Walrus",
+		response: "Oh, you found a Wiggly Walrus. That really sucks man." // well that sucks
+	},*/
 	{
 		id: "ownership",
 		rank: 5,
+		worth: 200,
 		displayName: "Ownership",
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found the ownership of SMPEarth! How does that even work?"
 	},
@@ -326,8 +367,9 @@ module.exports = [
 	{
 		id: "corn",
 		rank: 5,
+		worth: 0.5,
 		displayName: "Corn",
-		response: "YOU CAN'T BELIEVE YOUR EYES! You found a cob of corn! THIS IS THE BEST PRESENT YOU COULD HAVE GOTTEN! You show it to your friends and they can't believe that you got corn! They're shocked and they go to tell their friends that you found the mythical corn. Eventually, the legend spreads everywhere and legends are made about the person who found the corn. You become the most popular person on Earth with nearly unlimited wealth because of the simps. Congrats, you won the game"
+		response: "YOU CAN'T BELIEVE YOUR EYES! You found a cob of corn! THIS IS THE BEST PRESENT YOU COULD HAVE GOTTEN! You show it to your friends and they can't believe that you got corn! They're shocked and they go to tell their friends that you found the mythical corn. Eventually, the legend spreads everywhere and legends are made about the person who found the corn. You become the most popular person on Earth with nearly unlimited wealth because of the simps. Congrats, you won the game" // Why? Just why? -Walrus
 	},
 	{
 		id: "dupeMachine",
@@ -345,7 +387,7 @@ module.exports = [
 		id: "broken",
 		rank: 6,
 		displayName: "Broken Plane",
-		response: "[placeholder]"
+		response: "Come on devs! Y'all have one job!"
 	},
 	{
 		id: "bigTriangle",
