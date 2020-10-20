@@ -2,7 +2,8 @@ const mysql = require("mysql2");
 const items = require("./items");
 
 class Database {
-	constructor(options) {
+	constructor(client, options) {
+		this.client = client;
 		this.pool = mysql.createPool({ ...options, supportBigNumbers: true, bigNumberStrings: true }).promise();
 	}
 
@@ -422,53 +423,6 @@ class Database {
 		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
 	}
 
-	async foundGoose({ userID, presentLevel }) {
-		let gooseTotal = "gooseTotal";
-		presentLevel = "lvl" + presentLevel + "Presents";
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseTotal, gooseTotal, userID]);
-		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [userID]);
-	}
-
-	async addItemSpecial({ itemName, userID, presentLevel}) {
-		let itemNameTotal = itemName + "Total";
-		presentLevel = "lvl" + presentLevel + "Presents";
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [itemNameTotal, itemNameTotal, userID]);
-		await this.pool.execute("UPDATE userData SET ? = ? - 1 WHERE userID = ?", [presentLevel, presentLevel, userID]);
-	}
-
-	async foundKeyboard({ message }) {
-		const rand = Math.random();
-		let prompt = "Type in the following for the keyboard to give you candy!\n\n";
-		if (rand < 1 / 3) {
-			prompt = prompt + "This is an example typing test";
-		} else if (rand < 2 / 3) {
-			prompt = prompt + "This is another example of a prompt";
-		} else {
-			prompt = prompt + "I've run out of ideas";
-		}
-		const filter = response => response.content === prompt;
-
-		message.channel.send(prompt);
-		const collected = await message.channel.awaitMessages(filter, {max: 1, time: 30000, errors: ["time"]}).catch(() => message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away"));
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
-	}
-
-	async foundSimp({ userID }) {
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [userID]);
-	}
-
-	async foundGlitch({ userID }) {
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [userID]);
-	}
-
-	async addBigTriangle({ userID }) {
-		let bigTriangleAmt = "bigTriangleAmt";
-		let bigTriangleTotal = "bigTriangleTotal";
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleAmt, bigTriangleAmt, userID]);
-		await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleTotal, bigTriangleTotal, userID]);
-	}
-
 	async checkBigTriangle({ userID, message }) {
 		const userData = await this.client.database.userDataCheck({ userID: userID });
 		if (userData.mysteriousPartAmt >= 3 && userData.fractal >= 1 && userData.spanner >= 1 && userData.slime >= 1 && userData.cyberDragon >= 1) {
@@ -503,9 +457,17 @@ class Database {
 		const candidates = items.filter(e => e.rank === presentRarity);
 		const item = candidates[Math.floor(Math.random() * candidates.length)];
 
-		// TODO: handle special items
-		await this.addItem({ itemName: item.id, userID, presentLevel });
-		await message.channel.send(item.response);
+		if (item.defaultBehavior !== false) {
+			await this.addItem({ itemName: item.id, userID, presentLevel });
+		}
+
+		if (typeof item.onFind === "function") {
+			await item.onFind(this.client, message);
+		}
+
+		if (item.response) {
+			await message.channel.send(item.response);
+		}
 	}
 }
 

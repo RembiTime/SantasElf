@@ -27,7 +27,7 @@ class SantasElf extends AkairoClient {
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.loadAll();
 
-		this.database = new Database({
+		this.database = new Database(this, {
 			host: process.env.MYSQL_HOST,
 			port: parseInt(process.env.MYSQL_PORT),
 			user: process.env.MYSQL_USERNAME,

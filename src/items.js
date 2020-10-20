@@ -1,3 +1,26 @@
+// TODO: make handlers atomic
+// TODO: handle present level updates
+
+/**
+ * @typedef {object} ItemEntry
+ * @property {string} id
+ * @property {number} rank
+ * @property {displayName} displayName
+ * @property {displayName} response
+ * @property {boolean} defaultBehavior
+ * @property {OnFindType} onFind
+ */
+
+/**
+  * @callback OnFindType
+  * @param client
+  * @param message
+  * @returns {Promise<void>}
+  */
+
+/**
+ * @type {ItemEntry[]}
+ */
 module.exports = [
 	{
 		id: "coal",
@@ -9,7 +32,13 @@ module.exports = [
 		id: "goose",
 		rank: 0,
 		displayName: "Goose",
-		response: "Honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes"
+		response: "Honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			let gooseTotal = "gooseTotal";
+			await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [gooseTotal, gooseTotal, message.author.id]);
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
+		}
 	},
 	{
 		id: "dirt",
@@ -159,7 +188,24 @@ module.exports = [
 		id: "keyboard",
 		rank: 2,
 		displayName: "Keyboard",
-		response: "Nice! You found a keyboard! It seems to be rattling with anticipation"
+		response: "Nice! You found a keyboard! It seems to be rattling with anticipation",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			const rand = Math.random();
+			let prompt = "Type in the following for the keyboard to give you candy!\n\n";
+			if (rand < 1 / 3) {
+				prompt = prompt + "This is an example typing test";
+			} else if (rand < 2 / 3) {
+				prompt = prompt + "This is another example of a prompt";
+			} else {
+				prompt = prompt + "I've run out of ideas";
+			}
+			const filter = response => response.content === prompt;
+
+			message.channel.send(prompt);
+			const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] }).catch(() => message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away"));
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
+		}
 	},
 	{
 		id: "hat",
@@ -207,7 +253,11 @@ module.exports = [
 		id: "simp",
 		rank: 3,
 		displayName: "Simp",
-		response: "Wow! You found a simp! You wonder why it was hiding in the box, but he gives you 50 candy canes hoping that you will notice it. You take the money and promptly ignore it"
+		response: "Wow! You found a simp! You wonder why it was hiding in the box, but he gives you 50 candy canes hoping that you will notice it. You take the money and promptly ignore it",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
+		}
 	},
 	{
 		id: "cat",
@@ -267,7 +317,11 @@ module.exports = [
 		id: "glitch",
 		rank: 5,
 		displayName: "Glitch",
-		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!"
+		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
+		}
 	},
 	{
 		id: "corn",
@@ -297,6 +351,13 @@ module.exports = [
 		id: "bigTriangle",
 		rank: 6,
 		displayName: "Big Triangle",
-		response: "[placeholder]"
+		response: "[placeholder]",
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			let bigTriangleAmt = "bigTriangleAmt";
+			let bigTriangleTotal = "bigTriangleTotal";
+			await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleAmt, bigTriangleAmt, message.author.id]);
+			await this.pool.execute("UPDATE userData SET ? = ? + 1 WHERE userID = ?", [bigTriangleTotal, bigTriangleTotal, message.author.id]);
+		}
 	}
 ];
