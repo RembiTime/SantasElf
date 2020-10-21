@@ -17,43 +17,69 @@ class InventoryReactListener extends Listener {
 			return;
 		}
 
-		//const checkMessageID = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
 		const checkInventoryWatch = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
-
 		if (checkInventoryWatch === null) {
 			return;
 		}
+
+		if (checkInventoryWatch.userID !== user.id) {
+			return;
+		}
+
 		const inventoryChannel = this.client.channels.cache.get(reaction.message.channel.id);
 		const embedMessage = await inventoryChannel.messages.fetch(reaction.message.id);
 
 		if (reaction.emoji.name === "⬅️") {
 			if (checkInventoryWatch.pageNum === 1) {
-				this.client.database.setInvPageNum({ pageNum: 3, messageID: reaction.message.id });
 				reaction.users.remove(user);
-				const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
-				this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
-				return;
+				if (checkInventoryWatch.invOrStats === "INV") {
+					this.client.database.setInvPageNum({ pageNum: 8, messageID: reaction.message.id });
+					const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
+					this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				} if (checkInventoryWatch.invOrStats === "STATS") {
+					this.client.database.setInvPageNum({ pageNum: 2, messageID: reaction.message.id });
+					const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
+					this.client.database.updateStatsEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				}
 			} else {
 				this.client.database.subInvPageNum({ messageID: reaction.message.id });
 				reaction.users.remove(user);
 				const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
-				this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
-				return;
+				if (checkInventoryWatch.invOrStats === "INV") {
+					this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				} if (checkInventoryWatch.invOrStats === "STATS") {
+					this.client.database.updateStatsEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				}
 			}
 		}
 		if (reaction.emoji.name === "➡️") {
-			if (checkInventoryWatch.pageNum === 3) {
-				this.client.database.setInvPageNum({ pageNum: 1, messageID: reaction.message.id });
+			if (checkInventoryWatch.pageNum === 8 && checkInventoryWatch.invOrStats === "INV") {
 				reaction.users.remove(user);
+				this.client.database.setInvPageNum({ pageNum: 1, messageID: reaction.message.id });
 				const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
 				this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+				return;
+			} else if (checkInventoryWatch.pageNum === 2 && checkInventoryWatch.invOrStats === "STATS") {
+				reaction.users.remove(user);
+				this.client.database.setInvPageNum({ pageNum: 1, messageID: reaction.message.id });
+				const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
+				this.client.database.updateStatsEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
 				return;
 			} else {
 				this.client.database.addInvPageNum({ messageID: reaction.message.id });
 				reaction.users.remove(user);
 				const getPageNum = await this.client.database.checkInventoryWatch({ messageID: reaction.message.id });
-				this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
-				return;
+				if (checkInventoryWatch.invOrStats === "INV") {
+					this.client.database.updateInventoryEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				} if (checkInventoryWatch.invOrStats === "STATS") {
+					this.client.database.updateStatsEmbed({embedMessage: embedMessage, newPageNum: getPageNum.pageNum, oldEmbed: embedMessage.embeds[0], userID: reaction.message.author.id});
+					return;
+				}
 			}
 		}
 		if (reaction.emoji.name === "⏹️") {

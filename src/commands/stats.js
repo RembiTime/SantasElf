@@ -1,13 +1,15 @@
 const { Command } = require("discord-akairo");
 const Discord = require("discord.js");
 
-class InventoryCommand extends Command {
+class StatsCommand extends Command {
 	constructor() {
-		super("inventory", {
-			aliases: ["inventory", "inv"],
-			description: "Checks your inventory"
+		super("stats", {
+			aliases: ["stats"],
+			description: "Checks your statistics"
 		});
 	}
+
+	//This will be seperate from the inventory page with statistics instead of how many presents
 
 	async exec(message) {
 		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
@@ -20,15 +22,15 @@ class InventoryCommand extends Command {
 		}
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 
-		const inventoryEmbed = new Discord.MessageEmbed()
+		const statsEmbed = new Discord.MessageEmbed()
 			.setColor(hexColor)
-			.setTitle("Presents")
-			.setFooter("Page 1")
+			.setTitle("User Stats")
+			.setFooter("Page 1/2")
 			.setAuthor(message.member.user.tag, message.member.user.avatarURL(), message.member.user.avatarURL())
 			.addField("Presents:", "You've found " + userData.totalPresents + " presents!")
 			.addField("Stats:", "You've guessed incorrectly " + userData.wrongGuesses + " times!\nYou've found the present first " + userData.firstFinder + " times!");
-		let sent = await message.channel.send(inventoryEmbed);
-		await this.client.database.addInventoryWatcher({
+		let sent = await message.channel.send(statsEmbed);
+		await this.client.database.addStatsWatcher({
 			messageID: sent.id,
 			userID: message.author.id,
 			pageNum: 1 //TODO: Starting at a diff number
@@ -40,4 +42,4 @@ class InventoryCommand extends Command {
 	}
 }
 
-module.exports = InventoryCommand;
+module.exports = StatsCommand;

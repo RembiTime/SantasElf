@@ -180,6 +180,7 @@ class Database {
 			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS inventoryWatch (
 					messageID	       BIGINT UNSIGNED  NOT NULL,
+					invOrStats			 ENUM('INV', 'STATS') NOT NULL,
 					userID      		 BIGINT UNSIGNED  NOT NULL,
 					pageNum       	 INTEGER         	NOT NULL
 				)
@@ -452,6 +453,17 @@ class Database {
 		await this.pool.execute(`
 			INSERT INTO inventoryWatch SET
 				messageID = ?,
+				invOrStats = 'INV',
+				userID = ?,
+				pageNum = ?
+			`, [messageID, userID, pageNum]);
+	}
+
+	async addStatsWatcher({ messageID, userID, pageNum }) {
+		await this.pool.execute(`
+			INSERT INTO inventoryWatch SET
+				messageID = ?,
+				invOrStats = 'STATS',
 				userID = ?,
 				pageNum = ?
 			`, [messageID, userID, pageNum]);
@@ -505,19 +517,75 @@ class Database {
 	async updateInventoryEmbed({ embedMessage, newPageNum, oldEmbed, userID }) {
 		if (newPageNum === 1) {
 			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Page 1");
+				.setTitle("Presents")
+				.setFooter("Page 1");
 			embedMessage.edit(editedEmbed);
 			return;
 		}
 		if (newPageNum === 2) {
 			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Page 2");
+				.setTitle("Common Items")
+				.setFooter("Page 2");
 			embedMessage.edit(editedEmbed);
 			return;
 		}
 		if (newPageNum === 3) {
 			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Page 3");
+				.setTitle("Uncommon Items")
+				.setFooter("Page 3");
+			embedMessage.edit(editedEmbed);
+			return;
+		} if (newPageNum === 4) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Rare Items")
+				.setFooter("Page 4");
+			embedMessage.edit(editedEmbed);
+			return;
+		} if (newPageNum === 5) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Legendary Items")
+				.setFooter("Page 5");
+			embedMessage.edit(editedEmbed);
+			return;
+		} if (newPageNum === 6) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Mythic Items")
+				.setFooter("Page 6");
+			embedMessage.edit(editedEmbed);
+			return;
+		} if (newPageNum === 7) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Negative Items")
+				.setFooter("Page 7");
+			embedMessage.edit(editedEmbed);
+			return;
+		} if (newPageNum === 8) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Unique Items")
+				.setFooter("Page 8");
+			embedMessage.edit(editedEmbed);
+			return;
+		}
+	}
+
+	async updateStatsEmbed({ embedMessage, newPageNum, oldEmbed, userID }) {
+		if (newPageNum === 1) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("User Stats")
+				.setFooter("Page 1/2");
+			embedMessage.edit(editedEmbed);
+			return;
+		}
+		if (newPageNum === 2) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setTitle("Global Stats")
+				.setFooter("Page 2/2");
+			embedMessage.edit(editedEmbed);
+			return;
+		}
+		if (newPageNum === 3) {
+			const editedEmbed = new MessageEmbed(oldEmbed)
+				.setFooter("Page 3");
 			embedMessage.edit(editedEmbed);
 			return;
 		}
