@@ -44,6 +44,8 @@ const showPages = async function(pages, channel, user, time = 30000) {
 	await message.react(left);
 	await message.react(end);
 	await message.react(right);
+
+	return message;
 };
 
 module.exports = { showPages };

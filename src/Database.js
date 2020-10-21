@@ -1,6 +1,5 @@
 const mysql = require("mysql2");
 const items = require("./items");
-const { MessageEmbed } = require("discord.js");
 
 class Database {
 	constructor(client, options) {
@@ -176,20 +175,8 @@ class Database {
 					isPartner      BOOLEAN          NOT NULL,
 					appealed3Deny  BOOLEAN          NOT NULL
 				)
-			`),
-			this.pool.execute(`
-				CREATE TABLE IF NOT EXISTS inventoryWatch (
-					messageID	       BIGINT UNSIGNED  NOT NULL,
-					invOrStats			 ENUM('INV', 'STATS') NOT NULL,
-					userID      		 BIGINT UNSIGNED  NOT NULL,
-					pageNum       	 INTEGER         	NOT NULL
-				)
 			`)
 		]);
-	}
-
-	async clearInventoryWatch() {
-		this.pool.execute("TRUNCATE TABLE inventoryWatch");
 	}
 
 	async getPresent(options) {
@@ -237,16 +224,6 @@ class Database {
 		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ? AND status = 'ONGOING'", [options.messageID]);
-			return newGuild.length ? newGuild[0] : null;
-		} else {
-			throw new Error("Invalid getPresent() call");
-		}
-	}
-
-	async checkInventoryWatch(options) {
-		if ("messageID" in options) {
-			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM inventoryWatch WHERE messageID = ?", [options.messageID]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -449,26 +426,6 @@ class Database {
 			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
-	async addInventoryWatcher({ messageID, userID, pageNum }) {
-		await this.pool.execute(`
-			INSERT INTO inventoryWatch SET
-				messageID = ?,
-				invOrStats = 'INV',
-				userID = ?,
-				pageNum = ?
-			`, [messageID, userID, pageNum]);
-	}
-
-	async addStatsWatcher({ messageID, userID, pageNum }) {
-		await this.pool.execute(`
-			INSERT INTO inventoryWatch SET
-				messageID = ?,
-				invOrStats = 'STATS',
-				userID = ?,
-				pageNum = ?
-			`, [messageID, userID, pageNum]);
-	}
-
 	async addNewGuild({ guildID, trueFalse }) {
 		await this.pool.execute(`
 			INSERT INTO guildData SET
@@ -500,95 +457,6 @@ class Database {
 
 	async appealAccept({ guildID }) {
 		await this.pool.execute("UPDATE guildData SET appealed3Deny = TRUE WHERE guildID = ?", [guildID]);
-	}
-
-	async setInvPageNum({ pageNum, messageID }) {
-		await this.pool.execute("UPDATE inventoryWatch SET pageNum = ? WHERE messageID = ?", [pageNum, messageID]);
-	}
-
-	async subInvPageNum({ messageID }) {
-		await this.pool.execute("UPDATE inventoryWatch SET pageNum = pageNum - 1 WHERE messageID = ?", [messageID]);
-	}
-
-	async addInvPageNum({ messageID }) {
-		await this.pool.execute("UPDATE inventoryWatch SET pageNum = pageNum + 1 WHERE messageID = ?", [messageID]);
-	}
-
-	async updateInventoryEmbed({ embedMessage, newPageNum, oldEmbed, userID }) {
-		if (newPageNum === 1) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Presents")
-				.setFooter("Page 1");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
-		if (newPageNum === 2) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Common Items")
-				.setFooter("Page 2");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
-		if (newPageNum === 3) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Uncommon Items")
-				.setFooter("Page 3");
-			embedMessage.edit(editedEmbed);
-			return;
-		} if (newPageNum === 4) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Rare Items")
-				.setFooter("Page 4");
-			embedMessage.edit(editedEmbed);
-			return;
-		} if (newPageNum === 5) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Legendary Items")
-				.setFooter("Page 5");
-			embedMessage.edit(editedEmbed);
-			return;
-		} if (newPageNum === 6) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Mythic Items")
-				.setFooter("Page 6");
-			embedMessage.edit(editedEmbed);
-			return;
-		} if (newPageNum === 7) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Negative Items")
-				.setFooter("Page 7");
-			embedMessage.edit(editedEmbed);
-			return;
-		} if (newPageNum === 8) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Unique Items")
-				.setFooter("Page 8");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
-	}
-
-	async updateStatsEmbed({ embedMessage, newPageNum, oldEmbed, userID }) {
-		if (newPageNum === 1) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("User Stats")
-				.setFooter("Page 1/2");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
-		if (newPageNum === 2) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setTitle("Global Stats")
-				.setFooter("Page 2/2");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
-		if (newPageNum === 3) {
-			const editedEmbed = new MessageEmbed(oldEmbed)
-				.setFooter("Page 3");
-			embedMessage.edit(editedEmbed);
-			return;
-		}
 	}
 
 	async getGlobalStats() {
@@ -637,11 +505,6 @@ class Database {
 		return result;
 	}
 
-	async deleteInvWatcher({ messageID }) {
-		await this.pool.execute("DELETE FROM inventoryWatch WHERE messageID = ?", [messageID]);
-	}
-
-
 	//ITEM STUFF
 
 	async addCandyCanes({ amount, userID }) {
@@ -657,7 +520,7 @@ class Database {
 		await this.pool.execute(`UPDATE userData SET ${presentLevel} = ${presentLevel} - 1 WHERE userID = ?`, [userID]);
 	}
 
-	async removePresent({ userData, userID, presentLevel }) {
+	async removePresent({ userData, presentLevel }) {
 		if (presentLevel == 1) {
 			if (userData.lvl1Presents < 1) {
 				return 0;

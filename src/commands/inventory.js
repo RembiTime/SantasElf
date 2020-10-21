@@ -27,16 +27,8 @@ class InventoryCommand extends Command {
 			.setAuthor(message.member.user.tag, message.member.user.avatarURL(), message.member.user.avatarURL())
 			.addField("Presents:", "You've found " + userData.totalPresents + " presents!")
 			.addField("Stats:", "You've guessed incorrectly " + userData.wrongGuesses + " times!\nYou've found the present first " + userData.firstFinder + " times!");
-		let sent = await message.channel.send(inventoryEmbed);
-		await this.client.database.addInventoryWatcher({
-			messageID: sent.id,
-			userID: message.author.id,
-			pageNum: 1 //TODO: Starting at a diff number
-		});
-		const approvalMessage = await message.channel.messages.fetch(sent.id);
-		approvalMessage.react("⬅️");
-		approvalMessage.react("⏹️");
-		approvalMessage.react("➡️");
+
+		await message.channel.send(inventoryEmbed);
 	}
 }
 

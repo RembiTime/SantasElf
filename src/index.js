@@ -38,7 +38,6 @@ class SantasElf extends AkairoClient {
 
 	async login(token) {
 		await this.database.init();
-		await this.database.clearInventoryWatch();
 		return super.login(token);
 	}
 }
