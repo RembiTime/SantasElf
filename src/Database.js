@@ -53,98 +53,99 @@ class Database {
 					lvl5Total      INTEGER       NOT NULL,
 					coalAmt        INTEGER       NOT NULL,
 					coalTotal      INTEGER       NOT NULL,
-					treeAmt        INTEGER       NOT NULL,
-					treeTotal      INTEGER       NOT NULL,
-					paletteAmt     INTEGER       NOT NULL,
-					paletteTotal   INTEGER       NOT NULL,
+					gooseTotal     INTEGER       NOT NULL,
+					dirtAmt        INTEGER       NOT NULL,
+					dirtTotal      INTEGER       NOT NULL,
 					ornamentAmt    INTEGER       NOT NULL,
 					ornamentTotal  INTEGER       NOT NULL,
-					hatAmt         INTEGER       NOT NULL,
-					hatTotal       INTEGER       NOT NULL,
-					mistletoeAmt   INTEGER       NOT NULL,
-					mistletoeTotal INTEGER       NOT NULL,
-					watchAmt       INTEGER       NOT NULL,
-					watchTotal     INTEGER       NOT NULL,
-					giftcardAmt    INTEGER       NOT NULL,
-					giftcardTotal  INTEGER       NOT NULL,
-					consoleAmt     INTEGER       NOT NULL,
-					consoleTotal   INTEGER       NOT NULL,
-					computerAmt    INTEGER       NOT NULL,
-					computerTotal  INTEGER       NOT NULL,
 					plushAmt       INTEGER       NOT NULL,
 					plushTotal     INTEGER       NOT NULL,
-					figurineAmt    INTEGER       NOT NULL,
-					figurineTotal  INTEGER       NOT NULL,
 					socksAmt       INTEGER       NOT NULL,
 					socksTotal     INTEGER       NOT NULL,
 					duckAmt        INTEGER       NOT NULL,
 					duckTotal      INTEGER       NOT NULL,
-					carAmt         INTEGER       NOT NULL,
-					carTotal       INTEGER       NOT NULL,
-					ownershipAmt   INTEGER       NOT NULL,
-					ownershipTotal INTEGER       NOT NULL,
-					memeAmt        INTEGER       NOT NULL,
-					memeTotal      INTEGER       NOT NULL,
-					glitchTotal    INTEGER       NOT NULL,
 					pencilsAmt     INTEGER       NOT NULL,
 					pencilsTotal   INTEGER       NOT NULL,
-					snowglobeAmt   INTEGER       NOT NULL,
-					snowglobeTotal INTEGER       NOT NULL,
 					boxAmt         INTEGER       NOT NULL,
 					boxTotal       INTEGER       NOT NULL,
-					gooseTotal     INTEGER       NOT NULL,
-					dragonEggAmt   INTEGER       NOT NULL,
-					dragonEggTotal INTEGER       NOT NULL,
-					mysteriousPart INTEGER       NOT NULL,
-					roleTotal      INTEGER       NOT NULL,
-					spannerAmt     INTEGER       NOT NULL,
-					spannerTotal   INTEGER       NOT NULL,
 					pumpkinAmt     INTEGER       NOT NULL,
 					pumpkinTotal   INTEGER       NOT NULL,
-					pinAmt         INTEGER       NOT NULL,
-					pinTotal       INTEGER       NOT NULL,
 					orangeAmt      INTEGER       NOT NULL,
 					orangeTotal    INTEGER       NOT NULL,
-					slimeAmt       INTEGER       NOT NULL,
-					slimeTotal     INTEGER       NOT NULL,
-					dirtAmt        INTEGER       NOT NULL,
-					dirtTotal      INTEGER       NOT NULL,
-					puppyAmt       INTEGER       NOT NULL,
-					puppyTotal     INTEGER       NOT NULL,
-					blanketAmt     INTEGER       NOT NULL,
-					blanketTotal   INTEGER       NOT NULL,
 					shirtAmt       INTEGER       NOT NULL,
 					shirtTotal     INTEGER       NOT NULL,
-					swordAmt       INTEGER       NOT NULL,
-					swordTotal     INTEGER       NOT NULL,
 					chocolateAmt   INTEGER       NOT NULL,
 					chocolateTotal INTEGER       NOT NULL,
-					cyberDragonAmt INTEGER       NOT NULL,
-					cyberDragonTotal INTEGER     NOT NULL,
-					headphonesAmt  INTEGER       NOT NULL,
-					headphonesTotal INTEGER      NOT NULL,
-					gameAmt        INTEGER       NOT NULL,
-					gameTotal      INTEGER       NOT NULL,
 					footballAmt    INTEGER       NOT NULL,
 					footballTotal  INTEGER       NOT NULL,
 					football2Amt   INTEGER       NOT NULL,
 					football2Total INTEGER       NOT NULL,
+					singleCandyTotal INTEGER     NOT NULL,
+					treeAmt        INTEGER       NOT NULL,
+					treeTotal      INTEGER       NOT NULL,
+					giftcardAmt    INTEGER       NOT NULL,
+					giftcardTotal  INTEGER       NOT NULL,
+					figurineAmt    INTEGER       NOT NULL,
+					figurineTotal  INTEGER       NOT NULL,
+					snowglobeAmt   INTEGER       NOT NULL,
+					snowglobeTotal INTEGER       NOT NULL,
+					paletteAmt     INTEGER       NOT NULL,
+					paletteTotal   INTEGER       NOT NULL,
+					mistletoeAmt   INTEGER       NOT NULL,
+					mistletoeTotal INTEGER       NOT NULL,
+					memeAmt        INTEGER       NOT NULL,
+					memeTotal      INTEGER       NOT NULL,
+					pinAmt         INTEGER       NOT NULL,
+					pinTotal       INTEGER       NOT NULL,
+					blanketAmt     INTEGER       NOT NULL,
+					blanketTotal   INTEGER       NOT NULL,
+					headphonesAmt  INTEGER       NOT NULL,
+					headphonesTotal INTEGER      NOT NULL,
+					gameAmt        INTEGER       NOT NULL,
+					gameTotal      INTEGER       NOT NULL,
 					keyboardTotal  INTEGER       NOT NULL,
-					cornAmt        INTEGER       NOT NULL,
-					cornTotal      INTEGER       NOT NULL,
+					hatAmt         INTEGER       NOT NULL,
+					hatTotal       INTEGER       NOT NULL,
+					consoleAmt     INTEGER       NOT NULL,
+					consoleTotal   INTEGER       NOT NULL,
+					computerAmt    INTEGER       NOT NULL,
+					computerTotal  INTEGER       NOT NULL,
+					watchAmt       INTEGER       NOT NULL,
+					watchTotal     INTEGER       NOT NULL,
+					mysteriousPartAmt INTEGER    NOT NULL,
+					mysteriousPartTotal INTEGER  NOT NULL,
+					puppyAmt       INTEGER       NOT NULL,
+					puppyTotal     INTEGER       NOT NULL,
+					swordAmt       INTEGER       NOT NULL,
+					swordTotal     INTEGER       NOT NULL,
 					simpTotal      INTEGER       NOT NULL,
-					dupeAmt        INTEGER       NOT NULL,
-					dupeTotal      INTEGER       NOT NULL,
-					discAmt        INTEGER       NOT NULL,
-					discTotal      INTEGER       NOT NULL,
-					fractalAmt     INTEGER       NOT NULL,
-					fractalTotal   INTEGER       NOT NULL,
-					bigTriangleAmt INTEGER       NOT NULL,
-					bigTriangleTotal INTEGER     NOT NULL,
 					catAmt         INTEGER       NOT NULL,
 					catTotal       INTEGER       NOT NULL,
+					carAmt         INTEGER       NOT NULL,
+					carTotal       INTEGER       NOT NULL,
+					dragonEggAmt   INTEGER       NOT NULL,
+					dragonEggTotal INTEGER       NOT NULL,
+					roleTotal      INTEGER       NOT NULL,
+					spannerAmt     INTEGER       NOT NULL,
+					spannerTotal   INTEGER       NOT NULL,
+					slimeAmt       INTEGER       NOT NULL,
+					slimeTotal     INTEGER       NOT NULL,
+					dragonAmt 		 INTEGER       NOT NULL,
+					dragonTotal 	 INTEGER     	 NOT NULL,
+					fractalAmt     INTEGER       NOT NULL,
+					fractalTotal   INTEGER       NOT NULL,
+					ownershipAmt   INTEGER       NOT NULL,
+					ownershipTotal INTEGER       NOT NULL,
+					glitchTotal    INTEGER       NOT NULL,
+					cornAmt        INTEGER       NOT NULL,
+					cornTotal      INTEGER       NOT NULL,
+					discAmt        INTEGER       NOT NULL,
+					discTotal      INTEGER       NOT NULL,
 					brokenPlaneAmt INTEGER       NOT NULL,
 					brokenPlaneTotal INTEGER     NOT NULL,
+					bigTriangleAmt INTEGER       NOT NULL,
+					bigTriangleTotal INTEGER     NOT NULL,
+					dupeTotal      INTEGER       NOT NULL,
 					PRIMARY KEY(userID)
 				)
 			`),
@@ -360,7 +361,8 @@ class Database {
 				gooseTotal     = 0,
 				dragonEggAmt   = 0,
 				dragonEggTotal = 0,
-				mysteriousPart = 0,
+				mysteriousPartAmt = 0,
+				mysteriousPartTotal = 0,
 				roleTotal      = 0,
 				spannerAmt     = 0,
 				spannerTotal   = 0,
@@ -384,8 +386,8 @@ class Database {
 				swordTotal     = 0,
 				chocolateAmt   = 0,
 				chocolateTotal = 0,
-				cyberDragonAmt = 0,
-				cyberDragonTotal = 0,
+				dragonAmt = 0,
+				dragonTotal = 0,
 				headphonesAmt  = 0,
 				headphonesTotal = 0,
 				gameAmt        = 0,
@@ -398,7 +400,6 @@ class Database {
 				cornAmt        = 0,
 				cornTotal      = 0,
 				simpTotal      = 0,
-				dupeAmt        = 0,
 				dupeTotal      = 0,
 				discAmt        = 0,
 				discTotal      = 0,
@@ -457,6 +458,13 @@ class Database {
 
 	async appealAccept({ guildID }) {
 		await this.pool.execute("UPDATE guildData SET appealed3Deny = TRUE WHERE guildID = ?", [guildID]);
+	}
+
+	async addUserPresent({ presentLevel, userID }) {
+		let presentAmt = "lvl" + presentLevel + "Presents";
+		let presentTotal = "lvl" + presentLevel + "Total";
+		await this.pool.execute(`UPDATE userData SET ${presentAmt} = ${presentAmt} + 1 WHERE userID = ?`, [userID]);
+		await this.pool.execute(`UPDATE userData SET ${presentTotal} = ${presentTotal} + 1 WHERE userID = ?`, [userID]);
 	}
 
 	async getGlobalStats() {
@@ -587,18 +595,18 @@ class Database {
 		const { result } = await this.pool.execute(`
 			START TRANSACTION;
 
-			SELECT (mysteriousPartAmt, fractalAmt, spannerAmt, slimeAmt, cyberDragonAmt)
-				INTO (parts, fractals, spanners, slimes, dragons)
+			SELECT (mysteriousPartAmt, fractalAmt, spannerAmt, slimeAmt, dragonAmt)
+				INTO (parts, fractals, spanners, slimes, dragon)
 				FROM userData WHERE userID = ?
 				FOR UPDATE;
 
-			IF (parts >= 3 AND fractals >= 1 AND spanners >= 1 AND slimes >= 1 AND dragons >= 1) THEN
+			IF (parts >= 3 AND fractals >= 1 AND spanners >= 1 AND slimes >= 1 AND dragon >= 1) THEN
 				UPDATE userData SET
 					mysteriousPartAmt = mysteriousPartAmt - 3,
 					fractalAmt = fractalAmt - 1,
 					spannerAmt = spannerAmt - 1,
 					slimeAmt = slimeAmt - 1,
-					cyberDragonAmt = cyberDragonAmt - 1
+					dragonAmt = dragonAmt - 1
 					bigTriangleAmt = bigTriangleAmt + 1;
 
 				SELECT TRUE AS result;
@@ -646,7 +654,6 @@ class Database {
 		const candidates = items.filter(e => e.rank === presentRarity);
 		const item = candidates[Math.floor(Math.random() * candidates.length)];
 
-		console.log(presentRarity);
 		if (item.defaultBehavior !== false) {
 			await this.addItem({ itemName: item.id, userID, presentLevel });
 		}

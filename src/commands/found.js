@@ -59,6 +59,9 @@ class FoundCommand extends Command {
 		console.log(newUserCheck.userName + " found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
 		*/
 		// TODO: fix this race condition
+
+		this.client.database.addUserPresent({presentLevel: present.presentLevel, userID: message.author.id});
+
 		if (present.timesFound === 0) {
 			//console.log(newUserCheck.userName + " has found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + " first! They've found " + newUserCheck.firstFinder + " presents first!");
 			await this.client.database.presentFound({

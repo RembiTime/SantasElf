@@ -27,7 +27,7 @@ module.exports = [
 		rank: 0,
 		worth: 0,
 		displayName: "Coal",
-		response: "Uh oh... Looks like you got on the naughty list. You found coal"
+		response: "Uh oh... Looks like you got on the naughty list. You found coal."
 	},
 	{
 		id: "goose",
@@ -82,13 +82,13 @@ module.exports = [
 		displayName: "Pencils",
 		response: "You found a box of pencils! Who does their christmas shopping at Office Depot?" //changed: reworked -Walrus
 	},
-	{
+	/*{
 		id: "box",
 		rank: 1,
 		worth: 1,
 		displayName: "Box",
 		response: "You found a cardboard box! You feel a deep primal urge to sit in it." //changed: reworded -Walrus
-	},
+	},*/
 	{
 		id: "pumpkin",
 		rank: 1,
@@ -130,6 +130,17 @@ module.exports = [
 		worth: 6,
 		displayName: "Football2",
 		response: "You found a football! Which football is it, though?" //changed: Grammar -Walrus
+	},
+	{
+		id: "singleCandy",
+		rank: 1,
+		displayName: "singleCandy",
+		response: "You found a singular candy cane! Make sure not to spend it all in one place!", // changed: reworded, also what the fuck? -Walrus
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute("UPDATE userData SET singleCandyTotal = singleCandyTotal + 1 WHERE userID = ?", [message.author.id]);
+		}
 	},
 	{
 		id: "tree",
@@ -332,10 +343,10 @@ module.exports = [
 		response: "WHA?? You found a slime! It's dark sky-blue and you can almost see a smiling face on it. It seems alive..."
 	},
 	{
-		id: "cyberDragon",
+		id: "dragon",
 		rank: 4,
-		displayName: "Cyber Dragon",
-		response: "WHA?? You found a cyber dragon! It looks like a wireframe dragon figure with raw power pulsing through it"
+		displayName: "Dragon",
+		response: "WHA?? You found a dragon! It looks like a wireframe dragon figure with raw power pulsing through it"
 	},
 	{
 		id: "fractal",

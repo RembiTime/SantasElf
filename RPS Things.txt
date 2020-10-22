@@ -18,7 +18,7 @@ Plush
 Socks
 Rubber Duck
 Pencils
-Box
+Singular Candy Cane
 Pumpkin
 Orange
 Shirt
@@ -57,7 +57,7 @@ Dragon Egg*
 Role
 Spanner
 Slime
-Cyber Dragon
+Dragon
 Fractal
 
 Mythic (Santa - 5/3):

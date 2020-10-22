@@ -13,9 +13,10 @@ const showPages = async function(pages, channel, user, time = 30000) {
 
 	collector.on("collect", (reaction, reactor) => {
 		if (reactor.id === reactor.client.user.id) { return; }
-		reaction.users.remove(reactor).catch(noop);
 
 		if (reactor.id !== user.id) { return; }
+
+		reaction.users.remove(reactor).catch(noop);
 
 		if (reaction.emoji.name === left) {
 			page--;

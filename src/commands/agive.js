@@ -8,8 +8,12 @@ class AdminGiveCommand extends Command {
 			ownerOnly: true,
 			args: [
 				{
-					id: "presentLevel",
+					id: "userID",
 					type: "string"
+				},
+				{
+					id: "presentLevel",
+					type: "integer"
 				},
 				{
 					id: "amount",
@@ -19,8 +23,8 @@ class AdminGiveCommand extends Command {
 		});
 	}
 
-	async exec(message, {presentLevel, amount}) {
-		this.client.database.agivePresent({ message: message, userID: message.author.id, presentLevel: presentLevel, amount: amount});
+	async exec(message, {userID, presentLevel, amount}) {
+		this.client.database.agivePresent({ userID: userID, message: message, presentLevel: presentLevel, amount: amount});
 	}
 }
 

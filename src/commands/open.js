@@ -13,6 +13,16 @@ class OpenCommand extends Command {
 	}
 
 	async exec(message, {presentLevel}) {
+
+		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
+
+		if (newUserCheck === null) {
+			await this.client.database.addNewUser({
+				userID: message.author.id,
+				userName: message.member.user.tag
+			});
+		}
+
 		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
 		const presentCheck = await this.client.database.removePresent({userData: userData, userID: message.author.id, presentLevel: presentLevel});
 		if (presentCheck == 0) {
