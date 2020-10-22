@@ -656,6 +656,9 @@ class Database {
 
 		if (item.defaultBehavior !== false) {
 			await this.addItem({ itemName: item.id, userID, presentLevel });
+		} else if (item.defaultBehavior === false) {
+			let lvlPresents = "lvl" + presentLevel + "Presents";
+			this.pool.execute(`UPDATE userData SET ${lvlPresents} = ${lvlPresents} - 1 WHERE userID = ?`, [userID]);
 		}
 
 		if (typeof item.onFind === "function") {
