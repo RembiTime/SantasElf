@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Argument, Command } = require("discord-akairo");
 
 class ChangeLevelCommand extends Command {
 	constructor() {
@@ -8,7 +8,7 @@ class ChangeLevelCommand extends Command {
 			args: [
 				{
 					id: "level",
-					type: "int"
+					type: Argument.range("integer", 1, 5, true)
 				},
 				{
 					id: "messageID",
