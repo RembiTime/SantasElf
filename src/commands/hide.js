@@ -1,4 +1,4 @@
-const { Command, Argument } = require("discord-akairo");
+const { Argument, Command } = require("discord-akairo");
 const { MessageEmbed } = require("discord.js");
 
 class HideCommand extends Command {

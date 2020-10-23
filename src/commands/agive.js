@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Argument, Command } = require("discord-akairo");
 
 class AdminGiveCommand extends Command {
 	constructor() {
@@ -8,12 +8,12 @@ class AdminGiveCommand extends Command {
 			ownerOnly: true,
 			args: [
 				{
-					id: "userID",
-					type: "string"
+					id: "user",
+					type: "user"
 				},
 				{
 					id: "presentLevel",
-					type: "integer"
+					type: Argument.range("integer", 1, 5, true)
 				},
 				{
 					id: "amount",
@@ -23,8 +23,8 @@ class AdminGiveCommand extends Command {
 		});
 	}
 
-	async exec(message, {userID, presentLevel, amount}) {
-		this.client.database.agivePresent({ userID: userID, message: message, presentLevel: presentLevel, amount: amount});
+	async exec(message, { user, presentLevel, amount }) {
+		this.client.database.agivePresent({ userID: user.id, message: message, presentLevel: presentLevel, amount: amount });
 	}
 }
 
