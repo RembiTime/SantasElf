@@ -19,7 +19,7 @@ class OpenCommand extends Command {
 		if (newUserCheck === null) {
 			await this.client.database.addNewUser({
 				userID: message.author.id,
-				userName: message.member.user.tag
+				userName: message.author.tag
 			});
 		}
 
