@@ -259,6 +259,12 @@ class Database {
 		}*/
 	}
 
+	async userHasItem({userID, itemName}) {
+		let itemAmt = itemName + "Amt";
+		const [results] = await this.pool.execute(`SELECT * FROM userData WHERE userID = ? AND ${itemAmt} > 0`, [userID]);
+		return !!results.length;
+	}
+
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
@@ -526,6 +532,11 @@ class Database {
 		await this.pool.execute(`UPDATE userData SET ${itemNameAmt} = ${itemNameAmt} + 1 WHERE userID = ?`, [userID]);
 		await this.pool.execute(`UPDATE userData SET ${itemNameTotal} = ${itemNameTotal} + 1 WHERE userID = ?`, [userID]);
 		await this.pool.execute(`UPDATE userData SET ${presentLevel} = ${presentLevel} - 1 WHERE userID = ?`, [userID]);
+	}
+
+	async removeItem({ itemName, userID }) {
+		let itemNameAmt = itemName + "Amt";
+		await this.pool.execute(`UPDATE userData SET ${itemNameAmt} = ${itemNameAmt} - 1 WHERE userID = ?`, [userID]);
 	}
 
 	async removePresent({ userData, presentLevel }) {

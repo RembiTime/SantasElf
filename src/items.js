@@ -27,6 +27,7 @@ module.exports = [
 		rank: 0,
 		worth: 0,
 		displayName: "Coal",
+		messageName: "a piece of coal",
 		response: "Uh oh... Looks like you got on the naughty list. You found coal."
 	},
 	{
@@ -45,6 +46,7 @@ module.exports = [
 		rank: 0,
 		worth: 0,
 		displayName: "Dirt",
+		messageName: "a piece of dirt",
 		response: "You open the present to find dirt... fun." //changed: punctuation -Walrus
 	},
 	{
@@ -52,6 +54,7 @@ module.exports = [
 		rank: 1,
 		worth: 5,
 		displayName: "Ornament",
+		messageName: "an ornament",
 		response: "You found an ornament! That doesn't really do you much good since you've already decorated your tree." //changed: reworded -Walrus
 	},
 	{
@@ -59,6 +62,7 @@ module.exports = [
 		rank: 1,
 		worth: 8,
 		displayName: "Plush",
+		messageName: "a plush toy",
 		response: "You found a stuffed animal! It isn't worth much, but it makes a good companion."
 	},
 	{
@@ -66,6 +70,7 @@ module.exports = [
 		rank: 1,
 		worth: 2,
 		displayName: "Socks",
+		messageName: "some socks",
 		response: "You found a pair of socks! Why do people always give me socks?" //changed: reworded -Walrus
 	},
 	{
@@ -73,6 +78,7 @@ module.exports = [
 		rank: 1,
 		worth: 4,
 		displayName: "Rubber Duck",
+		messageName: "a rubber duck",
 		response: "You found a rubber duck! Cheap plastic has never been so lovable! You will cherish your new friend forever." //changed: reworded -Walrus
 	},
 	{
@@ -80,6 +86,7 @@ module.exports = [
 		rank: 1,
 		worth: 3,
 		displayName: "Pencils",
+		messageName: "a box of pencils",
 		response: "You found a box of pencils! Who does their christmas shopping at Office Depot?" //changed: reworked -Walrus
 	},
 	/*{
@@ -94,6 +101,7 @@ module.exports = [
 		rank: 1,
 		worth: 2,
 		displayName: "Pumpkin",
+		messageName: "a pumpkin",
 		response: "You found a pumpkin! Blech! It smells like it's been in there since Halloween." //changed: reworded -Walrus
 	},
 	{
@@ -101,6 +109,7 @@ module.exports = [
 		rank: 1,
 		worth: 3,
 		displayName: "Orange",
+		messageName: "an orange",
 		response: "You found an orange! Why did someone feel the need to give you this? You take a minute to contemplate the subtle intricacies of human interaction." //changed highbrow humor aquired -Walrus
 	},
 	{
@@ -108,6 +117,7 @@ module.exports = [
 		rank: 1,
 		worth: 6,
 		displayName: "Shirt",
+		messageName: "a shirt",
 		response: "You found a shirt! Great, more clothes. At least its clean." //changed: added a bit -Walrus
 	},
 	{
@@ -115,6 +125,7 @@ module.exports = [
 		rank: 1,
 		worth: 7,
 		displayName: "Chocolate",
+		messageName: "a box of choclates",
 		response: "You found a box of chocolate! Well, that's Valentine's day sorted!" //changed: reworked -Walrus
 	},
 	{
@@ -122,6 +133,7 @@ module.exports = [
 		rank: 1,
 		worth: 6,
 		displayName: "Football",
+		messageName: "a football",
 		response: "You found a football! Which football is it, though?" //changed: Grammar -Walrus
 	},
 	{
@@ -129,6 +141,7 @@ module.exports = [
 		rank: 1,
 		worth: 6,
 		displayName: "Football2",
+		messageName: "a football",
 		response: "You found a football! Which football is it, though?" //changed: Grammar -Walrus
 	},
 	{
@@ -147,12 +160,12 @@ module.exports = [
 		rank: 2,
 		worth: 13,
 		displayName: "Tree",
+		messageName: "a tree",
 		response: "Nice! You found an entire tree! How did they even fit this into the box?" //changed: reworded -Walrus
 	},
 	{
 		id: "giftcard",
 		rank: 2,
-		worth: 20,
 		displayName: "Giftcard",
 		response: "Nice! You found a giftcard! It's worth 20 candy canes!"
 	},
@@ -161,6 +174,7 @@ module.exports = [
 		rank: 2,
 		worth: 18,
 		displayName: "Figurine",
+		messageName: "a figurine",
 		response: "Nice! You found a figurine! A fine addition to your collection." //changed: prequelmeme -Walrus
 	},
 	{
@@ -168,6 +182,7 @@ module.exports = [
 		rank: 2,
 		worth: 15,
 		displayName: "Snowglobe",
+		messageName: "a snowglobe",
 		response: "Nice! You found a snowglobe! It's a winter wonderland on the go!" //changed: reworked -Walrus
 	},
 	{
@@ -193,6 +208,7 @@ module.exports = [
 		rank: 2,
 		worth: 16,
 		displayName: "Pin",
+		messageName: "a pin",
 		response: "Nice! You found a Pin! And it's authentic! That's definitely going on your lanyard!" // changed: reworded -Walrus
 	},
 	{
@@ -200,6 +216,7 @@ module.exports = [
 		rank: 2,
 		worth: 15,
 		displayName: "Blanket",
+		messageName: "a blanket",
 		response: "Nice! You found a blanket! You already feel yourself falling asleep in its soft, warm embrace!" // changed: reworded -Walrus
 	},
 	{
@@ -207,6 +224,7 @@ module.exports = [
 		rank: 2,
 		worth: 13,
 		displayName: "Headphones",
+		messageName: "a pair of headphones",
 		response: "Nice! You found a pair of headphones! Time to rock the night away to your favorite tunes!" // changed: reworked -Walrus
 	},
 	{
@@ -214,6 +232,7 @@ module.exports = [
 		rank: 2,
 		worth: 19,
 		displayName: "Video game",
+		messageName: "a video game",
 		response: "Nice! You found a video game! You've been eyeing this one for months, can't wait to give it a go!" // changed: reworded -Walrus
 	},
 	{
@@ -246,6 +265,7 @@ module.exports = [
 		rank: 3,
 		worth: 35,
 		displayName: "Santa's Hat",
+		messageName: "santa's hat",
 		response: "Wow! You found Santa's hat! He'll probably pay a fortune to get it back"
 	},
 	{
@@ -253,6 +273,7 @@ module.exports = [
 		rank: 3,
 		worth: 38,
 		displayName: "Console",
+		messageName: "a console",
 		response: "Wow! You found a console! You've been wanting the SwitchU for forever now!" // changed: grammar -Walrus
 	},
 	{
@@ -260,6 +281,7 @@ module.exports = [
 		rank: 3,
 		worth: 45,
 		displayName: "Computer",
+		messageName: "a computer",
 		response: "Wow! You found a computer! It looks like it's going to be quite the upgrade!" // changed: reworked -Walrus
 	},
 	{
@@ -279,6 +301,7 @@ module.exports = [
 		rank: 3,
 		worth: 40,
 		displayName: "Puppy",
+		messageName: "a puppy (how cruel)",
 		response: "Wow! You found a puppy! It certainly looks happy to see you, that box must've been dark and scary! Take good care of your new friend!" // changed: reworked -Walrus
 	},
 	{
@@ -286,6 +309,7 @@ module.exports = [
 		rank: 3,
 		worth: 35,
 		displayName: "Sword",
+		messageName: "a sword",
 		response: "Wow! You found a Sword! It looks pretty sharp, and you question its legality. Still freakin awesome though!" // changed: reworded -Walrus
 	},
 	{
@@ -304,6 +328,7 @@ module.exports = [
 		rank: 3,
 		worth: 39,
 		displayName: "Cat",
+		messageName: "a cat (how cruel)",
 		response: "Wow! You found a cat! It looks at you with indifference and goes back to sitting in the box. It's love at first sight!" // changed: reworded -Walrus
 	},
 	{
@@ -311,6 +336,7 @@ module.exports = [
 		rank: 4,
 		worth: 115,
 		displayName: "Car",
+		messageName: "a car",
 		response: "WHA?? You found a car! You can't wait to take it for a spin!" // changed: reworked -Walrus
 	},
 	{
@@ -365,6 +391,7 @@ module.exports = [
 		rank: 5,
 		worth: 200,
 		displayName: "Ownership",
+		messageName: "the ownership of SMPEarth",
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found the ownership of SMPEarth! How does that even work?"
 	},
 	{
@@ -383,6 +410,7 @@ module.exports = [
 		rank: 5,
 		worth: 0.5,
 		displayName: "Corn",
+		messageName: "the corn",
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found a cob of corn! THIS IS THE BEST PRESENT YOU COULD HAVE GOTTEN! You show it to your friends and they can't believe that you got corn! They're shocked and they go to tell their friends that you found the mythical corn. Eventually, the legend spreads everywhere and legends are made about the person who found the corn. You become the most popular person on Earth with nearly unlimited wealth because of the simps. Congrats, you won the game" // Why? Just why? -Walrus
 	},
 	{
