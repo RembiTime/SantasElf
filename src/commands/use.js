@@ -21,12 +21,31 @@ class UseCommand extends Command {
 			return;
 		} else if (item && "rank" in item) {
 			if (item.id === "mistletoe") {
-				message.channel.send("Who would you like to kiss?");
+				const promptMessage = await message.channel.send("Who would you like to kiss?");
+				const userID = await message.author.id;
+				message.delete();
 				const collector = new Discord.MessageCollector(message.channel, m => m.author.id === message.author.id, { time: 120000 });
 				collector.on("collect", message => {
-					let kissedID = message.mentions.users.first().id;
-					message.reply.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats!");
-					this.client.database.addCandyCanes({amount: 20, userID: message.author.id});
+					if (message.mentions.users.size === 1) {
+						let kissedID = message.mentions.users.first().id;
+						if (userID === kissedID) {
+							message.channel.send("You can't kiss yourself!");
+							return;
+						}
+						message.delete();
+						promptMessage.delete();
+						message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (Also, take 20 candy canes each)");
+						this.client.database.removeItem({itemName: "mistletoe", userID: message.author.id});
+						this.client.database.addCandyCanes({amount: 20, userID: message.author.id});
+						this.client.database.addCandyCanes({amount: 20, userID: kissedID});
+						return;
+					} else if (message.mentions.users.size > 1) {
+						message.channel.send("Please mention only one user");
+						return;
+					} else {
+						message.channel.send("Please mention a user to kiss!");
+						return;
+					}
 				});
 			}
 		}
