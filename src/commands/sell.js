@@ -1,7 +1,7 @@
 const { Command } = require("discord-akairo");
 const items = require("../items");
 
-class PingCommand extends Command {
+class SellCommand extends Command {
 	constructor() {
 		super("sell", {
 			aliases: ["sell"],
@@ -27,11 +27,11 @@ class PingCommand extends Command {
 				return;
 			}
 		} else if (item && "rank" in item) {
-			message.channel.send("This item can't be sold! Try `,use`ing it.");
+			message.channel.send("This item can't be sold! Try `,use`ing it instead.");
 		} else {
 			message.channel.send("This item does not exist!");
 		}
 	}
 }
 
-module.exports = PingCommand;
+module.exports = SellCommand;
