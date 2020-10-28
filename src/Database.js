@@ -178,6 +178,15 @@ class Database {
 		return !!results.length;
 	}
 
+	async itemCheck({userID, itemName}) {
+		//if ("id" in options) {
+		const [results] = await this.pool.execute("SELECT * FROM items WHERE name = ? AND userID = ?", [itemName, userID]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
@@ -509,6 +518,56 @@ class Database {
 			await message.channel.send(item.response);
 		}
 	}
+
+	async useMistletoe({message}) {
+		let kissMessage = await message.channel.send("Who would you like to kiss?");
+		const filter = m => m.author.id === message.author.id;
+		const mentionMsg = (await message.channel.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })).first();
+		if (mentionMsg.mentions.users.size === 1) {
+			let kissedID = mentionMsg.mentions.users.first().id;
+			if (kissedID === message.author.id) {
+				message.channel.send("You can't kiss yourself!");
+				return;
+			}
+			message.delete();
+			kissMessage.delete();
+			await mentionMsg.delete();
+			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [15, message.author.id]);
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [15, kissedID]);
+			await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", ["mistletoe", message.author.id]);
+			return;
+		} if (mentionMsg.mentions.users.size > 1) {
+			message.channel.send("Please only mention one user!");
+			return;
+		} if (mentionMsg.mentions.users.size === 0) {
+			message.channel.send("Please mention someone to kiss!");
+		}
+	}
+
+	async useMeme({message}) {
+		let candyCaneAmt = Math.floor(Math.random() * 41) - 10;
+		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", ["meme", message.author.id]);
+		if (candyCaneAmt === 0) {
+			message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
+			return;
+		} if (candyCaneAmt < 0) {
+			let positiveNum = Math.abs(candyCaneAmt);
+			message.channel.send("Wow, people did not like your meme! You lost " + positiveNum + " candy canes! Welcome to controversial.");
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - ? WHERE userID = ?", [positiveNum, message.author.id]);
+			return;
+		} if (candyCaneAmt > 0 && candyCaneAmt <= 15) {
+			message.channel.send("People liked your meme, which made it to hot! You gained " + candyCaneAmt + " candy canes!");
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [candyCaneAmt, message.author.id]);
+			return;
+		} if (candyCaneAmt > 15) {
+			message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCaneAmt + " candy canes!");
+			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [candyCaneAmt, message.author.id]);
+			return;
+		}
+	}
+
+
 }
 
 module.exports = Database;
