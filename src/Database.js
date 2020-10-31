@@ -205,7 +205,7 @@ class Database {
 		}*/
 	}
 
-	async getAllItems(userID) {
+	async getAllItems({ userID }) {
 		const [results] = await this.pool.execute("SELECT * FROM items WHERE userID = ?", [userID]);
 		return results.map(({ name, amount, record }) => ({
 			item: items.find(e => e.id === name),
