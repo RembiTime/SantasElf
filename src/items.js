@@ -343,7 +343,18 @@ module.exports = [
 		id: "dragonEgg",
 		rank: 4,
 		displayName: "Dragon Egg",
-		response: "WHA?? You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**" //changed: NORBERT!! -Walrus
+		response: "WHA?? You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
+		defaultBehavior: false,
+		onFind: async (client, message) => {
+			let d= new Date();
+			let timeStamp = d.getTime();
+			await this.database.pool.execute(`
+				INSERT INTO dragonEggData SET
+					userID = ?,
+					active = ?,
+					timeFound = ?
+				`, [message.author.id, "TRUE", timeStamp]);
+		}
 	},
 	{
 		id: "role",

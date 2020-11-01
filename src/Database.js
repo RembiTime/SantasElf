@@ -81,6 +81,14 @@ class Database {
 				)
 			`),
 			this.pool.execute(`
+				CREATE TABLE IF NOT EXISTS dragonEggData (
+					userID  BIGINT UNSIGNED,
+					active  BOOLEAN,
+					timeFound VARCHAR(255),
+					PRIMARY KEY(userID)
+				)
+			`),
+			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS guildData (
 					guildID	       BIGINT UNSIGNED  NOT NULL,
 					isPartner      BOOLEAN          NOT NULL,

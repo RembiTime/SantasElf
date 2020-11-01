@@ -34,12 +34,12 @@ class InventoryCommand extends Command {
 			.addField("Level 2 presents", userData.lvl2Presents, true)
 			.addField("Level 3 presents", userData.lvl3Presents, true)
 			.addField("Level 4 presents", userData.lvl4Presents, true)
-			.addField("Level 5 presents", userData.lvl5Presents, true)
+			.addField("Level 5 presents", userData.lvl5Presents, true);
 
 		const itemSets = partition(item => item.item.rank, items).sort((x, y) => x[0].item.rank - y[0].item.rank);
 		const rankNames = ["Negative", "Common", "Uncommon", "Rare", "Legendary", "Mythic", "Unique"];
 
-		const itemsetPages = itemSets.map((itemSet, i) => new MessageEmbed()
+		const itemsetPages = itemSets.map((itemSet) => new MessageEmbed()
 			.setColor(hexColor)
 			.setTitle(`${rankNames[itemSet[0].item.rank]} items`)
 			.addFields(itemSet.map(({ item, amount, record }) => ({
@@ -50,7 +50,7 @@ class InventoryCommand extends Command {
 		// .setFooter(`Page ${i + 3}`)
 
 		const pages = [candyCanePage, presentsPage, ...itemsetPages];
-		pages.forEach((page, i) => page.setFooter(`Page ${i + 1} / ${pages.length}`))
+		pages.forEach((page, i) => page.setFooter(`Page ${i + 1} / ${pages.length}`));
 
 		showPages(pages, message.channel, message.author, 120000);
 	}
