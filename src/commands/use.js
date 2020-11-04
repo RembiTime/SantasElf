@@ -34,13 +34,25 @@ class UseCommand extends Command {
 				}
 				this.client.database.useMistletoe({message: message});
 			}
-			if (item.id === "meme") {
+			else if (item.id === "meme") {
 				const itemCheck = await this.client.database.itemCheck({userID: message.author.id, itemName: "meme"});
 				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				}
 				this.client.database.useMeme({message: message});
+			}
+			else if (item.id === "palette") {
+				const itemCheck = await this.client.database.itemCheck({userID: message.author.id, itemName: "palette"});
+				if (itemCheck === null || itemCheck.amount < 1) {
+					message.channel.send("You don't have any of that item!");
+					return;
+				} const checkIfMinigame = await this.client.database.checkOngoingMinigame({ userID: message.author.id });
+				if (checkIfMinigame !== null) {
+					message.channel.send("There is already an ongoing game! Please finish that first");
+					return;
+				}
+				this.client.database.usePalette({message: message});
 			}
 		} else {
 			message.channel.send("That item does not exist!");

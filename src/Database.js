@@ -81,11 +81,12 @@ class Database {
 				)
 			`),
 			this.pool.execute(`
-				CREATE TABLE IF NOT EXISTS dragonEggData (
-					userID  BIGINT UNSIGNED,
-					active  BOOLEAN,
-					timeFound VARCHAR(255),
-					PRIMARY KEY(userID)
+				CREATE TABLE IF NOT EXISTS minigameReactions (
+					messageID     BIGINT UNSIGNED,
+					minigame      ENUM('PALETTE', 'WATCH')  NOT NULL,
+					userID        BIGINT UNSIGNED,
+					palletteMessage BIGINT UNSIGNED,
+					paletteAnswer INTEGER
 				)
 			`),
 			this.pool.execute(`
@@ -94,7 +95,8 @@ class Database {
 					isPartner      BOOLEAN          NOT NULL,
 					appealed3Deny  BOOLEAN          NOT NULL
 				)
-			`)
+			`),
+			this.pool.execute("TRUNCATE TABLE  minigameReactions")
 		]);
 
 		await Promise.all(items.map(item => (
@@ -137,6 +139,26 @@ class Database {
 		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
+			return newGuild.length ? newGuild[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async checkMinigame(options) {
+		if ("messageID" in options) {
+			//Check if message is stored
+			const [newGuild] = await this.pool.execute("SELECT * FROM minigameReactions WHERE messageID = ?", [options.messageID]);
+			return newGuild.length ? newGuild[0] : null;
+		} else {
+			throw new Error("Invalid getPresent() call");
+		}
+	}
+
+	async checkOngoingMinigame(options) {
+		if ("userID" in options) {
+			//Check if message is stored
+			const [newGuild] = await this.pool.execute("SELECT * FROM minigameReactions WHERE userID = ?", [options.userID]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -370,6 +392,10 @@ class Database {
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
 	}
 
+	async deleteMinigameListener({ messageID }) {
+		await this.pool.execute("DELETE FROM minigameReactions WHERE messageID = ?", [messageID]);
+	}
+
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
 		await this.pool.execute(`
@@ -573,6 +599,81 @@ class Database {
 			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [candyCaneAmt, message.author.id]);
 			return;
 		}
+	}
+
+	async usePalette({message}) {
+		let colorArray = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬜", "⬛", "🟫",];
+		colorArray = colorArray.sort(() => Math.random() - 0.5);
+		let finalArray = this.stringInsert(colorArray, 3).map(x => x.join("")).join("\n");
+		let answer = Math.floor(Math.random() * 9);
+		const lookupMap = {
+			"🟥": "red",
+			"🟧": "orange",
+			"🟨": "yellow",
+			"🟩": "green",
+			"🟦": "blue",
+			"🟪": "purple",
+			"⬜": "white",
+			"⬛": "black",
+			"🟫": "brown",
+		};
+		const answerString = lookupMap[colorArray[answer]];
+		let sent = await message.channel.send(finalArray);
+		const botMessage = await message.channel.messages.fetch(sent.id);
+		let seconds = 10;
+		const msg = await message.channel.send(`Memorize these colors, they will disappear in ${seconds} seconds`);
+		await this.pool.execute(`
+			INSERT INTO minigameReactions SET
+				messageID = ?,
+				minigame = ?,
+				userID = ?,
+				palletteMessage = ?,
+				paletteAnswer = ?
+			`, [sent.id, "PALETTE", message.author.id, msg.id, answer]);
+		const timer = setInterval(async() => {
+			await msg.edit(`Memorize these colors, they will disappear in ${--seconds} seconds`);
+			if (seconds <= 0) {
+				clearInterval(timer);
+				botMessage.react("1️⃣");
+				botMessage.react("2️⃣");
+				botMessage.react("3️⃣");
+				botMessage.react("4️⃣");
+				botMessage.react("5️⃣");
+				botMessage.react("6️⃣");
+				botMessage.react("7️⃣");
+				botMessage.react("8️⃣");
+				botMessage.react("9️⃣");
+				sent.edit("1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣");
+				await msg.edit("Click which number " + answerString + " was");
+			}
+		}, 1000);
+	}
+
+	async shuffle(array) {
+		var currentIndex = array.length, temporaryValue, randomIndex;
+
+		// While there remain elements to shuffle...
+		while (0 !== currentIndex) {
+
+			// Pick a remaining element...
+			randomIndex = Math.floor(Math.random() * currentIndex);
+			currentIndex -= 1;
+
+			// And swap it with the current element.
+			temporaryValue = array[currentIndex];
+			array[currentIndex] = array[randomIndex];
+			array[randomIndex] = temporaryValue;
+		}
+
+		return array;
+	}
+
+	stringInsert(arr, len) {
+		var chunks = [], i = 0, n = arr.length;
+		while (i < n) {
+			chunks.push(arr.slice(i, i += len));
+		}
+		return chunks;
 	}
 
 
