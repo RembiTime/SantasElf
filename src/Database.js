@@ -81,22 +81,12 @@ class Database {
 				)
 			`),
 			this.pool.execute(`
-				CREATE TABLE IF NOT EXISTS minigameReactions (
-					messageID     BIGINT UNSIGNED,
-					minigame      ENUM('PALETTE', 'WATCH')  NOT NULL,
-					userID        BIGINT UNSIGNED,
-					palletteMessage BIGINT UNSIGNED,
-					paletteAnswer INTEGER
-				)
-			`),
-			this.pool.execute(`
 				CREATE TABLE IF NOT EXISTS guildData (
 					guildID	       BIGINT UNSIGNED  NOT NULL,
 					isPartner      BOOLEAN          NOT NULL,
 					appealed3Deny  BOOLEAN          NOT NULL
 				)
-			`),
-			this.pool.execute("TRUNCATE TABLE  minigameReactions")
+			`)
 		]);
 
 		await Promise.all(items.map(item => (
@@ -139,26 +129,6 @@ class Database {
 		if ("messageID" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
-			return newGuild.length ? newGuild[0] : null;
-		} else {
-			throw new Error("Invalid getPresent() call");
-		}
-	}
-
-	async checkMinigame(options) {
-		if ("messageID" in options) {
-			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM minigameReactions WHERE messageID = ?", [options.messageID]);
-			return newGuild.length ? newGuild[0] : null;
-		} else {
-			throw new Error("Invalid getPresent() call");
-		}
-	}
-
-	async checkOngoingMinigame(options) {
-		if ("userID" in options) {
-			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM minigameReactions WHERE userID = ?", [options.userID]);
 			return newGuild.length ? newGuild[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -392,10 +362,6 @@ class Database {
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
 	}
 
-	async deleteMinigameListener({ messageID }) {
-		await this.pool.execute("DELETE FROM minigameReactions WHERE messageID = ?", [messageID]);
-	}
-
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
 		await this.pool.execute(`
@@ -556,7 +522,11 @@ class Database {
 	async useMistletoe({message}) {
 		let kissMessage = await message.channel.send("Who would you like to kiss?");
 		const filter = m => m.author.id === message.author.id;
-		const mentionMsg = (await message.channel.awaitMessages(filter, { max: 1, time: 120000, errors: ["time"] })).first();
+		const mentionMsg = (await message.channel.awaitMessages(filter, { max: 1, time: 120000}));
+		if (mentionMsg.size === 0){
+			message.channel.send("You didn't answer in time! Please run the command again to try again.");
+			return;
+		}
 		if (mentionMsg.mentions.users.size === 1) {
 			let kissedID = mentionMsg.mentions.users.first().id;
 			if (kissedID === message.author.id) {
@@ -602,6 +572,7 @@ class Database {
 	}
 
 	async usePalette({message}) {
+		this.client.minigamePlayers.add(message.author.id);
 		let colorArray = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬜", "⬛", "🟫",];
 		colorArray = colorArray.sort(() => Math.random() - 0.5);
 		let finalArray = this.stringInsert(colorArray, 3).map(x => x.join("")).join("\n");
@@ -622,31 +593,133 @@ class Database {
 		const botMessage = await message.channel.messages.fetch(sent.id);
 		let seconds = 10;
 		const msg = await message.channel.send(`Memorize these colors, they will disappear in ${seconds} seconds`);
-		await this.pool.execute(`
-			INSERT INTO minigameReactions SET
-				messageID = ?,
-				minigame = ?,
-				userID = ?,
-				palletteMessage = ?,
-				paletteAnswer = ?
-			`, [sent.id, "PALETTE", message.author.id, msg.id, answer]);
+		const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+		for(const x of numberEmojis) botMessage.react(x);
 		const timer = setInterval(async() => {
-			await msg.edit(`Memorize these colors, they will disappear in ${--seconds} seconds`);
+			seconds = seconds - 2;
+			await msg.edit(`Memorize these colors, they will disappear in ${seconds} seconds`);
 			if (seconds <= 0) {
 				clearInterval(timer);
-				botMessage.react("1️⃣");
-				botMessage.react("2️⃣");
-				botMessage.react("3️⃣");
-				botMessage.react("4️⃣");
-				botMessage.react("5️⃣");
-				botMessage.react("6️⃣");
-				botMessage.react("7️⃣");
-				botMessage.react("8️⃣");
-				botMessage.react("9️⃣");
 				sent.edit("1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣");
 				await msg.edit("Click which number " + answerString + " was");
+				const filter = (reaction, user) => {
+					return ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"].includes(reaction.emoji.name) && user.id === message.author.id;
+				};
+				const reaction = (await botMessage.awaitReactions(filter, { max: 1, time: 30000}));
+				if (reaction.size === 0){
+					this.client.minigamePlayers.delete(message.author.id);
+					msg.edit("You didn't answer in time! Please run the command again to try again.");
+					return;
+				}
+				const lookupMap = {
+					"1️⃣": 0,
+					"2️⃣": 1,
+					"3️⃣": 2,
+					"4️⃣": 3,
+					"5️⃣": 4,
+					"6️⃣": 5,
+					"7️⃣": 6,
+					"8️⃣": 7,
+					"9️⃣": 8,
+				};
+				const reactionAnswer = lookupMap[reaction.first().emoji.name];
+				if (reactionAnswer !== answer) {
+					this.client.minigamePlayers.delete(message.author.id);
+					this.client.database.removeItem({itemName: "palette", userID: message.author.id});
+					answer = answer + 1;
+					msg.edit("That's incorrect, it was "+ answer + ". Try again next time!");
+					return;
+				} else {
+					this.client.database.addCandyCanes({amount: 25, userID: message.author.id});
+					this.client.minigamePlayers.delete(message.author.id);
+					this.client.database.removeItem({itemName: "palette", userID: message.author.id});
+					msg.edit("That's correct! You got 25 candy canes!");
+					return;
+				}
 			}
-		}, 1000);
+		}, 2000);
+	}
+
+	async useWatch({message}) {
+		this.client.minigamePlayers.add(message.author.id);
+		let timeRed = (Math.floor(Math.random() * 9) + 2) * 1000;
+		let seconds = 6;
+		let stopMsg = await message.channel.send(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+		stopMsg.react("🛑");
+		const timer = setInterval(async() => {
+			seconds = seconds - 2;
+			await stopMsg.edit(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+			if (seconds <= 0) {
+				clearInterval(timer);
+				await stopMsg.edit("🟥");
+				const filter = (reaction, user) => {
+					return reaction.emoji.name === "🛑" && user.id === message.author.id;
+				};
+				const redReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: timeRed}));
+				if (redReaction.size === 0) {
+					await stopMsg.edit("🟩");
+					let startGreen = new Date();
+					const greenReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: 8000}));
+					if (greenReaction.size === 0) {
+						this.client.minigamePlayers.delete(message.author.id);
+						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+						stopMsg.edit("You were too slow! Click it as soon as it turns green next time.");
+						return;
+					} else {
+						let endGreen = new Date();
+						let timeToReact = endGreen.getTime() - startGreen.getTime();
+						this.client.minigamePlayers.delete(message.author.id);
+						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+						if (timeToReact > 900) {
+							this.client.database.addCandyCanes({amount: 5, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 5 candy canes!");
+							return;
+						} if (timeToReact > 850) {
+							this.client.database.addCandyCanes({amount: 10, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 10 candy canes!");
+							return;
+						} if (timeToReact > 800) {
+							this.client.database.addCandyCanes({amount: 15, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 15 candy canes!");
+							return;
+						} if (timeToReact > 750) {
+							this.client.database.addCandyCanes({amount: 20, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 20 candy canes!");
+							return;
+						} if (timeToReact > 700) {
+							this.client.database.addCandyCanes({amount: 25, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 25 candy canes!");
+							return;
+						} if (timeToReact > 650) {
+							this.client.database.addCandyCanes({amount: 30, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 30 candy canes!");
+							return;
+						} if (timeToReact > 600) {
+							this.client.database.addCandyCanes({amount: 35, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 35 candy canes!");
+							return;
+						} if (timeToReact > 550) {
+							this.client.database.addCandyCanes({amount: 40, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 40 candy canes!");
+							return;
+						} if (timeToReact > 500) {
+							this.client.database.addCandyCanes({amount: 50, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 50 candy canes!");
+							return;
+						} if (timeToReact <= 500) {
+							this.client.database.addCandyCanes({amount: 60, userID: message.author.id});
+							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 60 candy canes!");
+							return;
+						}
+					}
+				} else {
+					this.client.minigamePlayers.delete(message.author.id);
+					this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+					stopMsg.edit("You were too quick! Wait for it to turn green next time.");
+					return;
+				}
+			}
+		}, 2000);
 	}
 
 	async shuffle(array) {

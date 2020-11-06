@@ -47,12 +47,22 @@ class UseCommand extends Command {
 				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
-				} const checkIfMinigame = await this.client.database.checkOngoingMinigame({ userID: message.author.id });
-				if (checkIfMinigame !== null) {
+				} if (this.client.minigamePlayers.has(message.author.id)) {
 					message.channel.send("There is already an ongoing game! Please finish that first");
 					return;
 				}
 				this.client.database.usePalette({message: message});
+			}
+			else if (item.id === "watch") {
+				const itemCheck = await this.client.database.itemCheck({userID: message.author.id, itemName: "watch"});
+				if (itemCheck === null || itemCheck.amount < 1) {
+					message.channel.send("You don't have any of that item!");
+					return;
+				} if (this.client.minigamePlayers.has(message.author.id)) {
+					message.channel.send("There is already an ongoing game! Please finish that first");
+					return;
+				}
+				this.client.database.useWatch({message: message});
 			}
 		} else {
 			message.channel.send("That item does not exist!");

@@ -34,6 +34,8 @@ class SantasElf extends AkairoClient {
 			password: process.env.MYSQL_PASSWORD,
 			database: process.env.MYSQL_DATABASE
 		});
+
+		this.minigamePlayers = new Set();
 	}
 
 	async login(token) {
