@@ -1,4 +1,5 @@
 const { Command } = require("discord-akairo");
+const { Util: { escapeMarkdown } } = require("discord.js");
 
 class AddPartnerCommand extends Command {
 	constructor() {
@@ -10,16 +11,23 @@ class AddPartnerCommand extends Command {
 	}
 
 	async exec(message) {
-		const findIfGuildExists = await this.client.database.findIfGuildExists({ guildID: message.guild.id });
-		if (findIfGuildExists === null) {
-			await this.client.database.addNewGuild({
-				guildID: message.guild.id,
-				trueFalse: true
-			});
+		// This could double-send the success message if run twice in quick succession,
+		// but the race condition is harmless
+
+		const isPartner = await this.client.knex("guildData").count("guildID", { as: "count" })
+			.where({ guildID: message.guild.id, isPartner: true })
+			.then(([{ count }]) => count !== 0);
+
+		if (isPartner) {
+			message.channel.send("This guild is already partnered!");
+			return;
 		} else {
-			this.client.database.addPartner({ guildID: message.guild.id });
+			await this.client.knex("guildData")
+				.insert({ guildID: message.guild.id, isPartner: true })
+				.onConflict().merge({ isPartner: true });
+
+			message.channel.send(`**${escapeMarkdown(message.guild.name)}** is now a partner!`);
 		}
-		message.channel.send(message.guild.name + " now has partner permissions!");
 	}
 }
 
