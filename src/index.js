@@ -1,12 +1,17 @@
 require("dotenv").config();
 
-const { AkairoClient, CommandHandler, ListenerHandler } = require("discord-akairo");
+const { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler: { readdirRecursive } } = require("discord-akairo");
 
 const path = require("path");
 const knex = require("knex");
 
 const items = require("./items");
 const Database = require("./Database");
+
+// Load extentions
+readdirRecursive(path.join(__dirname, "extentions"))
+	.filter(name => (/\.js$/).test(name))
+	.forEach(file => require(file));
 
 class SantasElf extends AkairoClient {
 	constructor() {
@@ -46,7 +51,14 @@ class SantasElf extends AkairoClient {
 				port: parseInt(process.env.MYSQL_PORT),
 				user: process.env.MYSQL_USERNAME,
 				password: process.env.MYSQL_PASSWORD,
-				database: process.env.MYSQL_DATABASE
+				database: process.env.MYSQL_DATABASE,
+				typeCast: (field, next) => {
+					if (field.type == "TINY" && field.length === 1) {
+						const value = field.string();
+						return value ? (value === "1") : null;
+					}
+					return next();
+				}
 			}
 		});
 
@@ -101,24 +113,24 @@ class SantasElf extends AkairoClient {
 			await this.knex.schema.createTable("userData", table => {
 				table.bigInteger("userID").unsigned().primary();
 				// TODO: we shouldn't have this
-				table.string("userName").notNullable();
+				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
 
-				table.integer("candyCanes").notNullable();
-				table.integer("wrongGuesses").notNullable();
+				table.integer("candyCanes").notNullable().defaultTo(0);
+				table.integer("wrongGuesses").notNullable().defaultTo(0);
 
 				// TODO: these are all also bad
-				table.integer("firstFinder").notNullable();
-				table.integer("totalPresents").notNullable();
-				table.integer("lvl1Presents").notNullable();
-				table.integer("lvl1Total").notNullable();
-				table.integer("lvl2Presents").notNullable();
-				table.integer("lvl2Total").notNullable();
-				table.integer("lvl3Presents").notNullable();
-				table.integer("lvl3Total").notNullable();
-				table.integer("lvl4Presents").notNullable();
-				table.integer("lvl4Total").notNullable();
-				table.integer("lvl5Presents").notNullable();
-				table.integer("lvl5Total").notNullable();
+				table.integer("firstFinder").notNullable().defaultTo(0);
+				table.integer("totalPresents").notNullable().defaultTo(0);
+				table.integer("lvl1Presents").notNullable().defaultTo(0);
+				table.integer("lvl1Total").notNullable().defaultTo(0);
+				table.integer("lvl2Presents").notNullable().defaultTo(0);
+				table.integer("lvl2Total").notNullable().defaultTo(0);
+				table.integer("lvl3Presents").notNullable().defaultTo(0);
+				table.integer("lvl3Total").notNullable().defaultTo(0);
+				table.integer("lvl4Presents").notNullable().defaultTo(0);
+				table.integer("lvl4Total").notNullable().defaultTo(0);
+				table.integer("lvl5Presents").notNullable().defaultTo(0);
+				table.integer("lvl5Total").notNullable().defaultTo(0);
 			});
 
 		}

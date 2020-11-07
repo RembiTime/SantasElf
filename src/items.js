@@ -149,10 +149,9 @@ module.exports = [
 		rank: 1,
 		displayName: "singleCandy",
 		response: "You found a singular candy cane! Make sure not to spend it all in one place!", // changed: reworded, also what the fuck? -Walrus
-		defaultBehavior: false,
 		onFind: async (client, message) => {
+			// TODO: ???
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 1 WHERE userID = ?", [message.author.id]);
-			await client.database.pool.execute("UPDATE userData SET singleCandyTotal = singleCandyTotal + 1 WHERE userID = ?", [message.author.id]);
 		}
 	},
 	{

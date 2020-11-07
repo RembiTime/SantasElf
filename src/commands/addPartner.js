@@ -14,19 +14,21 @@ class AddPartnerCommand extends Command {
 		// This could double-send the success message if run twice in quick succession,
 		// but the race condition is harmless
 
-		const isPartner = await this.client.knex("guildData").count("guildID", { as: "count" })
-			.where({ guildID: message.guild.id, isPartner: true })
-			.then(([{ count }]) => count !== 0);
+		await message.guild.ensureDB();
+
+		const [{ isPartner }] = await this.client.knex("guildData")
+			.select("isPartner")
+			.where({ guildID: message.guild.id });
 
 		if (isPartner) {
 			message.channel.send("This guild is already partnered!");
 			return;
 		} else {
 			await this.client.knex("guildData")
-				.insert({ guildID: message.guild.id, isPartner: true })
-				.onConflict().merge({ isPartner: true });
+				.update({ isPartner: true })
+				.where({ guildID: message.guild.id });
 
-			message.channel.send(`**${escapeMarkdown(message.guild.name)}** is now a partner!`);
+			await message.channel.send(`**${escapeMarkdown(message.guild.name)}** is now a partner!`);
 		}
 	}
 }
