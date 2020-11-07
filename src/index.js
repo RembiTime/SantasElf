@@ -151,8 +151,8 @@ class SantasElf extends AkairoClient {
 		if (!await this.knex.schema.hasTable("guildData")) {
 			await this.knex.schema.createTable("guildData", table => {
 				table.bigInteger("guildID").unsigned().primary();
-				table.boolean("isPartner").notNullable();
-				table.bigInteger("appealed3Deny").notNullable();
+				table.boolean("isPartner").notNullable().defaultTo(false);
+				table.boolean("appealed3Deny").notNullable().defaultTo(false);
 			});
 		}
 
