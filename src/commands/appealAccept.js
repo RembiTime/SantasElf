@@ -7,24 +7,32 @@ class AppealAcceptCommand extends Command {
 			description: "Accept a 3 denied appeal",
 			ownerOnly: true,
 			args: [{
-				id: "guildID",
-				type: "string"
+				id: "guild",
+				type: "guild"
 			}]
 		});
 	}
 
-	async exec(message, { guildID }) {
-		const guildData = await this.client.database.checkNewGuild({guildID});
-		if (guildData === null) {
-			message.channel.send("This guild does not exist");
+	async exec(message, { guild }) {
+		// TODO: ensure guild has actually appealed?
+
+		if (!guild) {
+			await message.channel.send("The bot is not in that guild!");
 			return;
 		}
+
+		const guildData = await guild.getData();
+
 		if (guildData.appealed3Deny) {
-			message.channel.send("This server has already appealed.");
+			await message.channel.send("This server has already appealed.");
 			return;
 		}
-		this.client.database.appealAccept({guildID});
-		message.channel.send("This guild has been given 2 more attempts");
+
+		await this.client.knex("guildData")
+			.update({ appealed3Deny: true })
+			.where({ guildID: guild.id });
+
+		await message.channel.send("This guild has been given 2 more attempts");
 	}
 }
 
