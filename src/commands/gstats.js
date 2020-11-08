@@ -10,14 +10,23 @@ class GlobalStatsCommand extends Command {
 	}
 
 	async exec(message) {
-		const globalStats = await this.client.database.getGlobalStats();
+		const [{ presentsFound }] = await this.client.knex("foundPresents")
+			.countDistinct("presentCode", { as: "presentsFound" });
+
+		const [{ wrongGuesses }] = await this.client.knex("userData")
+			.sum({ wrongGuesses: "wrongGuesses"} );
+
+		const [{ usersWithPresents }] = await this.client.knex("foundPresents")
+			.countDistinct("userID", { as: "usersWithPresents" });
+
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
+
 
 		const gstatsEmbed = new Discord.MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("Global Statistics")
-			.addField("Presents:", "Total presents found: " + globalStats.presentsFound)
-			.addField("Stats:", "Wrong guesses: " + globalStats.wrongGuesses + "\nUsers playing: " + globalStats.usersWithPresents);
+			.addField("Presents:", "Total presents found: " + presentsFound)
+			.addField("Stats:", "Wrong guesses: " + wrongGuesses + "\nUsers playing: " + usersWithPresents);
 
 		message.channel.send(gstatsEmbed);
 	}
