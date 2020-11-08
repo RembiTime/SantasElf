@@ -13,70 +13,77 @@ class FoundCommand extends Command {
 	}
 
 	async exec(message, { code }) {
-		const present = await this.client.database.getPresent({ code, guildID: message.guild.id });
-		const dupeCheck = await this.client.database.findIfDupe({ userID: message.author.id, presentCode: code });
-		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
-		let isHider = false;
+		await message.author.ensureDB();
 
-		// Used to create global stats -- Uneeded: await this.client.database.startGlobalStats({id: code})
+		// URGENT TODO: put something here so that the code will only run once the info is added to the DB. Applies to all database functions.
 
-		if (newUserCheck === null) {
-			await this.client.database.addNewUser({
-				userID: message.author.id,
-				userName: message.member.user.tag
-			});
-		}
+		let present;
+		let finderIsHider = false;
+		let alreadyFound = false;
+		let firstFinder = false;
 
-		//URGENT TODO: put something here so that the code will only run once the info is added to the DB. Applies to all database functions.
+		await this.client.knex.transaction(async trx => {
+			present = await this.client.knex("presents")
+				.select("timesFound", "hiddenByID", "presentLevel")
+				.where({ code, guildID: message.guild.id })
+				.then(results => results.length ? results[0] : null)
+				.transacting(trx)
+				.forUpdate()
+				.then(([present]) => present ?? null);
 
-		//Check if the finder is also the hider
+			if (!present) {
+				return;
+			}
+
+			if (message.author.id === present.hiddenByID) {
+				finderIsHider = true;
+				return;
+			}
+
+			const hasFound = await this.client.knex("foundPresents")
+				.select(1)
+				.where("userID", "=", message.author.id)
+				.andWhere("presentCode", "=", code)
+				.transacting(trx)
+				.forUpdate()
+				.then(([result]) => !!result);
+
+			if (hasFound) {
+				alreadyFound = true;
+				return;
+			} else {
+				await this.client.knex("foundPresents")
+					.insert({
+						userID: message.author.id,
+						presentCode: code
+					})
+					.transacting(trx);
+
+				let presentAmt = `lvl${present.presentLevel}Presents`;
+				let presentTotal = `lvl${present.presentLevel}Total`;
+
+				await this.client.knex("userData")
+					.increment(presentAmt, 1)
+					.increment(presentTotal, 1)
+					.transacting(trx);
+
+				if (present.timesFound === 0) {
+					firstFinder = true;
+				}
+			}
+		});
 
 		if (present === null) {
-			//console.log(newUserCheck.userName + " guessed '" + code + "'! " + newUserCheck.userName + " has answered wrong " + newUserCheck.wrongGuesses + " times. There have been " + globalStats.wrongGuesses + " wrong guesses total");
-			message.channel.send("That present does not exist!");
-			return;
-		}
-
-		if (message.author.id == present.hiddenByID) {
-			isHider = true;
-		}
-
-		if (dupeCheck !== null) {
-			message.channel.send("You've already claimed that present!");
-			return;
-		}
-
-		if (isHider == true) {
-			message.channel.send("You can't claim a present that you hid!");
-			return;
-		}
-
-		//Need it twice because top allows for Wrong Guess Count, this is for amount of users with one present
-		/*if (newUserCheck === null) {
-			console.log(newUserCheck.userName + " just recieved their first present! There are now " + globalStats.usersWithPresents + " users playing!");
-		}
-
-		console.log(newUserCheck.userName + " found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + ". That present has been found " + present.timesFound + " times. " + newUserCheck.userName + " has found " + newUserCheck.totalPresents + " presents and " + globalStats.presentsFound + " presents have been found globally.");
-		*/
-		// TODO: fix this race condition
-
-		this.client.database.addUserPresent({presentLevel: present.presentLevel, userID: message.author.id});
-
-		if (present.timesFound === 0) {
-			//console.log(newUserCheck.userName + " has found present code '" + code + "' in " + this.client.guilds.cache.get(present.guildID).name + " first! They've found " + newUserCheck.firstFinder + " presents first!");
-			await this.client.database.presentFound({
-				userID: message.author.id,
-				userName: message.member.user.tag,
-				presentCode: code
-			});
-			message.channel.send("You were the first one to find this present! It had a difficulty of `" + present.presentLevel + "`.");
+			// TODO: increment wrong guesses counter?
+			await message.channel.send("That present does not exist!");
+		} else if (finderIsHider) {
+			await message.channel.send("You can't claim a present that you hid!");
+		} else if (alreadyFound) {
+			await message.channel.send("You've already claimed that present!");
+		} else if (firstFinder) {
+			await message.channel.send(`You were the first one to find this present! It had a difficulty of \`${present.presentLevel}\`.`);
 		} else {
-			await this.client.database.presentFound({
-				userID: message.author.id,
-				userName: message.member.user.tag,
-				presentCode: code
-			});
-			message.channel.send("You just claimed the present! It had a difficulty of `" + present.presentLevel + "`.");
+			await message.channel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
 		}
 	}
 }

@@ -140,7 +140,7 @@ class SantasElf extends AkairoClient {
 			await this.knex.schema.createTable("foundPresents", table => {
 				table.increments("id").primary();
 				table.bigInteger("userID").unsigned().notNullable();
-				table.string("userName").notNullable();
+				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
 				table.string("presentCode").notNullable();
 			});
 		}
