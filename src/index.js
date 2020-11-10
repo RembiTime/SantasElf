@@ -80,9 +80,10 @@ class SantasElf extends AkairoClient {
 				table.string("code").notNullable();
 				table.integer("presentLevel").notNullable();
 				table.integer("timesFound").notNullable();
-				table.bigInteger("guildID").unsigned().notNullable();
-				table.bigInteger("channelID").unsigned().notNullable();
+				table.bigInteger("guildID").unsigned();
+				table.bigInteger("channelID").unsigned();
 				table.bigInteger("hiddenByID").unsigned().notNullable();
+				table.integer("usesLeft");
 			});
 		}
 

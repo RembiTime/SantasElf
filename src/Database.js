@@ -11,9 +11,9 @@ class Database {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
 			return results.length ? results[0] : null;
-		} else if ("code" in options && "guildID" in options) {
+		} else if ("code" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
-			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ? AND guildID = ?", [options.code, options.guildID]);
+			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [options.code]);
 			return results.length ? results[0] : null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -24,6 +24,28 @@ class Database {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
 		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async checkPresentUses({ code }) {
+		//if ("id" in options) {
+		const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [code]);
+		return results.length ? results[0] : null;
+		/*} else {
+			throw new Error("Invalid findIfDupe() call");
+		}*/
+	}
+
+	async subtractUse({ code }) {
+		//if ("id" in options) {
+		await this.pool.execute("UPDATE presents SET usesLeft = usesLeft - 1 WHERE code = ?", [code]);
+		const checkZero = await this.pool.execute("SELECT usesLeft AS uses FROM presents WHERE code = ?;", [code]);
+		if (checkZero.uses === 0) {
+			await this.pool.execute("DELETE FROM presents WHERE code = ?", [code]);
+		}
+		return;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -127,7 +149,7 @@ class Database {
 		}));
 	}
 
-	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID }) {
+	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
 				code = ?,
@@ -135,8 +157,9 @@ class Database {
 				timesFound = ?,
 				guildID = ?,
 				channelID = ?,
-				hiddenByID = ?
-			`, [code, presentLevel, timesFound, guildID, channelID, hiddenByID]);
+				hiddenByID = ?,
+				usesLeft = ?
+			`, [code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft]);
 	}
 
 	async presentFound({ userID, userName, presentCode }) {
@@ -299,7 +322,7 @@ class Database {
 			await this.pool.execute(`
                     INSERT INTO achievements (name, userID) VALUES (?, ?)
                 `, [achName, userID]); //We might need a race condition check
-			message.channel.send("Achievement Unlocked: " + achName + "! You can view all your achievements with `,achievements`.");
+			message.channel.send("✨ Achievement Unlocked: **" + achName + "**! You can view all your achievements with `,achievements`. ✨");
 			return 1;
 		} return 0;
 	}

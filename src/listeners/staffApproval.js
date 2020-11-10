@@ -54,7 +54,8 @@ class StaffApprovalListener extends Listener {
 				timesFound: 0,
 				guildID: checkStaffApproval.guildID,
 				channelID: checkStaffApproval.channelID,
-				hiddenByID: checkStaffApproval.hiddenByID
+				hiddenByID: checkStaffApproval.hiddenByID,
+				usesLeft: null
 			});
 			this.client.database.approvalStatusUpdate({ status: "ACCEPTED", messageID: reaction.message.id });
 			const oldEmbed = approvalMessage.embeds[0];
