@@ -109,6 +109,15 @@ class SantasElf extends AkairoClient {
 			});
 		}
 
+		if (!await this.knex.schema.hasTable("achievements")) {
+			await this.knex.schema.createTable("achievements", table => {
+				table.string("name").notNullable();
+				table.bigInteger("userID").unsigned().notNullable();
+
+				table.primary(["name", "userID"]);
+			});
+		}
+
 		if (!await this.knex.schema.hasTable("userData")) {
 			await this.knex.schema.createTable("userData", table => {
 				table.bigInteger("userID").unsigned().primary();

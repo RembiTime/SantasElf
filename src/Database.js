@@ -286,6 +286,24 @@ class Database {
 		await this.pool.execute(`UPDATE userData SET ${presentLevel} = ${presentLevel} - 1 WHERE userID = ?`, [userID]);
 	}
 
+	async foundAchievement({ achName, userID, message }) {
+		let present;
+
+		await this.client.knex.transaction();
+		present = await this.client.knex("achievements")
+			.select("name", "userID")
+			.where({ name: achName, userID: userID })
+			.then(results => results.length ? results[0] : null);
+
+		if (!present) {
+			await this.pool.execute(`
+                    INSERT INTO achievements (name, userID) VALUES (?, ?)
+                `, [achName, userID]); //We might need a race condition check
+			message.channel.send("Achievement Unlocked: " + achName + "! You can view all your achievements with `,achievements`.");
+			return 1;
+		} return 0;
+	}
+
 	async removeItem({ itemName, userID }) {
 		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", [itemName, userID]);
 	}
