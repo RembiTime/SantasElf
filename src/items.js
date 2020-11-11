@@ -39,6 +39,7 @@ module.exports = [
 		onFind: async (client, message) => {
 			await client.database.pool.execute("UPDATE userData SET gooseTotal = gooseTotal + 1 WHERE userID = ?", [message.author.id]);
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
+			await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
 		}
 	},
 	{
@@ -413,6 +414,7 @@ module.exports = [
 		onFind: async (client, message) => {
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
 			await client.database.pool.execute("UPDATE userData SET glitchTotal = glitchTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.foundAchievement({achName: findGlitch, userID: message.author.id, message: message})
 		}
 	},
 	{

@@ -149,6 +149,14 @@ class Database {
 		}));
 	}
 
+	async getAchievement({ name, userID }) {
+		const [results] = await this.pool.execute("SELECT * FROM achievements WHERE userID = ? AND name = ?", [userID, name]);
+		const checkHas = results.length ? results[0] : null;
+		if (checkHas !== null) {
+			return true;
+		} return false;
+	}
+
 	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft }) {
 		await this.pool.execute(`
 			INSERT INTO presents SET
