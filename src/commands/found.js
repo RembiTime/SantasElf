@@ -23,12 +23,11 @@ class FoundCommand extends Command {
 		let firstFinder = false;
 
 		await this.client.knex.transaction(async trx => {
-			present = await this.client.knex("presents")
+			[present] = await this.client.knex("presents")
 				.select("timesFound", "hiddenByID", "presentLevel")
 				.where({ code, guildID: message.guild.id })
 				.transacting(trx)
-				.forUpdate()
-				.then(([present]) => present ?? null);
+				.forUpdate();
 
 			if (!present) {
 				return;
@@ -51,11 +50,10 @@ class FoundCommand extends Command {
 				alreadyFound = true;
 				return;
 			} else {
-				const results = await this.client.knex("presents").select("*").where({ code: code });
-				if (results[0].usesLeft === 0) {
+				if (present.usesLeft === 0) {
 					message.channel.send("This code has expired!");
 				}
-				await this.client.knex("presents").decrement("usesLeft", 1).where({ code: "abc123" });
+
 				await this.client.knex("foundPresents")
 					.insert({
 						userID: message.author.id,
@@ -74,21 +72,21 @@ class FoundCommand extends Command {
 				if (present.timesFound === 0) {
 					firstFinder = true;
 				}
-
-				if (present === null) {
-					// TODO: increment wrong guesses counter?
-					await message.channel.send("That present does not exist!");
-				} else if (finderIsHider) {
-					await message.channel.send("You can't claim a present that you hid!");
-				} else if (alreadyFound) {
-					await message.channel.send("You've already claimed that present!");
-				} else if (firstFinder) {
-					await message.channel.send(`You were the first one to find this present! It had a difficulty of \`${present.presentLevel}\`.`);
-				} else {
-					await message.channel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
-				}
 			}
 		});
+
+		if (present === null) {
+			// TODO: increment wrong guesses counter?
+			await message.channel.send("That present does not exist!");
+		} else if (finderIsHider) {
+			await message.channel.send("You can't claim a present that you hid!");
+		} else if (alreadyFound) {
+			await message.channel.send("You've already claimed that present!");
+		} else if (firstFinder) {
+			await message.channel.send(`You were the first one to find this present! It had a difficulty of \`${present.presentLevel}\`.`);
+		} else {
+			await message.channel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
+		}
 	}
 }
 
