@@ -20,6 +20,12 @@ class AchievementCommand extends Command {
 			.setColor(hexColor)
 			.setTitle("Achievements")
 			.setFooter("Page 1")
+			let checkach = await this.client.database.checkAchievement({ name: "presentTotal", userID: message.author.id });
+			if (checkach) {
+				page1.addField("Christmas Spirit", "🟩🟥🟥🟥🟥🟥")
+			} else {
+				page1.addField("Christmas Spirit", "🟥🟥🟥🟥🟥🟥")
+			}
 
 		const page2 = new MessageEmbed()
 			.setColor(hexColor)
@@ -28,7 +34,7 @@ class AchievementCommand extends Command {
 
 		// .setFooter(`Page ${i + 3}`)
 
-		const pages = [page1, page2, ...itemsetPages];
+		const pages = [page1, page2];
 
 		showPages(pages, message.channel, message.author, 120000);
 	}

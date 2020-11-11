@@ -149,7 +149,7 @@ class Database {
 		}));
 	}
 
-	async getAchievement({ name, userID }) {
+	async checkAchievement({ name, userID }) {
 		const [results] = await this.pool.execute("SELECT * FROM achievements WHERE userID = ? AND name = ?", [userID, name]);
 		const checkHas = results.length ? results[0] : null;
 		if (checkHas !== null) {
