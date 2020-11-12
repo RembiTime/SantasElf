@@ -2,7 +2,7 @@ const { Command } = require("discord-akairo");
 const { partition } = require("../util/array");
 const { showPages } = require("../util/discord");
 const { MessageEmbed } = require("discord.js");
-const achievements = require("./achievements");
+const achievements = require("../achievements");
 
 class AchievementCommand extends Command {
 	constructor() {

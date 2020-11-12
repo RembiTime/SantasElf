@@ -41,6 +41,7 @@ module.exports = [
 		description: ["Get a grinch/negative item", "Get a snowflake/common item", "Get a snowman/uncommon item", "Get an elf/rare item", "Get a reindeer/legendary item", "Get a Santa/mythic item", "Get a Rudolf/unique item", "Get at least one item in each rarity"]
 	},
 	{
+		keyID: "serverPresents",
 		id: ["serverPresents1", "serverPresents2", "serverPresents3", "serverPresents4"],
 		displayName: ["Adventurer", "Explorer", "Tourist", "Extrovert"],
 		prize: ["lvl1Present", "lvl2Present", "lvl3Present", "lvl4Present"],

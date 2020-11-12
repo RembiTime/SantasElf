@@ -37,9 +37,14 @@ module.exports = [
 		response: "Honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.database.pool.execute("UPDATE userData SET gooseTotal = gooseTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["goose", message.author.id]);
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
-			await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
+			//await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
 		}
 	},
 	{
@@ -151,7 +156,12 @@ module.exports = [
 		displayName: "singleCandy",
 		response: "You found a singular candy cane! Make sure not to spend it all in one place!", // changed: reworded, also what the fuck? -Walrus
 		onFind: async (client, message) => {
-			// TODO: ???
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["singleCandy", message.author.id]);
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 1 WHERE userID = ?", [message.author.id]);
 		}
 	},
@@ -243,7 +253,12 @@ module.exports = [
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 
-			await client.database.pool.execute("UPDATE userData SET keyboardTotal = keyboardTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["keyboard", message.author.id]);
 			const rand = Math.random();
 			let prompt = "Type in the following for the keyboard to give you candy!\n\n";
 			if (rand < 1 / 3) {
@@ -320,7 +335,12 @@ module.exports = [
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
-			await client.database.pool.execute("UPDATE userData SET simpTotal = simpTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["simp", message.author.id]);
 		}
 	},
 	{
@@ -348,7 +368,7 @@ module.exports = [
 		onFind: async (client, message) => {
 			let d= new Date();
 			let timeStamp = d.getTime();
-			await this.database.pool.execute(`
+			await client.database.pool.execute(`
 				INSERT INTO dragonEggData SET
 					userID = ?,
 					active = ?,
@@ -363,7 +383,12 @@ module.exports = [
 		response: "WHA?? You found a role! You feel special-er.",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.database.pool.execute("UPDATE userData SET roleTotal = roleTotal + 1 WHERE userID = ?", [message.author.id]);
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["role", message.author.id]);
 			// TODO: message.member.addRole("ROLE ID HERE");
 		}
 	},
@@ -413,8 +438,13 @@ module.exports = [
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
-			await client.database.pool.execute("UPDATE userData SET glitchTotal = glitchTotal + 1 WHERE userID = ?", [message.author.id]);
-			await client.database.foundAchievement({achName: findGlitch, userID: message.author.id, message: message})
+			await client.database.pool.execute(`
+			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
+			ON DUPLICATE KEY UPDATE
+				amount = amount + 1,
+				record = GREATEST(amount, record)
+		`, ["glitch", message.author.id]);
+			//wait client.database.foundAchievement({achName: findGlitch, userID: message.author.id, message: message})
 		}
 	},
 	{
