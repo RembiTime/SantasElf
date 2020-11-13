@@ -632,47 +632,11 @@ class Database {
 						let timeToReact = endGreen.getTime() - startGreen.getTime();
 						this.client.minigamePlayers.delete(message.author.id);
 						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
-						if (timeToReact > 900) {
-							this.client.database.addCandyCanes({amount: 5, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 5 candy canes!");
-							return;
-						} if (timeToReact > 850) {
-							this.client.database.addCandyCanes({amount: 10, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 10 candy canes!");
-							return;
-						} if (timeToReact > 800) {
-							this.client.database.addCandyCanes({amount: 15, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 15 candy canes!");
-							return;
-						} if (timeToReact > 750) {
-							this.client.database.addCandyCanes({amount: 20, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 20 candy canes!");
-							return;
-						} if (timeToReact > 700) {
-							this.client.database.addCandyCanes({amount: 25, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 25 candy canes!");
-							return;
-						} if (timeToReact > 650) {
-							this.client.database.addCandyCanes({amount: 30, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 30 candy canes!");
-							return;
-						} if (timeToReact > 600) {
-							this.client.database.addCandyCanes({amount: 35, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 35 candy canes!");
-							return;
-						} if (timeToReact > 550) {
-							this.client.database.addCandyCanes({amount: 40, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 40 candy canes!");
-							return;
-						} if (timeToReact > 500) {
-							this.client.database.addCandyCanes({amount: 50, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 50 candy canes!");
-							return;
-						} if (timeToReact <= 500) {
-							this.client.database.addCandyCanes({amount: 60, userID: message.author.id});
-							stopMsg.edit("You took " + timeToReact + " ms to react, so you got 60 candy canes!");
-							return;
-						}
+						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) : 
+							timeToReact < 500 ? 60 : 50);
+						this.client.database.addCandyCanes({amount: toAdd, userID: message.author.id});
+						stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
+						return;
 					}
 				} else {
 					this.client.minigamePlayers.delete(message.author.id);
