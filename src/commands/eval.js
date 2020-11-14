@@ -4,7 +4,7 @@ const Akairo = require("discord-akairo");
 const Discord = require("discord.js");
 const util = require("util");
 
-const { Command } = Akairo;
+const { Command } = require("../Command");
 
 class EvalCommand extends Command {
 	constructor() {
@@ -39,6 +39,10 @@ class EvalCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 * @param {{ silent: boolean, delsrc: boolean, depth: number, code: string }} args
+	 */
 	async exec(message, { silent, delsrc, depth, code }) {
 
 		if (delsrc && message.deletable) {
@@ -46,7 +50,6 @@ class EvalCommand extends Command {
 		}
 
 		const { client, guild, channel } = message;
-		const { data } = client;
 
 		const codeBlockRE = /```(?:javascript|js)?(.+)```/isu;
 
@@ -60,13 +63,13 @@ class EvalCommand extends Command {
 			const evaluated = await eval(code);
 
 			if (!silent) {
-				message.channel.send(util.inspect(evaluated, { depth }), {
+				await message.channel.send(util.inspect(evaluated, { depth }), {
 					code: "javascript",
 					split: true
 				});
 			}
 		} catch (err) {
-			message.channel.send(`ERROR: ${err}`);
+			await message.channel.send(`ERROR: ${err}`);
 		}
 	}
 }

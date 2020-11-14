@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 const { partition } = require("../util/array");
 const { showPages } = require("../util/discord");
 const { MessageEmbed } = require("discord.js");
@@ -11,6 +11,9 @@ class InventoryCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 */
 	async exec(message) {
 		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
 		const items = await this.client.database.getAllItems({ userID: message.author.id });
@@ -38,7 +41,7 @@ class InventoryCommand extends Command {
 
 		const itemSets = partition(item => item.item.rank, items).sort((x, y) => x[0].item.rank - y[0].item.rank);
 		const rankNames = ["Negative", "Common", "Uncommon", "Rare", "Legendary", "Mythic", "Unique"];
-		const rankPics = ["https://i.imgur.com/TtiJNGG.png", "https://i.imgur.com/oazdKuu.png", "https://i.imgur.com/4MC50bd.png", "https://i.imgur.com/6fIQ6fT.png", "https://i.imgur.com/riRGZKp.png", "https://i.imgur.com/1cEZyOx.png", "https://i.imgur.com/1cEZyOx.png"]
+		const rankPics = ["https://i.imgur.com/TtiJNGG.png", "https://i.imgur.com/oazdKuu.png", "https://i.imgur.com/4MC50bd.png", "https://i.imgur.com/6fIQ6fT.png", "https://i.imgur.com/riRGZKp.png", "https://i.imgur.com/1cEZyOx.png", "https://i.imgur.com/1cEZyOx.png"];
 
 		const itemsetPages = itemSets.map((itemSet) => new MessageEmbed()
 			.setColor(hexColor)

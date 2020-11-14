@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 
 class GuessCommand extends Command {
 	constructor() {
@@ -10,10 +10,12 @@ class GuessCommand extends Command {
 				type: "string"
 			}]
 		});
-		/** @type {import("..").SantasElf} */
-		this.client;
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 * @param {{ code: string }} args
+	 */
 	async exec(message, { code }) {
 		await message.delete();
 		if (this.client.usersGuessing.has(message.author.id)) {
@@ -128,7 +130,7 @@ class GuessCommand extends Command {
 			});
 
 			if (!present) {
-			 if (stopCollector) {
+				if (stopCollector) {
 					await dmChannel.send("Guessing stopped. If you would like to open it again, please send `,g` in a channel again.");
 				} else {
 					await dmChannel.send("That present does not exist!");
@@ -144,7 +146,7 @@ class GuessCommand extends Command {
 				await dmChannel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
 			}
 		});
-		collector.on("end", collected => {
+		collector.on("end", () => {
 			this.client.usersGuessing.delete(message.author.id);
 		});
 	}

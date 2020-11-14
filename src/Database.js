@@ -1,6 +1,9 @@
 const mysql = require("mysql2");
 const items = require("./items");
 
+/** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
+/** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
+
 class Database {
 	/**
 	 * @param {import(".").SantasElf} client
@@ -75,8 +78,6 @@ class Database {
 		return results[0]?.displayMessageId ?? null;
 	}
 
-	/** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
-
 	/**
 	 * @returns {Promise<GuildDataRow[]>} An array of guildData entries.
 	 */
@@ -145,11 +146,14 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
-	async userDataCheck(options) {
+	/**
+	 * @param {{ userID: string }} userID 
+	 * @returns {Promise<UserDataRow?>}
+	 */
+	async userDataCheck({ userID }) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM userData WHERE userID = ?", [options.userID]);
-		return results.length ? results[0] : null;
+		const [results] = await this.client.knex.select("*").from("userData").where({ userID });
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -338,16 +342,21 @@ class Database {
 	}
 
 	async checkIfPendingPresent({ guildID }) {
-		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM staffApproval WHERE status = 'ONGOING' AND guildID = ?", [guildID]);
+		const [{count: result}] = await this.client.knex.count("* as count").from("staffApproval").where({
+			status: "ONGOING",
+			guildID
+		});
 		return result;
 	}
 
 	async checkPresentAmount({ guildID }) {
-		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM presents WHERE guildID = ?", [guildID]);
+		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+			guildID
+		});
 		return result;
 	}
 
-	//ITEM STUFF
+	// ITEM STUFF
 
 	async addCandyCanes({ amount, userID }) {
 		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
@@ -386,7 +395,10 @@ class Database {
 		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", [itemName, userID]);
 	}
 
-	async removePresent({ userData, presentLevel }) {
+	/**
+	 * @param {{ userData: UserDataRow, presentLevel: number }} args
+	 */
+	removePresent({ userData, presentLevel }) {
 		if (presentLevel == 1) {
 			if (userData.lvl1Presents < 1) {
 				return 0;
@@ -695,7 +707,7 @@ class Database {
 		}, 2000);
 	}
 
-	async shuffle(array) {
+	shuffle(array) {
 		var currentIndex = array.length, temporaryValue, randomIndex;
 
 		// While there remain elements to shuffle...

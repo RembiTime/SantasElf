@@ -1,4 +1,5 @@
-const { Argument, Command } = require("discord-akairo");
+const { Argument } = require("discord-akairo");
+const { Command } = require("../Command");
 
 class AdminGiveCommand extends Command {
 	constructor() {
@@ -23,6 +24,10 @@ class AdminGiveCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message
+	 * @param {{ user: import("discord.js").User, presentLevel: number, amount: number }} args
+	 */
 	async exec(message, { user, presentLevel, amount }) {
 		await user.ensureDB();
 		await this.client.knex("userData")

@@ -1,6 +1,6 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 const { showPages } = require("../util/discord");
-const Discord = require("discord.js");
+const { MessageEmbed } = require("discord.js");
 
 class StatsCommand extends Command {
 	constructor() {
@@ -10,6 +10,10 @@ class StatsCommand extends Command {
 		});
 	}
 
+	/**
+	 * 
+	 * @param {import("discord.js").Message} message 
+	 */
 	async exec(message) {
 		const [{ presentsFound }] = await this.client.knex("foundPresents")
 			.countDistinct("presentCode", { as: "presentsFound" });
@@ -25,13 +29,13 @@ class StatsCommand extends Command {
 
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 
-		const uStatsEmbed = new Discord.MessageEmbed()
+		const uStatsEmbed = new MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("User Statistics")
 			.addField("Presents:", "Total level 1 presents found: " + userPresents[0] + "\nTotal level 2 presents found: " + userPresents[1] + "\nTotal level 3 presents found: " + userPresents[2] + "\nTotal level 4 presents found: " + userPresents[3] + "\nTotal level 5 presents found: " + userPresents[4]);
 
 
-		const gstatsEmbed = new Discord.MessageEmbed()
+		const gstatsEmbed = new MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("Global Statistics")
 			.addField("Presents:", "Total presents found: " + presentsFound)

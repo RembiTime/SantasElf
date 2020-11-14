@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 
 class AppealAcceptCommand extends Command {
 	constructor() {
@@ -13,6 +13,10 @@ class AppealAcceptCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 * @param {{ guild: import("discord.js").Guild }} args
+	 */
 	async exec(message, { guild }) {
 		// TODO: ensure guild has actually appealed?
 

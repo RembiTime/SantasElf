@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 const items = require("../items");
 
 class SellCommand extends Command {
@@ -13,6 +13,10 @@ class SellCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 * @param {{ itemName: string }} args
+	 */
 	async exec(message, {itemName}) {
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
 		if (item && "worth" in item) {

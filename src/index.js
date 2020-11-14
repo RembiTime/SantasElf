@@ -1,7 +1,7 @@
 require("dotenv").config();
 
 const { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler: { readdirRecursive } } = require("discord-akairo");
-const { DiscordAPIError, MessageEmbed } = require("discord.js");
+const { DiscordAPIError, MessageEmbed, TextChannel } = require("discord.js");
 
 const path = require("path");
 const knex = require("knex");
@@ -66,8 +66,10 @@ class SantasElf extends AkairoClient {
 		});
 
 		this.minigamePlayers = new Set();
-		/** @type {import("discord.js").TextChannel} */
+		/** @type {TextChannel} */
 		this.guildDisplayChannel = null;
+		/** @type {TextChannel} */
+		this.partnerDisplayChannel = null;
 		this.usersGuessing = new Set();
 	}
 
@@ -192,14 +194,28 @@ class SantasElf extends AkairoClient {
 	}
 
 	/**
-	 * @returns {Promise<import("discord.js").TextChannel?>} The server list channel.
+	 * @returns {Promise<TextChannel?>} The server list channel.
 	 */
 	async getGuildDisplayChannel() {
 		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
-			/** @type {*} */
 			const fetchedChannel = await this.channels.fetch("777012969842278402");
+			if (!(fetchedChannel instanceof TextChannel)) throw new Error("The guild display channel is of the wrong type!");
 			return this.guildDisplayChannel ?? (this.guildDisplayChannel = fetchedChannel);
+		} catch (err) {
+			if (err instanceof DiscordAPIError && err.code === 10003) return null;
+			else throw err;
+		}
+	}
+	/**
+	 * @returns {Promise<TextChannel?>} The partnered server list channel.
+	 */
+	async getPartnerDisplayChannel() {
+		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
+		try {
+			const fetchedChannel = await this.channels.fetch("777263455375720478");
+			if (!(fetchedChannel instanceof TextChannel)) throw new Error("The guild display channel is of the wrong type!");
+			return this.partnerDisplayChannel ?? (this.partnerDisplayChannel = fetchedChannel);
 		} catch (err) {
 			if (err instanceof DiscordAPIError && err.code === 10003) return null;
 			else throw err;
@@ -210,10 +226,11 @@ class SantasElf extends AkairoClient {
 	 * @param {import("discord.js").Guild} guild 
 	 * @returns {Promise<string?>} A generated invite.
 	 */
-	async getOrCreateEmbed(guild) {
+	async getOrCreateInvite(guild) {
 		const inviteURL = await this.database.getInviteURLIfExistsForGuild(guild);
 		if (inviteURL) return inviteURL;
-		const invite = await guild.channels.cache.first()?.createInvite?.({ maxAge: 0, unique: true });
+		const invite = await guild.channels.cache.first()?.createInvite({ maxAge: 0, unique: true });
+		if (!invite) return "Not Found";
 		await this.database.setInviteURLOfGuild(guild, invite.url);
 		return invite.url;
 	}
@@ -223,8 +240,10 @@ class SantasElf extends AkairoClient {
 	 * @returns {Promise<MessageEmbed>} A generated message embed.
 	 */
 	async generateDisplayEmbedForGuild(guild) {
+		const invite = await this.getOrCreateInvite(guild);
 		const embed = new MessageEmbed()
 			.setTitle(guild.name)
+			.setDescription(`[Join!](${invite})`)
 			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
 			.addField("");
 		return embed;
@@ -237,9 +256,9 @@ class SantasElf extends AkairoClient {
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
 		for (const guildData of await this.database.getAllGuilds()) {
 			const displayMessageID = guildData.displayMessageId;
-			const displayMessage = await (() => {
+			const displayMessage = await (async() => {
 				try {
-					return displayMessageID && displayChannel.messages.fetch(displayMessageID);
+					return displayMessageID && await displayChannel.messages.fetch(displayMessageID);
 				} catch (err) {
 					if (err instanceof DiscordAPIError && err.code === 10008) return null;
 					throw err;
@@ -256,7 +275,10 @@ class SantasElf extends AkairoClient {
 			})();
 			if (guild === null) continue;
 			if (!displayMessage) {
-				const msg = await displayChannel.send();
+				const msg = await displayChannel.send(await this.generateDisplayEmbedForGuild(guild));
+				await this.knex.insert({ 
+					displayMessageId: msg.id
+				}).into("guildData").where({ guildID: guild.id });
 			}
 		}
 	}

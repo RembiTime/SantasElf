@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 const { Util: { escapeMarkdown } } = require("discord.js");
 
 class AddPartnerCommand extends Command {
@@ -10,6 +10,9 @@ class AddPartnerCommand extends Command {
 		});
 	}
 
+	/**
+	 * @param {import("discord.js").Message} message 
+	 */
 	async exec(message) {
 		// This could double-send the success message if run twice in quick succession,
 		// but the race condition is harmless

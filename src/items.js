@@ -5,16 +5,18 @@
  * @typedef {object} ItemEntry
  * @property {string} id
  * @property {number} rank
- * @property {displayName} displayName
- * @property {displayName} response
+ * @property {number} [worth]
+ * @property {string} displayName
+ * @property {string} messageName
+ * @property {string} response
  * @property {boolean} defaultBehavior
  * @property {OnFindType} onFind
  */
 
 /**
   * @callback OnFindType
-  * @param client
-  * @param message
+  * @param {import(".").SantasElf} client
+  * @param {import("discord.js").Message} message
   * @returns {Promise<void>}
   */
 
@@ -271,8 +273,12 @@ module.exports = [
 			const filter = response => response.content === prompt;
 
 			message.channel.send(prompt);
-			const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] }).catch(() => message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away"));
-			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
+			try {
+				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
+				await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
+			} catch {
+				return message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
+			}
 		}
 	},
 	{
