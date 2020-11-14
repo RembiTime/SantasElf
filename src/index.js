@@ -197,7 +197,9 @@ class SantasElf extends AkairoClient {
 	async getGuildDisplayChannel() {
 		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
-			return this.guildDisplayChannel ??= await this.channels.fetch("777012969842278402");
+			/** @type {*} */
+			const fetchedChannel = await this.channels.fetch("777012969842278402");
+			return this.guildDisplayChannel ?? (this.guildDisplayChannel = fetchedChannel);
 		} catch (err) {
 			if (err instanceof DiscordAPIError && err.code === 10003) return null;
 			else throw err;
