@@ -7,6 +7,7 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 12
 	},
+	ignorePatterns: ["*.d.ts"],
 	rules: {
 		"indent": [
 			"error",

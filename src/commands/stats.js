@@ -20,8 +20,8 @@ class StatsCommand extends Command {
 		const [{ usersWithPresents }] = await this.client.knex("foundPresents")
 			.countDistinct("userID", { as: "usersWithPresents" });
 
-			const userPresents = (await Promise.all([1, 2, 3, 4, 5].map(x =>
-				await this.client.knex("userData").sum(`lvl${x}Total`, { as: `userLvl${x}Presents` }).where({userID: message.author.id})))).map((x,i) => x[`userLvl${i+1}Presents`]);
+		const userPresents = (await Promise.all([1, 2, 3, 4, 5].map(async x =>
+			await this.client.knex("userData").sum(`lvl${x}Total`, { as: `userLvl${x}Presents` }).where({userID: message.author.id})))).map((x,i) => x[`userLvl${i+1}Presents`]);
 
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 
