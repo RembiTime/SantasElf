@@ -45,24 +45,27 @@ class SantasElf extends AkairoClient {
 		});
 
 		this.knex = knex({
-			client: "mysql2",
-			connection: {
-				host: process.env.MYSQL_HOST,
-				port: parseInt(process.env.MYSQL_PORT),
-				user: process.env.MYSQL_USERNAME,
-				password: process.env.MYSQL_PASSWORD,
-				database: process.env.MYSQL_DATABASE,
-				typeCast: (field, next) => {
-					if (field.type == "TINY" && field.length === 1) {
-						const value = field.string();
-						return value ? (value === "1") : null;
-					}
-					return next();
-				}
-			}
+            client: "mysql2",
+            connection: {
+                host: process.env.MYSQL_HOST,
+                port: parseInt(process.env.MYSQL_PORT),
+                user: process.env.MYSQL_USERNAME,
+                password: process.env.MYSQL_PASSWORD,
+                database: process.env.MYSQL_DATABASE,
+                typeCast: (field, next) => {
+                    if (field.type == "TINY" && field.length === 1) {
+                        const value = field.string();
+                        return value ? (value === "1") : null;
+                    }
+                    return next();
+                },
+                                supportBigNumbers: true,
+                                bigNumberStrings: true
+            }
 		});
 
 		this.minigamePlayers = new Set();
+		this.usersGuessing = new Set();
 	}
 
 	async login(token) {

@@ -37,10 +37,7 @@ class HideCommand extends Command {
 		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
 		const checkIfPartner = await this.client.database.checkIfPartner({ guildID: message.guild.id });
 		if (checkNewGuild === null) {
-			await this.client.database.addNewGuild({
-				guildID: message.guild.id,
-				trueFalse: false
-			});
+			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
 		if (present !== null || queuePresent !== null) {
 			message.channel.send("That code already exists!");
@@ -52,7 +49,7 @@ class HideCommand extends Command {
 				message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
 				return;
 			}
-			if (presentAmount.count > 1) {
+			if (presentAmount.count > 3) {
 				message.channel.send("Your server has reached the maximum amount of presents in your server. If you would like more, please apply to be a partner.");
 				return;
 			}

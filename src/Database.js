@@ -214,11 +214,11 @@ class Database {
 			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
-	async addNewGuild({ guildID, trueFalse }) {
+	async addNewGuild({ guildID }) {
 		await this.pool.execute(`
 			INSERT INTO guildData SET
 				guildID = ?,
-				isPartner = ?,
+				isPartner = FALSE,
 				appealed3Deny = FALSE
 			`, [guildID, trueFalse]);
 	}
