@@ -63,6 +63,9 @@ class StaffApprovalListener extends Listener {
 				.setColor("#8DFF5A")
 				.setFooter("Approved by " + user.username + "#" + user.discriminator);
 			approvalMessage.edit(editedEmbed);
+			const publicLogs = await this.client.channels.cache.get("777276173508018216");
+			const guildName = await this.client.guilds.cache.get(checkStaffApproval.guildID);
+			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!")
 		}
 		if (reaction.emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
