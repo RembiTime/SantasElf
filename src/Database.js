@@ -261,13 +261,10 @@ class Database {
 			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
 	}
 
-	async addNewGuild({ guildID, trueFalse }) {
-		await this.pool.execute(`
-			INSERT INTO guildData SET
-				guildID = ?,
-				isPartner = ?,
-				appealed3Deny = FALSE
-			`, [guildID, trueFalse]);
+	async addNewGuild({ guildID }) {
+		await this.client.knex.insert({ 
+			guildID
+		}).into("guildData");
 	}
 
 	async notClaimed({ messageID }) {
@@ -318,22 +315,25 @@ class Database {
 	}
 
 	async getGlobalUsersWithPresents() {
-		const [result] = await this.client.knex.countDistinct("userID").from("foundPresents");
-		return result.userID;
+		const [{count: result}] = await this.client.knex.countDistinct("userID").from("foundPresents");
+		return result;
 	}
 
 	async getGlobalGuildsWithPresents() {
-		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT guildID) FROM presents");
+		const [{count: result}] = await this.client.knex.countDistinct("guildID").from("presents");
 		return result;
 	}
 
 	async getGlobalPresentsFound() {
-		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT presentCode) FROM foundPresents");
+		const [{count: result}] = await this.client.knex.countDistinct("presentCode").from("foundPresents");
 		return result;
 	}
 
 	async checkGuildDeniedAmount({ guildID }) {
-		const [[result]] = await this.pool.execute("SELECT COUNT(*) AS count FROM staffApproval WHERE status = 'DENIED' AND guildID = ?", [guildID]);
+		const [{count: result}] = await this.client.knex.count("* as count").from("staffApproval").where({
+			status: "DENIED",
+			guildID
+		});
 		return result;
 	}
 
@@ -449,8 +449,8 @@ class Database {
 	async checkBigTriangle({ userID, message }) {
 		// this doesn't work yet
 		if (process.env.TOKEN) { return false; }
-
-		const { result } = await this.pool.execute(`
+		/** @type {*} */
+		const [result] = /** @type {HTMLElement} */ await this.pool.execute(`
 			START TRANSACTION;
 
 			SELECT (mysteriousPartAmt, fractalAmt, spannerAmt, slimeAmt, dragonAmt)
@@ -475,7 +475,7 @@ class Database {
 			COMMIT;
 		`, [userID]);
 
-		if (result) {
+		if (result.result) {
 			await message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
 		}
 	}

@@ -1,36 +1,45 @@
 const { Command } = require("discord-akairo");
+const { showPages } = require("../util/discord");
 const Discord = require("discord.js");
 
 class StatsCommand extends Command {
 	constructor() {
 		super("stats", {
-			aliases: ["stats"],
-			description: "Checks your statistics"
+			aliases: ["stats", "statistics"],
+			description: "Checks the statistics"
 		});
 	}
 
-	//This will be seperate from the inventory page with statistics instead of how many presents
-
 	async exec(message) {
-		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
+		const [{ presentsFound }] = await this.client.knex("foundPresents")
+			.countDistinct("presentCode", { as: "presentsFound" });
 
-		if (userData === null) {
-			await this.client.database.addNewUser({
-				userID: message.author.id,
-				userName: message.member.user.tag
-			});
-		}
+		const [{ wrongGuesses }] = await this.client.knex("userData")
+			.sum({ wrongGuesses: "wrongGuesses"} );
+
+		const [{ usersWithPresents }] = await this.client.knex("foundPresents")
+			.countDistinct("userID", { as: "usersWithPresents" });
+
+		const userPresents = (await Promise.all([1, 2, 3, 4, 5].map(async x =>
+			await this.client.knex("userData").sum(`lvl${x}Total`, { as: `userLvl${x}Presents` }).where({userID: message.author.id})))).map((x,i) => x[`userLvl${i+1}Presents`]);
+
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 
-		const statsEmbed = new Discord.MessageEmbed()
+		const uStatsEmbed = new Discord.MessageEmbed()
 			.setColor(hexColor)
-			.setTitle("User Stats")
-			.setFooter("Page 1/2")
-			.setAuthor(message.member.user.tag, message.member.user.avatarURL(), message.member.user.avatarURL())
-			.addField("Presents:", "You've found " + userData.totalPresents + " presents!")
-			.addField("Stats:", "You've guessed incorrectly " + userData.wrongGuesses + " times!\nYou've found the present first " + userData.firstFinder + " times!");
+			.setTitle("User Statistics")
+			.addField("Presents:", "Total level 1 presents found: " + userPresents[0] + "\nTotal level 2 presents found: " + userPresents[1] + "\nTotal level 3 presents found: " + userPresents[2] + "\nTotal level 4 presents found: " + userPresents[3] + "\nTotal level 5 presents found: " + userPresents[4]);
 
-		await message.channel.send(statsEmbed);
+
+		const gstatsEmbed = new Discord.MessageEmbed()
+			.setColor(hexColor)
+			.setTitle("Global Statistics")
+			.addField("Presents:", "Total presents found: " + presentsFound)
+			.addField("Stats:", "Wrong guesses: " + wrongGuesses + "\nUsers playing: " + usersWithPresents);
+
+		const pages = [uStatsEmbed, gstatsEmbed];
+
+		showPages(pages, message.channel, message.author, 120000);
 	}
 }
 

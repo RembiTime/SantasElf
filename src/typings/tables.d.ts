@@ -13,3 +13,8 @@ declare module "mysql2" {
 		length: number;
 	}
 }
+declare module "discord-akairo" {
+	export class Command extends AkarioModule {
+		client: string;
+	}
+}

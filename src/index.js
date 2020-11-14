@@ -59,13 +59,16 @@ class SantasElf extends AkairoClient {
 						return value ? (value === "1") : null;
 					}
 					return next();
-				}
+				},
+				supportBigNumbers: true,
+				bigNumberStrings: true
 			}
 		});
 
 		this.minigamePlayers = new Set();
 		/** @type {import("discord.js").TextChannel} */
 		this.guildDisplayChannel = null;
+		this.usersGuessing = new Set();
 	}
 
 	async login(token) {
