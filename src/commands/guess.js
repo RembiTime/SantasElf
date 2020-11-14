@@ -147,10 +147,12 @@ class GuessCommand extends Command {
 			} else if (presentExpired) {
 				await dmChannel.send("This code has expired!");
 			} else if (firstFinder && !tempPresent) {
+				const publicLogs = await this.client.channels.cache.get("777276173508018216");
 				let {guild} = message;
 				publicLogs.send("**" + message.author.tag + "** was the first one to find a level " + present.presentLevel + " present in **" + guild.name + "**")
 				await dmChannel.send(`You were the first one to find this present! It had a difficulty of \`${present.presentLevel}\`.`);
 			} else {
+				const publicLogs = await this.client.channels.cache.get("777276173508018216");
 				let {guild} = message;
 				publicLogs.send("**" + message.author.tag + "** just found a level " + present.presentLevel + " present in **" + guild.name + "**")
 				await dmChannel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
