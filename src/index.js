@@ -1,6 +1,7 @@
 require("dotenv").config();
 
 const { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler: { readdirRecursive } } = require("discord-akairo");
+const { DiscordAPIError, MessageEmbed } = require("discord.js");
 
 const path = require("path");
 const knex = require("knex");
@@ -63,6 +64,8 @@ class SantasElf extends AkairoClient {
 		});
 
 		this.minigamePlayers = new Set();
+		/** @type {import("discord.js").TextChannel} */
+		this.guildDisplayChannel = null;
 	}
 
 	async login(token) {
@@ -173,16 +176,89 @@ class SantasElf extends AkairoClient {
 		if (!await this.knex.schema.hasTable("guildData")) {
 			await this.knex.schema.createTable("guildData", table => {
 				table.bigInteger("guildID").unsigned().primary();
+				table.bigInteger("displayMessageId").unsigned();
 				table.boolean("isPartner").notNullable().defaultTo(false);
 				table.boolean("appealed3Deny").notNullable().defaultTo(false);
+				table.string("inviteURL");
 			});
 		}
 
 		await Promise.all(items.map(item =>
-			this.knex("itemsConfig").insert({ name: item.id, rank: item.rank }).onConflict().ignore()
+			this.knex("itemsConfig").insert({ name: item.id, rank: item.rank }).onConflict("name").ignore()
 		));
 	}
-}
 
+	/**
+	 * @returns {Promise<import("discord.js").TextChannel?>} The server list channel.
+	 */
+	async getGuildDisplayChannel() {
+		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
+		try {
+			return this.guildDisplayChannel ??= await this.channels.fetch("777012969842278402");
+		} catch (err) {
+			if (err instanceof DiscordAPIError && err.code === 10003) return null;
+			else throw err;
+		}
+	}
+	/**
+	 * 
+	 * @param {import("discord.js").Guild} guild 
+	 * @returns {Promise<string?>} A generated invite.
+	 */
+	async getOrCreateEmbed(guild) {
+		const inviteURL = await this.database.getInviteURLIfExistsForGuild(guild);
+		if (inviteURL) return inviteURL;
+		const invite = await guild.channels.cache.first()?.createInvite?.({ maxAge: 0, unique: true });
+		await this.database.setInviteURLOfGuild(guild, invite.url);
+		return invite.url;
+	}
+	/**
+	 * 
+	 * @param {import("discord.js").Guild} guild 
+	 * @returns {Promise<MessageEmbed>} A generated message embed.
+	 */
+	async generateDisplayEmbedForGuild(guild) {
+		const embed = new MessageEmbed()
+			.setTitle(guild.name)
+			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
+			.addField("");
+		return embed;
+	}
+	/**
+	 * @returns {Promise<void>}
+	 */
+	async setupGuildDisplayMessages() {
+		const displayChannel = await this.getGuildDisplayChannel();
+		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
+		for (const guildData of await this.database.getAllGuilds()) {
+			const displayMessageID = guildData.displayMessageId;
+			const displayMessage = await (() => {
+				try {
+					return displayMessageID && displayChannel.messages.fetch(displayMessageID);
+				} catch (err) {
+					if (err instanceof DiscordAPIError && err.code === 10008) return null;
+					throw err;
+				}
+			})();
+			const { guildId: guildID } = guildData;
+			const guild = await (() => {
+				try {
+					return this.guilds.fetch(guildID);
+				} catch (err) {
+					if (err instanceof DiscordAPIError && err.code === 10004) return null;
+					throw err;
+				}
+			})();
+			if (guild === null) continue;
+			if (!displayMessage) {
+				const msg = await displayChannel.send();
+			}
+		}
+	}
+}
 const client = new SantasElf();
 client.login(process.env.TOKEN);
+
+module.exports = {
+	SantasElf
+};

@@ -2,11 +2,18 @@ const mysql = require("mysql2");
 const items = require("./items");
 
 class Database {
+	/**
+	 * @param {import(".").SantasElf} client
+	 * @param {mysql.PoolOptions} options
+	 */
 	constructor(client, options) {
 		this.client = client;
 		this.pool = mysql.createPool({ ...options, supportBigNumbers: true, bigNumberStrings: true }).promise();
 	}
-
+	/**
+	 * 
+	 * @param {{ id: string } | { code: string }} options 
+	 */
 	async getPresent(options) {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
@@ -41,7 +48,7 @@ class Database {
 	async subtractUse({ code }) {
 		//if ("id" in options) {
 		await this.pool.execute("UPDATE presents SET usesLeft = usesLeft - 1 WHERE code = ?", [code]);
-		const checkZero = await this.pool.execute("SELECT usesLeft AS uses FROM presents WHERE code = ?;", [code]);
+		const [checkZero] = await this.client.knex.select("usesLeft as uses").from("presents").where({ code });
 		if (checkZero.uses === 0) {
 			await this.pool.execute("DELETE FROM presents WHERE code = ?", [code]);
 		}
@@ -58,6 +65,46 @@ class Database {
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
+	}
+	/**
+	 * @param {{guildID: string}} guildID
+	 * @returns {Promise<string?>}
+	 */
+	async getGuildDisplayMessageID({ guildID }) {
+		const [results] = await this.pool.execute("SELECT displayMessageId FROM guildData WHERE guildID = ?", [guildID]);
+		return results[0]?.displayMessageId ?? null;
+	}
+
+	/** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
+
+	/**
+	 * @returns {Promise<GuildDataRow[]>} An array of guildData entries.
+	 */
+	async getAllGuilds() {
+		const [results] = await this.client.knex.select("*").from("guildData");
+		return results;
+	}
+
+	/**
+	 * @param {import("discord.js").Guild} guild
+	 * @returns {Promise<GuildDataRow["inviteURL"]?>}.
+	 */
+	async getInviteURLIfExistsForGuild(guild) {
+		/** @type {GuildDataRow[]} */
+		const results = await this.client.knex.select("inviteURL")
+			.from("guildData")
+			.where({ guildId: guild.id });
+		return results[0]?.inviteURL ?? null;
+	}
+	/**
+	 * @param {import("discord.js").Guild} guild
+	 * @param {string} inviteURL
+	 * @returns {Promise<void>}
+	 */
+	async setInviteURLOfGuild(guild, inviteURL) {
+		await this.client.knex("guildData")
+			.update({ inviteURL })
+			.where({ guildId: guild.id });
 	}
 
 	async checkStaffApprovalIDs(options) {
@@ -141,7 +188,7 @@ class Database {
 	}
 
 	async getAllItems({ userID }) {
-		const [results] = await this.pool.execute("SELECT * FROM items WHERE userID = ?", [userID]);
+		const [results] = await this.client.knex.select("*").from("items").where({ userID });
 		return results.map(({ name, amount, record }) => ({
 			item: items.find(e => e.id === name),
 			amount,
@@ -266,13 +313,13 @@ class Database {
 	}
 
 	async getGlobalWrongGuesses() {
-		const [[result]] = await this.pool.execute("SELECT SUM(wrongGuesses) FROM userData");
+		const [[result]] = await this.client.knex.sum("wrongGuesses").from("userData");
 		return result;
 	}
 
 	async getGlobalUsersWithPresents() {
-		const [[result]] = await this.pool.execute("SELECT COUNT(DISTINCT userID) FROM foundPresents");
-		return result;
+		const [result] = await this.client.knex.countDistinct("userID").from("foundPresents");
+		return result.userID;
 	}
 
 	async getGlobalGuildsWithPresents() {
