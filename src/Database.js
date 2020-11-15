@@ -153,7 +153,7 @@ class Database {
 	async userDataCheck({ userID }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("userData").where({ userID });
-		return results?.[0] ?? null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
