@@ -1,5 +1,5 @@
-const { Listener } = require("discord-akairo");
-const { MessageEmbed } = require("discord.js");
+const { Listener } = require("../Listener");
+const { MessageEmbed, TextChannel } = require("discord.js");
 
 class StaffApprovalListener extends Listener {
 	constructor() {
@@ -28,6 +28,7 @@ class StaffApprovalListener extends Listener {
 			return;
 		}
 		const staffQueue = this.client.channels.cache.get("766143817497313331");
+		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel.");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
 		if (reaction.emoji.name === "❗") {
@@ -64,15 +65,16 @@ class StaffApprovalListener extends Listener {
 				.setFooter("Approved by " + user.username + "#" + user.discriminator);
 			approvalMessage.edit(editedEmbed);
 			const publicLogs = await this.client.channels.cache.get("777276173508018216");
+			if (!(publicLogs instanceof TextChannel)) throw new Error("Public logs channel was not a text channel.");
 			const guildName = await this.client.guilds.cache.get(checkStaffApproval.guildID);
-			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!")
+			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!");
 		}
 		if (reaction.emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
 			const deniedCount = await this.client.database.checkGuildDeniedAmount({ guildID: checkStaffApproval.guildID });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			this.client.database.approvalStatusUpdate({ status: "DENIED", messageID: reaction.message.id });
-			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + deniedCount.count + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
+			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + deniedCount + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
 			const oldEmbed = approvalMessage.embeds[0];
 			const editedEmbed = new MessageEmbed(oldEmbed)
 				.setColor("#FF5A5A")

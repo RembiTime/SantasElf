@@ -1,5 +1,5 @@
-const { Listener } = require("discord-akairo");
-const { MessageEmbed } = require("discord.js");
+const { Listener } = require("../Listener");
+const { MessageEmbed, TextChannel } = require("discord.js");
 
 class StaffApprovalRemoveListener extends Listener {
 	constructor() {
@@ -22,6 +22,7 @@ class StaffApprovalRemoveListener extends Listener {
 		}
 
 		const staffQueue = this.client.channels.cache.get("766143817497313331");
+		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel.");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
 		if (reaction.emoji.name === "❗") {
