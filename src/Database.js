@@ -20,11 +20,11 @@ class Database {
 	async getPresent(options) {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
-			return results.length ? results[0] : null;
+			return results ?? null;
 		} else if ("code" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [options.code]);
-			return results.length ? results[0] : null;
+			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
@@ -33,7 +33,7 @@ class Database {
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -42,7 +42,7 @@ class Database {
 	async checkPresentUses({ code }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [code]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -67,7 +67,7 @@ class Database {
 	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -152,7 +152,7 @@ class Database {
 	async findIfDupe(options) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -178,7 +178,7 @@ class Database {
 	async itemCheck({userID, itemName}) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM items WHERE name = ? AND userID = ?", [itemName, userID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -187,7 +187,7 @@ class Database {
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -200,7 +200,7 @@ class Database {
 	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -215,7 +215,7 @@ class Database {
 	
 
 	async getAllItems({ userID }) {
-		const [results] = await this.client.knex.select("*").from("items").where({ userID });
+		const results = await this.client.knex.select("*").from("items").where({ userID });
 		return results.map(({ name, amount, record }) => ({
 			item: items.find(e => e.id === name),
 			amount,
@@ -593,6 +593,7 @@ class Database {
 			message.channel.send("You didn't answer in time! Please run the command again to try again.");
 			return;
 		}
+		await console.log(mentionMsg)
 		if (mentionMsg.mentions.users.size === 1) {
 			let kissedID = mentionMsg.mentions.users.first().id;
 			if (kissedID === message.author.id) {
