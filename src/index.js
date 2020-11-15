@@ -119,10 +119,11 @@ class SantasElf extends AkairoClient {
 
 		if (!await this.knex.schema.hasTable("achievements")) {
 			await this.knex.schema.createTable("achievements", table => {
-				table.string("name").notNullable();
+				table.string("id").notNullable();
 				table.bigInteger("userID").unsigned().notNullable();
+				table.integer("tier").unsigned().notNullable();
 
-				table.primary(["name", "userID"]);
+				table.primary(["id", "userID", "tier"]);
 			});
 		}
 
@@ -221,8 +222,8 @@ class SantasElf extends AkairoClient {
 		}
 	}
 	/**
-	 * 
-	 * @param {import("discord.js").Guild} guild 
+	 *
+	 * @param {import("discord.js").Guild} guild
 	 * @returns {Promise<string?>} A generated invite.
 	 */
 	async getOrCreateInvite(guild) {
@@ -234,8 +235,8 @@ class SantasElf extends AkairoClient {
 		return invite.url;
 	}
 	/**
-	 * 
-	 * @param {import("discord.js").Guild} guild 
+	 *
+	 * @param {import("discord.js").Guild} guild
 	 * @returns {Promise<MessageEmbed>} A generated message embed.
 	 */
 	async generateDisplayEmbedForGuild(guild) {
@@ -275,7 +276,7 @@ class SantasElf extends AkairoClient {
 			if (guild === null) continue;
 			if (!displayMessage) {
 				const msg = await displayChannel.send(await this.generateDisplayEmbedForGuild(guild));
-				await this.knex.insert({ 
+				await this.knex.insert({
 					displayMessageId: msg.id
 				}).into("guildData").where({ guildID: guild.id });
 			}
