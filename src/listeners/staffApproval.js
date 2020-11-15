@@ -3,9 +3,13 @@ const { MessageEmbed, TextChannel } = require("discord.js");
 
 class StaffApprovalListener extends Listener {
 	constructor() {
-		super("staff-approval", {
-			emitter: "client",
-			event: "messageReactionAdd"
+		super("guess", {
+			aliases: ["guess", "g"],
+			description: "Command to be used when you find a present",
+			args: [{
+				id: "code",
+				type: "string"
+			}]
 		});
 	}
 
