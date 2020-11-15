@@ -1,8 +1,14 @@
+export interface AchievementEntry {
+	id: string;
+	tiers: Array<{
+		displayName: string;
+		description: string;
+		prize: { type: "present", level: number } | { type: "candyCanes", amount: number };
+		// onFind?(client: SantasElf, message: Message): void | Promise<void>;
+	}>;
+}
 
-/**
- * @type {import("./achievements").AchievementEntry[]}
- */
-module.exports = [
+const achievements: Readonly<AchievementEntry[]> = [
 	{
 		id: "presentTotal",
 		// TODO
@@ -214,3 +220,5 @@ module.exports = [
 		}]
 	}
 ];
+
+export { achievements };

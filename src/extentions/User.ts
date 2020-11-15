@@ -1,9 +1,11 @@
-const { Structures, Collection } = require("discord.js");
+import { Structures, Collection } from "discord.js";
 
-const achievements = require("../achievements");
+import { achievements } from "../achievements";
 
 Structures.extend("User", OldUser =>
 	class User extends OldUser {
+		private _ensured = false;
+
 		async ensureDB() {
 			if (this._ensured) { return; }
 
@@ -17,13 +19,13 @@ Structures.extend("User", OldUser =>
 		/**
 		 * @returns {Promise<Array<{ achievement: import("../achievements").AchievementEntry, tiers: number[] }>>}
 		 */
-		async fetchAchievements() {
+		async fetchAchievements(): Promise<any> {
 			const achievementRows = await this.client.knex("achievements")
 				.select("id", "tier")
 				.where({ userID: this.id })
 				.orderBy("tier");
 
-			const achievementColl = new Collection();
+			const achievementColl = new Collection<string, number[]>();
 
 			for (const { id, tier } of achievementRows) {
 				if (achievementColl.has(id)) {
@@ -33,7 +35,7 @@ Structures.extend("User", OldUser =>
 				}
 			}
 
-			return achievementColl.map((id, tiers) => ({
+			return achievementColl.map((tiers, id) => ({
 				achievement: achievements.find(achievement => achievement.id === id),
 				tiers
 			}));

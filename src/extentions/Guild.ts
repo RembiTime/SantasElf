@@ -1,7 +1,9 @@
-const { Structures } = require("discord.js");
+import { Structures } from "discord.js";
 
 Structures.extend("Guild", OldGuild =>
 	class Guild extends OldGuild {
+		private _ensured = false;
+
 		async ensureDB() {
 			if (this._ensured) { return; }
 

@@ -8,7 +8,7 @@ import path from "path";
 import knex from "knex";
 
 import items = require("./items");
-import Database from "./Database";
+import Database = require("./Database");
 
 // Load extentions
 AkairoHandler.readdirRecursive(path.join(__dirname, "extentions"))
