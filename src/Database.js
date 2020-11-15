@@ -1,6 +1,6 @@
 const mysql = require("mysql2");
 const items = require("./items");
-
+const util = require("util");
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
 
@@ -153,7 +153,7 @@ class Database {
 	async userDataCheck({ userID }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("userData").where({ userID });
-		return results[0] ?? null;
+		return results?.[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -181,7 +181,11 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
+	/**
+	 * @deprecated
+	 * @param {{ guildID: string }} guildID 
+	 * @returns {Promise<GuildDataRow?>}
+	 */
 	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
@@ -190,6 +194,14 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
+	/**
+	 * @param {string} guildID 
+	 * @returns {GuildDataRow?}
+	 */
+	getGuildDataFromId(guildID) {
+		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0]?.[0] ?? null;
+	}
+	
 
 	async getAllItems({ userID }) {
 		const [results] = await this.client.knex.select("*").from("items").where({ userID });
@@ -738,3 +750,5 @@ class Database {
 }
 
 module.exports = Database;
+
+util.deprecate(Database.prototype.findIfGuildExists, "Deprecated, use getGuildDataById");

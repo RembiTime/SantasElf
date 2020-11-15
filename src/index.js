@@ -252,34 +252,40 @@ class SantasElf extends AkairoClient {
 	 * @returns {Promise<void>}
 	 */
 	async setupGuildDisplayMessages() {
+		for (const guildData of await this.database.getAllGuilds()) {
+			await this.updateDisplayForGuild(guildData.guildId);
+		}
+	}
+	async updateDisplayForGuild(guildID) {
 		const displayChannel = await this.getGuildDisplayChannel();
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
-		for (const guildData of await this.database.getAllGuilds()) {
-			const displayMessageID = guildData.displayMessageId;
-			const displayMessage = await (async() => {
-				try {
-					return displayMessageID && await displayChannel.messages.fetch(displayMessageID);
-				} catch (err) {
-					if (err instanceof DiscordAPIError && err.code === 10008) return null;
-					throw err;
-				}
-			})();
-			const { guildId: guildID } = guildData;
-			const guild = await (() => {
-				try {
-					return this.guilds.fetch(guildID);
-				} catch (err) {
-					if (err instanceof DiscordAPIError && err.code === 10004) return null;
-					throw err;
-				}
-			})();
-			if (guild === null) continue;
-			if (!displayMessage) {
-				const msg = await displayChannel.send(await this.generateDisplayEmbedForGuild(guild));
-				await this.knex.insert({
-					displayMessageId: msg.id
-				}).into("guildData").where({ guildID: guild.id });
+		const partnerChannel = await this.getPartnerDisplayChannel();
+		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
+		const guildData = await this.database.findIfGuildExists({ guildID });
+		const displayMessageID = guildData.displayMessageId;
+		const channel = guildData.isPartner ? partnerChannel : displayChannel;
+		const displayMessage = await (async() => {
+			try {
+				return displayMessageID && await channel.messages.fetch(displayMessageID);
+			} catch (err) {
+				if (err instanceof DiscordAPIError && err.code === 10008) return null;
+				throw err;
 			}
+		})();
+		const guild = await (() => {
+			try {
+				return this.guilds.fetch(guildID);
+			} catch (err) {
+				if (err instanceof DiscordAPIError && err.code === 10004) return null;
+				throw err;
+			}
+		})();
+		if (guild === null) return;
+		if (!displayMessage) {
+			const msg = await channel.send(await this.generateDisplayEmbedForGuild(guild));
+			await this.knex("guildData").update({
+				displayMessageId: msg.id
+			}).where({ guildID: guild.id });
 		}
 	}
 }
