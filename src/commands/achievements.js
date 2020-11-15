@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 const { MessageEmbed } = require("discord.js");
 const { range } = require("../util/array");
 const { showPages } = require("../util/discord");

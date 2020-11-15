@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 const items = require("../items");
 
 class SellCommand extends Command {
@@ -14,7 +14,7 @@ class SellCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ itemName: string }} args
 	 */
 	async exec(message, {itemName}) {

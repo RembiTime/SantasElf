@@ -1,6 +1,20 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
-module.exports = [
+
+import { Message } from "discord.js";
+
+interface ItemEntry {
+	id: string;
+	rank: number;
+	worth?: number;
+	displayName: string;
+	messageName: string;
+	response: string;
+	defaultBehavior: boolean;
+	onFind(client: unknown, message: Message): void | Promise<void>;
+}
+
+const items = [
 	{
 		id: "coal",
 		rank: 0,
@@ -463,3 +477,6 @@ module.exports = [
 		response: "**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**"
 	}
 ];
+
+// TODO: don't use `as`
+export = items as ItemEntry[];

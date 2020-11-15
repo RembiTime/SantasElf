@@ -1,12 +1,6 @@
-/**
- * 
- * @param {import("discord.js").MessageEmbed[]} pages 
- * @param {import("discord.js").TextChannel} channel 
- * @param {import("discord.js").User} user 
- * @param {number} time 
- * @returns {Promise<import("discord.js").Message>}
- */
-const showPages = async (pages, channel, user, time = 30000) => {
+import { Message, MessageEmbed, TextChannel, User } from "discord.js";
+
+const showPages = async (pages: (MessageEmbed | string)[], channel: TextChannel, user: User, time = 30000): Promise<Message> => {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 
