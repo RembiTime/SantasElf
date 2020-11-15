@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 dotenv.config();
+
 import { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler } from "discord-akairo";
 import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
 
@@ -8,28 +9,43 @@ import knex from "knex";
 
 import items from "./items";
 import Database from "./Database";
+
 // Load extentions
 AkairoHandler.readdirRecursive(path.join(__dirname, "extentions"))
 	.filter(name => (/\.js$/).test(name))
 	.forEach(file => require(file));
 
-class SantasElf extends AkairoClient {
+interface Extension {
+	commandHandler: CommandHandler;
+	listenerHandler: ListenerHandler;
+	database: Database;
+	knex: knex;
 
-	public commandHandler: CommandHandler = new CommandHandler(this, {
+	minigamePlayers: Set<string>;
+	usersGuessing: Set<string>;
+	guildDisplayChannel: TextChannel;
+	partnerDisplayChannel: TextChannel;
+}
+
+class SantasElf extends AkairoClient implements Extension {
+	public commandHandler = new CommandHandler(this, {
 		directory: path.join(__dirname, "commands"),
 		prefix: ","
 	});
-	public listenerHandler: ListenerHandler = new ListenerHandler(this, {
+
+	public listenerHandler = new ListenerHandler(this, {
 		directory: path.join(__dirname, "listeners"),
 	});
-	public database: Database = new Database(this, {
+
+	public database = new Database(this, {
 		host: process.env.MYSQL_HOST,
 		port: parseInt(process.env.MYSQL_PORT),
 		user: process.env.MYSQL_USERNAME,
 		password: process.env.MYSQL_PASSWORD,
 		database: process.env.MYSQL_DATABASE
 	});
-	public knex: knex = knex({
+
+	public knex = knex({
 		client: "mysql2",
 		connection: {
 			host: process.env.MYSQL_HOST,
@@ -48,17 +64,16 @@ class SantasElf extends AkairoClient {
 			bigNumberStrings: true
 		}
 	});
+
 	public minigamePlayers: Set<string> = new Set();
+	public usersGuessing: Set<string> = new Set();
 	public guildDisplayChannel: TextChannel = null;
 	public partnerDisplayChannel: TextChannel = null;
-	public usersGuessing: Set<string> = new Set();
+
 	constructor() {
 		super(
-			{
-				ownerID: process.env.OWNER_IDS.split(",")
-			}, {
-				partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ]
-			}
+			{ ownerID: process.env.OWNER_IDS.split(",") },
+			{ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ] }
 		);
 
 		this.commandHandler.loadAll();
@@ -201,6 +216,7 @@ class SantasElf extends AkairoClient {
 			else throw err;
 		}
 	}
+
 	/**
 	 * @returns {Promise<TextChannel?>} The partnered server list channel.
 	 */
@@ -257,6 +273,7 @@ class SantasElf extends AkairoClient {
 			await this.updateDisplayForGuild(guildData.guildId);
 		}
 	}
+
 	async updateDisplayForGuild(guildID) {
 		const displayChannel = await this.getGuildDisplayChannel();
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
@@ -291,8 +308,14 @@ class SantasElf extends AkairoClient {
 		} else await displayMessage.edit(embed);
 	}
 }
+
+declare module "discord.js" {
+	interface Client extends Extension {}
+}
+
 const client = new SantasElf();
 client.login(process.env.TOKEN);
+
 
 module.exports = {
 	SantasElf
