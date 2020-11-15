@@ -8,10 +8,9 @@ class DeleteCommand extends Command {
 		});
 	}
 	async exec(message) {
-
-	if (!member.hasPermission('ADMINISTRATOR')) {
-		message.channel.send("You must have administrator permissions in this server to use this command!")
-	}
+		if (!message.member.hasPermission("ADMINISTRATOR")) {
+			await message.channel.send("You must have administrator permissions in this server to use this command!");
+		}
 
 	}
 }
