@@ -17,7 +17,7 @@ Structures.extend("Guild", OldGuild =>
 
 			const [guildData] = await this.client.knex("guildData")
 				.select("*")
-				.where("guildID", "=", this.id);
+				.where({ guildID : this.id });
 
 			return guildData;
 		}

@@ -1,5 +1,6 @@
-import { GuildDataRow } from "./tables";
-import type { AchievementEntry } from "../achievements"
+import type { GuildDataRow } from "./tables";
+import type { AchievementEntry } from "../achievements";
+import type Knex from "knex";
 
 declare module "discord.js" {
 	interface Base {
@@ -11,7 +12,10 @@ declare module "discord.js" {
 	}
 	interface User {
 		ensureDB(): Promise<void>;
-		fetchAchievements(): Promise<AchievementEntry>
+		fetchAchievements(): Promise<Array<{ achievement: import("../achievements").AchievementEntry, tiers: number[] }>>;
+	}
+	interface Client {
+		knex: Knex;
 	}
 }
 

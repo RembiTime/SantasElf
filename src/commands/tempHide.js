@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+const { Command } = require("../Command");
 
 class TempHideCommand extends Command {
 	constructor() {
@@ -42,7 +42,7 @@ class TempHideCommand extends Command {
 			hiddenByID: message.author.id,
 			usesLeft: uses
 		});
-		message.channel.send("Added the code " + code + " with " + uses + " uses!");
+		message.channel.send(`Added the code ${code} with ${uses} uses!`);
 	}
 }
 

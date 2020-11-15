@@ -1,26 +1,6 @@
-/**
- * @typedef {object} AchievementEntry
- * @property {string} id
- * @property {AchievementTier[]} tiers
- */
 
 /**
- * @typedef {object} AchievementTier
- * @property {string} displayName
- * @property {string} description
- * @property {{ type: "present", level: number } | { type: "candyCanes", amount: number }} prize
- * @property {OnFindType?} onFind
- */
-
-/**
- * @callback OnFindType
- * @param client
- * @param message
- * @returns {Promise<void>}
- */
-
-/**
- * @type {AchievementEntry[]}
+ * @type {import("./achievements").AchievementEntry[]}
  */
 module.exports = [
 	{

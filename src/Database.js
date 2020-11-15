@@ -1,8 +1,9 @@
 const mysql = require("mysql2");
 const items = require("./items");
-
+const util = require("util");
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
+/** @typedef {import("./typings/tables").StaffApprovalRow} StaffApprovalRow */
 
 class Database {
 	/**
@@ -20,20 +21,24 @@ class Database {
 	async getPresent(options) {
 		if ("id" in options) {
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
-			return results.length ? results[0] : null;
+			return results ?? null;
 		} else if ("code" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
 			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [options.code]);
-			return results.length ? results[0] : null;
+			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID 
+	 * @returns {Promise<GuildDataRow?>}
+	 * @deprecated
+	 */
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -42,7 +47,7 @@ class Database {
 	async checkPresentUses({ code }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [code]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -60,14 +65,25 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID 
+	 * @deprecated
+	 */
 	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
+	}
+	/**
+	 * @param {string} guildID 
+	 * @returns {Promise<boolean>}
+	 */
+	async isPartner(guildID) {
+		const data = await this.getGuildDataById(guildID);
+		return data.isPartner;
 	}
 	/**
 	 * @param {{guildID: string}} guildID
@@ -141,7 +157,7 @@ class Database {
 	async findIfDupe(options) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -153,7 +169,7 @@ class Database {
 	async userDataCheck({ userID }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("userData").where({ userID });
-		return results[0] ?? null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -167,32 +183,57 @@ class Database {
 	async itemCheck({userID, itemName}) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM items WHERE name = ? AND userID = ?", [itemName, userID]);
-		return results.length ? results[0] : null;
+		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
+	/**
+	 * @param {{ messageID: string }} messageID 
+	 * @returns {Promise<StaffApprovalRow>}
+	 * @deprecated
+	 */
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
-		return results.length ? results[0] : null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
 
+	/**
+	 * @param {string} messageID 
+	 * @returns {Promise<StaffApprovalRow>}
+	 */
+	async getStaffApprovalFromMessageID(messageID) {
+		const [result] = await this.client.knex.select("*").from("staffApproval").where({ messageID });
+		return result;
+	}
+	/**
+	 * @deprecated
+	 * @param {{ guildID: string }} guildID 
+	 * @returns {Promise<GuildDataRow?>}
+	 */
 	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results.length ? results[0] : null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
+	/**
+	 * @param {string} guildID 
+	 * @returns {Promise<GuildDataRow?>}
+	 */
+	getGuildDataById(guildID) {
+		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0]?.[0] ?? null;
+	}
+	
 
 	async getAllItems({ userID }) {
-		const [results] = await this.client.knex.select("*").from("items").where({ userID });
+		const results = await this.client.knex.select("*").from("items").where({ userID });
 		return results.map(({ name, amount, record }) => ({
 			item: items.find(e => e.id === name),
 			amount,
@@ -348,9 +389,31 @@ class Database {
 		});
 		return result;
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID
+	 * @deprecated
+	 */
 	async checkPresentAmount({ guildID }) {
 		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+			guildID
+		});
+		return result;
+	}
+	/**
+	 * @param {string} guildID
+	 */
+	async getPresentAmountForGuild(guildID) {
+		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+			guildID
+		});
+		return result;
+	}
+	/**
+	 * @param {string} guildID
+	 * @returns {Promise<import("./typings/tables").PresentRow[]>}
+	 */
+	async getPresentsForGuild(guildID) {
+		const [result] = await this.client.knex.select("*").from("presents").where({
 			guildID
 		});
 		return result;
@@ -548,6 +611,7 @@ class Database {
 			message.channel.send("You didn't answer in time! Please run the command again to try again.");
 			return;
 		}
+		await console.log(mentionMsg);
 		if (mentionMsg.mentions.users.size === 1) {
 			let kissedID = mentionMsg.mentions.users.first().id;
 			if (kissedID === message.author.id) {
@@ -738,3 +802,10 @@ class Database {
 }
 
 module.exports = Database;
+
+util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataById instead.");
+util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataById instead.");
+util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
+util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
+util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");
+

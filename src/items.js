@@ -1,28 +1,5 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
-
-/**
- * @typedef {object} ItemEntry
- * @property {string} id
- * @property {number} rank
- * @property {number} [worth]
- * @property {string} displayName
- * @property {string} messageName
- * @property {string} response
- * @property {boolean} defaultBehavior
- * @property {OnFindType} onFind
- */
-
-/**
-  * @callback OnFindType
-  * @param {import(".").SantasElf} client
-  * @param {import("discord.js").Message} message
-  * @returns {Promise<void>}
-  */
-
-/**
- * @type {ItemEntry[]}
- */
 module.exports = [
 	{
 		id: "coal",

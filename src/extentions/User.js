@@ -15,11 +15,11 @@ Structures.extend("User", OldUser =>
 		}
 
 		/**
-		 * @returns {Array<{ achivement: import("../achievements").AchievementEntry, tiers: number[] }>}
+		 * @returns {Promise<Array<{ achievement: import("../achievements").AchievementEntry, tiers: number[] }>>}
 		 */
 		async fetchAchievements() {
 			const achievementRows = await this.client.knex("achievements")
-				.fetch("id", "tier")
+				.select("id", "tier")
 				.where({ userID: this.id })
 				.orderBy("tier");
 

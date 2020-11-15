@@ -1,4 +1,10 @@
-const partition = function(valueOf, array) {
+/**
+ * @template T, U
+ * @param {(item: U) => T} valueOf 
+ * @param {U[]} array 
+ * @returns {U[][]}
+ */
+const partition = (valueOf, array) => {
 	const subsets = new Map();
 
 	for (const elem of array) {
