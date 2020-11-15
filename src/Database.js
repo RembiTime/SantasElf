@@ -60,7 +60,10 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID 
+	 * @deprecated
+	 */
 	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
@@ -68,6 +71,14 @@ class Database {
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
+	}
+	/**
+	 * @param {string} guildID 
+	 * @returns {Promise<boolean>}
+	 */
+	async isPartner(guildID) {
+		const data = await this.getGuildDataById(guildID);
+		return data.isPartner;
 	}
 	/**
 	 * @param {{guildID: string}} guildID
@@ -196,9 +207,9 @@ class Database {
 	}
 	/**
 	 * @param {string} guildID 
-	 * @returns {GuildDataRow?}
+	 * @returns {Promise<GuildDataRow?>}
 	 */
-	getGuildDataFromId(guildID) {
+	getGuildDataById(guildID) {
 		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0]?.[0] ?? null;
 	}
 	
@@ -360,9 +371,31 @@ class Database {
 		});
 		return result;
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID
+	 * @deprecated
+	 */
 	async checkPresentAmount({ guildID }) {
 		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+			guildID
+		});
+		return result;
+	}
+	/**
+	 * @param {string} guildID
+	 */
+	async getPresentAmountForGuild(guildID) {
+		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+			guildID
+		});
+		return result;
+	}
+	/**
+	 * @param {string} guildID
+	 * @returns {Promise<import("./typings/tables").PresentRow[]>}
+	 */
+	async getPresentsForGuild(guildID) {
+		const [result] = await this.client.knex.select("*").from("presents").where({
 			guildID
 		});
 		return result;
@@ -751,4 +784,7 @@ class Database {
 
 module.exports = Database;
 
-util.deprecate(Database.prototype.findIfGuildExists, "Deprecated, use getGuildDataById");
+util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataById instead.");
+util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
+util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
+

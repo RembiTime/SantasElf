@@ -241,11 +241,18 @@ class SantasElf extends AkairoClient {
 	 */
 	async generateDisplayEmbedForGuild(guild) {
 		const invite = await this.getOrCreateInvite(guild);
+		const presents = await this.database.getPresentsForGuild(guild.id);
+		/** @type [string, import("./typings/tables").PresentRow[]][] */
+		const groupedPresents = Object.entries(presents.reduce((l, c) => (l[c.presentLevel] ? l[c.presentLevel].push(c) : l[c.presentLevel] = [c], l), {}));
 		const embed = new MessageEmbed()
 			.setTitle(guild.name)
 			.setDescription(`[Join!](${invite})`)
 			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
-			.addField("");
+			.addField("Total Present Count", presents.length);
+		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, presents.length, true);
+		if (this.database.isPartner(guild.id)) {
+			embed.setColor(0x789fbf);
+		} else embed.setColor(0x949494);
 		return embed;
 	}
 	/**
@@ -261,12 +268,12 @@ class SantasElf extends AkairoClient {
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
-		const guildData = await this.database.findIfGuildExists({ guildID });
-		const displayMessageID = guildData.displayMessageId;
+		const guildData = await this.database.getGuildDataById(guildID);
+		const { displayMessageId } = guildData;
 		const channel = guildData.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
 			try {
-				return displayMessageID && await channel.messages.fetch(displayMessageID);
+				return displayMessageId && await channel.messages.fetch(displayMessageId);
 			} catch (err) {
 				if (err instanceof DiscordAPIError && err.code === 10008) return null;
 				throw err;
@@ -281,12 +288,13 @@ class SantasElf extends AkairoClient {
 			}
 		})();
 		if (guild === null) return;
+		const embed = await this.generateDisplayEmbedForGuild(guild);
 		if (!displayMessage) {
-			const msg = await channel.send(await this.generateDisplayEmbedForGuild(guild));
+			const msg = await channel.send(embed);
 			await this.knex("guildData").update({
 				displayMessageId: msg.id
 			}).where({ guildID: guild.id });
-		}
+		} else await displayMessage.edit(embed);
 	}
 }
 const client = new SantasElf();
