@@ -7,6 +7,16 @@ module.exports = {
 	parserOptions: {
 		ecmaVersion: 12
 	},
+	overrides: [
+		{
+			files: ["*.ts"],
+			parser: "@typescript-eslint/parser",
+			extends: [
+				// "@typescript-eslint/recommended",
+				// "@typescript-eslint/recommended-requiring-type-checking"
+			]
+		}
+	],
 	ignorePatterns: ["*.d.ts"],
 	rules: {
 		"indent": [

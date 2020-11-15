@@ -249,7 +249,7 @@ class SantasElf extends AkairoClient {
 			.setDescription(`[Join!](${invite})`)
 			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
 			.addField("Total Present Count", presents.length);
-		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, presents.length, true);
+		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, (presents as any /* TODO */).length, true);
 		if (this.database.isPartner(guild.id)) {
 			embed.setColor(0x789fbf);
 		} else embed.setColor(0x949494);
