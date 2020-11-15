@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+import { Command } from "discord-akairo";
 
 class DeleteCommand extends Command {
 	constructor() {
@@ -11,8 +11,7 @@ class DeleteCommand extends Command {
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			await message.channel.send("You must have administrator permissions in this server to use this command!");
 		}
-
 	}
 }
 
-module.exports = DeleteCommand;
+export = DeleteCommand;

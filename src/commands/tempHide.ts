@@ -1,4 +1,4 @@
-const { Command } = require("discord-akairo");
+import { Command } from "discord-akairo";
 
 class TempHideCommand extends Command {
 	constructor() {
@@ -46,4 +46,4 @@ class TempHideCommand extends Command {
 	}
 }
 
-module.exports = TempHideCommand;
+export = TempHideCommand;

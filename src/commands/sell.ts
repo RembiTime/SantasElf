@@ -1,5 +1,5 @@
-const { Command } = require("discord-akairo");
-const items = require("../items");
+import { Command } from "discord-akairo";
+import items = require("../items");
 
 class SellCommand extends Command {
 	constructor() {
@@ -13,10 +13,7 @@ class SellCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 * @param {{ itemName: string }} args
-	 */
+
 	async exec(message, {itemName}) {
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
 		if (item && "worth" in item) {
@@ -38,4 +35,4 @@ class SellCommand extends Command {
 	}
 }
 
-module.exports = SellCommand;
+export = SellCommand;

@@ -1,4 +1,4 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 
 const Akairo = require("discord-akairo");
 const Discord = require("discord.js");
@@ -74,4 +74,4 @@ class EvalCommand extends Command {
 	}
 }
 
-module.exports = EvalCommand;
+export = EvalCommand;

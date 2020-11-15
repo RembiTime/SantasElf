@@ -1,7 +1,7 @@
-const { Command } = require("discord-akairo");
-const { MessageEmbed } = require("discord.js");
-const { range } = require("../util/array");
-const { showPages } = require("../util/discord");
+import { Command } from "discord-akairo";
+import { MessageEmbed } from "discord.js";
+import { range } from "../util/array";
+import { showPages } from "../util/discord";
 
 class AchievementCommand extends Command {
 	constructor() {
@@ -10,9 +10,7 @@ class AchievementCommand extends Command {
 			description: "Checks your achievements"
 		});
 	}
-	/**
-	 * @param {import("discord.js").Message} message
-	 */
+
 	async exec(message) {
 		const pages = [];
 
@@ -44,4 +42,4 @@ class AchievementCommand extends Command {
 	}
 }
 
-module.exports = AchievementCommand;
+export = AchievementCommand;

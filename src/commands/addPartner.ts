@@ -1,5 +1,5 @@
-const { Command } = require("discord-akairo");
-const { Util: { escapeMarkdown } } = require("discord.js");
+import { Command } from "discord-akairo";
+import { Util } from "discord.js";
 
 class AddPartnerCommand extends Command {
 	constructor() {
@@ -10,9 +10,6 @@ class AddPartnerCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 */
 	async exec(message) {
 		// This could double-send the success message if run twice in quick succession,
 		// but the race condition is harmless
@@ -31,9 +28,9 @@ class AddPartnerCommand extends Command {
 				.update({ isPartner: true })
 				.where({ guildID: message.guild.id });
 
-			await message.channel.send(`**${escapeMarkdown(message.guild.name)}** is now a partner!`);
+			await message.channel.send(`**${Util.escapeMarkdown(message.guild.name)}** is now a partner!`);
 		}
 	}
 }
 
-module.exports = AddPartnerCommand;
+export = AddPartnerCommand;

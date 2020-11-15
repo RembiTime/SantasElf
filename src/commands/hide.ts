@@ -1,6 +1,5 @@
-const { Argument } = require("discord-akairo");
-const { Command } = require("discord-akairo");
-const { MessageEmbed, TextChannel, DMChannel } = require("discord.js");
+import { Argument, Command } from "discord-akairo";
+import { MessageEmbed, TextChannel, DMChannel } from "discord.js";
 
 class HideCommand extends Command {
 	constructor() {
@@ -26,10 +25,6 @@ class HideCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 * @param {{ code: string, level: number, description: string }} args
-	 */
 	async exec(message, { code, level, description }) {
 		const present = await this.client.database.getPresent({ code });
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
@@ -107,4 +102,4 @@ class HideCommand extends Command {
 	}
 }
 
-module.exports = HideCommand;
+export = HideCommand;

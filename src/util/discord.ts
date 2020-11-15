@@ -1,6 +1,6 @@
 import { Message, MessageEmbed, TextChannel, User } from "discord.js";
 
-const showPages = async (pages: (MessageEmbed | string)[], channel: TextChannel, user: User, time = 30000): Promise<Message> => {
+export const showPages = async (pages: (MessageEmbed | string)[], channel: TextChannel, user: User, time = 30000): Promise<Message> => {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 
@@ -48,5 +48,3 @@ const showPages = async (pages: (MessageEmbed | string)[], channel: TextChannel,
 
 	return message;
 };
-
-module.exports = { showPages };

@@ -1,4 +1,4 @@
-const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] => {
+export const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] => {
 	const subsets = new Map();
 
 	for (const elem of array) {
@@ -16,7 +16,7 @@ const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] => {
 /**
  * Inclusive on the min, exclusive on the max
  */
-const range = function(min: number, max: number): number[] {
+export const range = function(min: number, max: number): number[] {
 	const result = Array(max - min);
 
 	for (let i = 0; i < result.length; i++) {
@@ -25,5 +25,3 @@ const range = function(min: number, max: number): number[] {
 
 	return result;
 };
-
-module.exports = { partition, range };
