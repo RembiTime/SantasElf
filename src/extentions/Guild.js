@@ -4,9 +4,6 @@ Structures.extend("Guild", OldGuild =>
 	class Guild extends OldGuild {
 		async ensureDB() {
 			if (this._ensured) { return; }
-			
-			/** @type {import("..").SantasElf} */
-			this.client;
 
 			await this.client.knex("guildData")
 				.insert({ guildID: this.id })
@@ -15,7 +12,7 @@ Structures.extend("Guild", OldGuild =>
 			this._ensured = true;
 		}
 
-		async getData() {
+		async fetchData() {
 			await this.ensureDB();
 
 			const [guildData] = await this.client.knex("guildData")

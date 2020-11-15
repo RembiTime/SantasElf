@@ -14,7 +14,7 @@ class AppealAcceptCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ guild: import("discord.js").Guild }} args
 	 */
 	async exec(message, { guild }) {
@@ -25,7 +25,7 @@ class AppealAcceptCommand extends Command {
 			return;
 		}
 
-		const guildData = await guild.getData();
+		const guildData = await guild.fetchData();
 
 		if (guildData.appealed3Deny) {
 			await message.channel.send("This server has already appealed.");

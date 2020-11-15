@@ -1,4 +1,5 @@
 import { GuildDataRow } from "./tables";
+import type { AchievementEntry } from "../achievements"
 
 declare module "discord.js" {
 	interface Base {
@@ -6,10 +7,11 @@ declare module "discord.js" {
 	}
 	interface Guild {
 		ensureDB(): Promise<void>;
-		getData(): Promise<GuildDataRow>;
+		fetchData(): Promise<GuildDataRow>;
 	}
 	interface User {
 		ensureDB(): Promise<void>;
+		fetchAchievements(): Promise<AchievementEntry>
 	}
 }
 

@@ -1,149 +1,236 @@
 /**
  * @typedef {object} AchievementEntry
  * @property {string} id
- * @property {displayName} displayName
- * @property {displayName} description
- * @property {number} tiers
- * @property {OnFindType} onFind
+ * @property {AchievementTier[]} tiers
  */
 
 /**
-  * @callback OnFindType
-  * @param client
-  * @param message
-  * @returns {Promise<void>}
-  */
+ * @typedef {object} AchievementTier
+ * @property {string} displayName
+ * @property {string} description
+ * @property {{ type: "present", level: number } | { type: "candyCanes", amount: number }} prize
+ * @property {OnFindType?} onFind
+ */
+
+/**
+ * @callback OnFindType
+ * @param client
+ * @param message
+ * @returns {Promise<void>}
+ */
 
 /**
  * @type {AchievementEntry[]}
  */
-
 module.exports = [
 	{
 		id: "presentTotal",
-		displayName: "Christmas spirit",
-		prize: "lvl1Present",
-		tiers: 6, //TODO
-		description: "Find your first present!"
+		// TODO
+		tiers: [
+			{
+				displayName: "Christmas spirit",
+				description: "Find your first present!",
+				prize: { type: "present", level: 1 }
+			}
+		]
 	},
 	{
 		id: "uniquePresents",
-		displayName: "Christmas spirit",
-		prize: "lvl1Present",
-		tiers: 4, //TODO
-		description: "Find your first present!"
+		//TODO
+		tiers: [
+			{
+				displayName: "Christmas spirit",
+				description: "Find your first present!",
+				prize: { type: "present", level: 1 }
+			}
+		]
 	},
 	{
 		id: "1stCategory",
-		displayName: ["Down on your luck", "Ruler of rubbish", "Master of mediocrity", "PLACEHOLDER", "Lord of legendary", "Master of mythic", "Acculmulator of anomalies", "Diverse collector"],
-		prize: ["lvl1Present", "lvl1Present", "lvl1Present", "lvl1Present", "lvl1Present", "lvl1Present", "lvl1Present", "lvl3Present"],
-		tiers: 8,
-		description: ["Get a grinch/negative item", "Get a snowflake/common item", "Get a snowman/uncommon item", "Get an elf/rare item", "Get a reindeer/legendary item", "Get a Santa/mythic item", "Get a Rudolf/unique item", "Get at least one item in each rarity"]
+		tiers: [
+			{
+				displayName: "Down on your luck",
+				description: "Get a grinch/negative item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Ruler of rubbish",
+				description: "Get a snowflake/common item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Master of mediocrity",
+				description: "Get a snowman/uncommon item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "PLACEHOLDER",
+				description: "Get an elf/rare item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Lord of legendary",
+				description: "Get a reindeer/legendary item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Master of mythic",
+				description: "Get a Santa/mythic item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Acculmulator of anomalies",
+				description: "Get a Rudolf/unique item",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Diverse collector",
+				description: "Get at least one item in each rarity",
+				prize: { type: "present", level: 3 }
+			}
+		]
 	},
 	{
-		keyID: "serverPresents",
-		id: ["serverPresents1", "serverPresents2", "serverPresents3", "serverPresents4"],
-		displayName: ["Adventurer", "Explorer", "Tourist", "Extrovert"],
-		prize: ["lvl1Present", "lvl2Present", "lvl3Present", "lvl4Present"],
-		tiers: 4,
-		description: ["Find presents in 5 different servers", "Find presents in 10 different servers", "Find presents in 20 different servers", "Find presents in 50 different servers"]
+		id: "serverPresents",
+		tiers: [
+			{
+				displayName: "Adventurer",
+				description: "Find presents in 5 different servers",
+				prize: { type: "present", level: 1 }
+			},
+			{
+				displayName: "Explorer",
+				description: "Find presents in 10 different servers",
+				prize: { type: "present", level: 2 }
+			},
+			{
+				displayName: "Tourist",
+				description: "Find presents in 20 different servers",
+				prize: { type: "present", level: 3 }
+			},
+			{
+				displayName: "Extrovert",
+				description: "Find presents in 50 different servers",
+				prize: { type: "present", level: 4 }
+			}
+		]
 	},
 	{
 		id: "minigamesPlayed",
-		displayName: "Let the games begin!",
-		prize: "lvl1Present",
-		tiers: 4, //TODO
-		description: "Play your first minigame"
+		//TODO
+		tiers: [
+			{
+				displayName: "Let the games begin!",
+				description: "Play your first minigame",
+				prize: { type: "present", level: 1 }
+			}
+		]
 	},
 	{
 		id: "everyMinigame",
-		displayName: "True gamer at heart",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Play every minigame"
+		tiers: [{
+			displayName: "True gamer at heart",
+			description: "Play every minigame",
+			prize: { type: "present", level: 5 }
+		}]
 	},
 	{
 		id: "sellItems",
-		displayName: "Salesman",
-		prize: "lvl1Present",
-		tiers: 6, //TODO
-		description: "Sell your first item"
+		//TODO
+		tiers: [
+			{
+				displayName: "Salesman",
+				description: "Sell your first item",
+				prize: { type: "present", level: 1 }
+			}
+		]
 	},
 	{
 		id: "sellAll",
-		displayName: "Business man doing business",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Sell every item"
+		tiers: [{
+			displayName: "Business man doing business",
+			description: "Sell every item",
+			prize: { type: "present", level: 5 },
+		}]
 	},
 	{
 		id: "findGoose",
-		displayName: "HONK!",
-		prize: "20cc",
-		tiers: 1,
-		description: "Find a devilish goose"
+		tiers: [{
+			displayName: "HONK!",
+			description: "Find a devilish goose",
+			prize: { type: "candyCanes", amount: 20 }
+		}]
 	},
 	{
 		id: "findClothing",
-		displayName: "Covered head to toe",
-		prize: "lvl2Present",
-		tiers: 1,
-		description: "Find all pieces of clothing"
+		tiers: [{
+			displayName: "Covered head to toe",
+			description: "Find all pieces of clothing",
+			prize: { type: "present", level: 2 },
+		}]
 	},
 	{
 		id: "findFootballs",
-		displayName: "Yay! Sportsball!",
-		prize: "lvl2Present",
-		tiers: 1,
-		description: "Find both footballs"
+		tiers: [{
+			displayName: "Yay! Sportsball!",
+			description: "Find both footballs",
+			prize: { type: "present", level: 2 }
+		}]
 	},
 	{
 		id: "findGamerstuff",
-		displayName: "Sponsored by mountain dew",
-		prize: "lvl4Present",
-		tiers: 1,
-		description: "Find everything you need to become a true gamer"
+		tiers: [{
+			displayName: "Sponsored by mountain dew",
+			description: "Find everything you need to become a true gamer",
+			prize: { type: "present", level: 4 }
+		}]
 	},
 	{
 		id: "findPets",
-		displayName: "Expanded family",
-		prize: "lvl3Present",
-		tiers: 1,
-		description: "Find both the pets"
+		tiers: [{
+			displayName: "Expanded family",
+			description: "Find both the pets",
+			prize: { type: "present", level: 3 }
+		}]
 	},
 	{
 		id: "findDevs",
-		displayName: "Meet the makers",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Find all the dev-inspired items"
+		tiers: [{
+			displayName: "Meet the makers",
+			description: "Find all the dev-inspired items",
+			prize: { type: "present", level: 5 }
+		}]
 	},
 	{
 		id: "findOwner",
-		displayName: "PLACEHOLDER",
-		prize: "lvl3Present",
-		tiers: 1,
-		description: "Become the owner of SMPEarth"
+		tiers: [{
+			displayName: "PLACEHOLDER",
+			description: "Become the owner of SMPEarth",
+			prize: { type: "present", level: 3 }
+		}]
 	},
 	{
 		id: "findGlitch",
-		displayName: "YoU BrOkE EvErYtHiNg",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Find a glitch"
+		tiers: [{
+			displayName: "YoU BrOkE EvErYtHiNg",
+			description: "Find a glitch",
+			prize: { type: "present", level: 5 }
+		}]
 	},
 	{
 		id: "findCorn",
-		displayName: "aMAZEing",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Find the best item in the game: The legendary corn"
+		tiers: [{
+			displayName: "aMAZEing",
+			description: "Find the best item in the game: The legendary corn",
+			prize: { type: "present", level: 5 }
+		}]
 	},
 	{
 		id: "createTriangle",
-		displayName: "Mechanic",
-		prize: "lvl5Present",
-		tiers: 1,
-		description: "Construct a mysterious object"
+		tiers: [{
+			displayName: "Mechanic",
+			description: "Construct a mysterious object",
+			prize: { type: "present", level: 5 }
+		}]
 	}
 ];
