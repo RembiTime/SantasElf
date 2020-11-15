@@ -2,8 +2,6 @@ const showPages = async function(pages, channel, user, time = 30000) {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 
-	const noop = () => {};
-
 	const left = "◀️";
 	const right = "▶️";
 	const end = "⏹️";
@@ -16,7 +14,7 @@ const showPages = async function(pages, channel, user, time = 30000) {
 
 		if (reactor.id !== user.id) { return; }
 
-		reaction.users.remove(reactor).catch(noop);
+		reaction.users.remove(reactor).catch(() => {});
 
 		if (reaction.emoji.name === left) {
 			page--;
@@ -39,7 +37,7 @@ const showPages = async function(pages, channel, user, time = 30000) {
 
 	collector.once("end", async () => {
 		clearTimeout(timeout);
-		message.delete();
+		await message.delete();
 	});
 
 	await message.react(left);
