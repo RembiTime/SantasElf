@@ -1,6 +1,6 @@
 const { Command } = require("../Command");
 const { showPages } = require("../util/discord");
-const { MessageEmbed } = require("discord.js");
+const { MessageEmbed, TextChannel } = require("discord.js");
 // const achievements = require("../achievements");
 
 class AchievementCommand extends Command {
@@ -38,6 +38,7 @@ class AchievementCommand extends Command {
 
 		const pages = [page1, page2];
 		// :how:
+		if (!(message.channel instanceof TextChannel)) return message.channel.send("You cannot use this in a DM channel!");
 		showPages(pages, message.channel, message.author, 120000);
 	}
 }

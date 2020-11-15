@@ -8,7 +8,6 @@ const knex = require("knex");
 
 const items = require("./items");
 const Database = require("./Database");
-
 // Load extentions
 readdirRecursive(path.join(__dirname, "extentions"))
 	.filter(name => (/\.js$/).test(name))
@@ -102,7 +101,7 @@ class SantasElf extends AkairoClient {
 			});
 
 			// knex doesn't support CHECK constraints :(
-			await this.knex.raw("ALTER TABLE itemsConfig ADD CONSTRAINT CHECK (rank >= 0 AND rank <= 6)");
+			await this.knex.raw("ALTER TABLE itemsConfig ADD CONSTRAINT CHECK (`rank` >= 0 AND `rank` <= 6)");
 		}
 
 

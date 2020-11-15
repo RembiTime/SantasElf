@@ -1,4 +1,12 @@
-const showPages = async function(pages, channel, user, time = 30000) {
+/**
+ * 
+ * @param {import("discord.js").MessageEmbed[]} pages 
+ * @param {import("discord.js").TextChannel} channel 
+ * @param {import("discord.js").User} user 
+ * @param {number} time 
+ * @returns {Promise<import("discord.js").Message>}
+ */
+const showPages = async (pages, channel, user, time = 30000) => {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 
@@ -39,7 +47,7 @@ const showPages = async function(pages, channel, user, time = 30000) {
 
 	collector.once("end", async () => {
 		clearTimeout(timeout);
-		message.delete();
+		await message.delete();
 	});
 
 	await message.react(left);

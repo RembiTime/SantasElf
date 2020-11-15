@@ -1,4 +1,4 @@
-import { GuildDataRow } from "./tables";
+import type { GuildDataRow } from "./tables";
 
 declare module "discord.js" {
 	interface Base {
