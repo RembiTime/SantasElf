@@ -1,10 +1,4 @@
-/**
- * @template T, U
- * @param {(item: U) => T} valueOf 
- * @param {U[]} array 
- * @returns {U[][]}
- */
-const partition = (valueOf, array) => {
+const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] => {
 	const subsets = new Map();
 
 	for (const elem of array) {
@@ -21,12 +15,8 @@ const partition = (valueOf, array) => {
 
 /**
  * Inclusive on the min, exclusive on the max
- *
- * @param {number} min
- * @param {number} max
- * @returns {number[]}
  */
-const range = function(min, max) {
+const range = function(min: number, max: number): number[] {
 	const result = Array(max - min);
 
 	for (let i = 0; i < result.length; i++) {
