@@ -33,3 +33,13 @@ export interface PresentRow {
 	hiddenByID: string;
 	usesLeft?: number;
 }
+export interface StaffApprovalRow {
+	readonly messageID: string;
+	status: "ONGOING" | "ACCEPTED" | "DENIED";
+	claimedByID?: string;
+	code: string;
+	presentLevel: number;
+	guildID: string;
+	channelID: string;
+	hiddenByID: string;
+}

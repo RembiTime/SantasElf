@@ -3,6 +3,7 @@ const items = require("./items");
 const util = require("util");
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
+/** @typedef {import("./typings/tables").StaffApprovalRow} StaffApprovalRow */
 
 class Database {
 	/**
@@ -29,11 +30,15 @@ class Database {
 			throw new Error("Invalid getPresent() call");
 		}
 	}
-
+	/**
+	 * @param {{ guildID: string }} guildID 
+	 * @returns {Promise<GuildDataRow?>}
+	 * @deprecated
+	 */
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results ?? null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -183,14 +188,27 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-
+	/**
+	 * @param {{ messageID: string }} messageID 
+	 * @returns {Promise<StaffApprovalRow>}
+	 * @deprecated
+	 */
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
-		return results ?? null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
+	}
+
+	/**
+	 * @param {string} messageID 
+	 * @returns {Promise<StaffApprovalRow>}
+	 */
+	async getStaffApprovalFromMessageID(messageID) {
+		const [result] = await this.client.knex.select("*").from("staffApproval").where({ messageID });
+		return result;
 	}
 	/**
 	 * @deprecated
@@ -200,7 +218,7 @@ class Database {
 	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
-		return results ?? null;
+		return results[0] ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
@@ -593,7 +611,7 @@ class Database {
 			message.channel.send("You didn't answer in time! Please run the command again to try again.");
 			return;
 		}
-		await console.log(mentionMsg)
+		await console.log(mentionMsg);
 		if (mentionMsg.mentions.users.size === 1) {
 			let kissedID = mentionMsg.mentions.users.first().id;
 			if (kissedID === message.author.id) {
@@ -786,6 +804,8 @@ class Database {
 module.exports = Database;
 
 util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataById instead.");
+util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataById instead.");
 util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
 util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
+util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");
 
