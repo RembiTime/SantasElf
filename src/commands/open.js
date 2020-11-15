@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class OpenCommand extends Command {
 	constructor() {
@@ -13,7 +13,7 @@ class OpenCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ presentLevel: number }} args
 	 */
 	async exec(message, {presentLevel}) {

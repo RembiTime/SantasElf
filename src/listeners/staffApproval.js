@@ -1,4 +1,4 @@
-const { Listener } = require("../Listener");
+const { Listener } = require("discord-akairo");
 const { MessageEmbed, TextChannel } = require("discord.js");
 
 class StaffApprovalListener extends Listener {

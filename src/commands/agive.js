@@ -1,5 +1,5 @@
 const { Argument } = require("discord-akairo");
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class AdminGiveCommand extends Command {
 	constructor() {

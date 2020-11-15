@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class GuessCommand extends Command {
 	constructor() {
@@ -13,7 +13,7 @@ class GuessCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ code: string }} args
 	 */
 	async exec(message, { code }) {
@@ -49,7 +49,7 @@ class GuessCommand extends Command {
 				stopCollector = true;
 				collector.stop();
 			}
-			
+
 			await this.client.knex.transaction(async trx => {
 				[present] = await this.client.knex("presents")
 					.select("timesFound", "hiddenByID", "presentLevel", "usesLeft")
@@ -66,7 +66,7 @@ class GuessCommand extends Command {
 					}
 					return;
 				}
-				
+
 				this.client.usersGuessing.delete(message.author.id);
 				collector.stop();
 
@@ -118,7 +118,7 @@ class GuessCommand extends Command {
 						.increment("timesFound", 1)
 						.transacting(trx)
 						.where("code", "=", m.content);
-				
+
 					if (firstFinder) {
 						await this.client.knex("userData")
 							.increment("firstFinder", 1)

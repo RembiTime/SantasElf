@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class DeleteCommand extends Command {
 	constructor() {

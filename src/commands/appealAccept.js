@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class AppealAcceptCommand extends Command {
 	constructor() {

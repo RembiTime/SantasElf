@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 const { showPages } = require("../util/discord");
 const { MessageEmbed } = require("discord.js");
 
@@ -11,8 +11,8 @@ class StatsCommand extends Command {
 	}
 
 	/**
-	 * 
-	 * @param {import("discord.js").Message} message 
+	 *
+	 * @param {import("discord.js").Message} message
 	 */
 	async exec(message) {
 		const [{ presentsFound }] = await this.client.knex("foundPresents")

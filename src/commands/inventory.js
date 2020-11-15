@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 const { partition } = require("../util/array");
 const { showPages } = require("../util/discord");
 const { MessageEmbed } = require("discord.js");
@@ -12,7 +12,7 @@ class InventoryCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 */
 	async exec(message) {
 		const userData = await this.client.database.userDataCheck({ userID: message.author.id });

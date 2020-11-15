@@ -1,5 +1,5 @@
 const { Argument } = require("discord-akairo");
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 const { MessageEmbed, TextChannel, DMChannel } = require("discord.js");
 
 class HideCommand extends Command {
@@ -27,7 +27,7 @@ class HideCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ code: string, level: number, description: string }} args
 	 */
 	async exec(message, { code, level, description }) {
