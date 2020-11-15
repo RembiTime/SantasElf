@@ -1,19 +1,57 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
+import { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler } from "discord-akairo";
+import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
 
-const { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler: { readdirRecursive } } = require("discord-akairo");
-const { DiscordAPIError, MessageEmbed, TextChannel } = require("discord.js");
+import path from "path";
+import knex from "knex";
 
-const path = require("path");
-const knex = require("knex");
-
-const items = require("./items");
-const Database = require("./Database");
+import items from "./items";
+import Database from "./Database";
 // Load extentions
-readdirRecursive(path.join(__dirname, "extentions"))
+AkairoHandler.readdirRecursive(path.join(__dirname, "extentions"))
 	.filter(name => (/\.js$/).test(name))
 	.forEach(file => require(file));
 
 class SantasElf extends AkairoClient {
+
+	public commandHandler: CommandHandler = new CommandHandler(this, {
+		directory: path.join(__dirname, "commands"),
+		prefix: ","
+	});
+	public listenerHandler: ListenerHandler = new ListenerHandler(this, {
+		directory: path.join(__dirname, "listeners"),
+	});
+	public database: Database = new Database(this, {
+		host: process.env.MYSQL_HOST,
+		port: parseInt(process.env.MYSQL_PORT),
+		user: process.env.MYSQL_USERNAME,
+		password: process.env.MYSQL_PASSWORD,
+		database: process.env.MYSQL_DATABASE
+	});
+	public knex: knex = knex({
+		client: "mysql2",
+		connection: {
+			host: process.env.MYSQL_HOST,
+			port: parseInt(process.env.MYSQL_PORT),
+			user: process.env.MYSQL_USERNAME,
+			password: process.env.MYSQL_PASSWORD,
+			database: process.env.MYSQL_DATABASE,
+			typeCast: (field, next) => {
+				if (field.type == "TINY" && field.length === 1) {
+					const value = field.string();
+					return value ? (value === "1") : null;
+				}
+				return next();
+			},
+			supportBigNumbers: true,
+			bigNumberStrings: true
+		}
+	});
+	public minigamePlayers: Set<string> = new Set();
+	public guildDisplayChannel: TextChannel = null;
+	public partnerDisplayChannel: TextChannel = null;
+	public usersGuessing: Set<string> = new Set();
 	constructor() {
 		super(
 			{
@@ -23,56 +61,12 @@ class SantasElf extends AkairoClient {
 			}
 		);
 
-		this.commandHandler = new CommandHandler(this, {
-			directory: path.join(__dirname, "commands"),
-			prefix: ","
-		});
-
-		this.listenerHandler = new ListenerHandler(this, {
-			directory: path.join(__dirname, "listeners"),
-		});
-
 		this.commandHandler.loadAll();
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.loadAll();
-
-		this.database = new Database(this, {
-			host: process.env.MYSQL_HOST,
-			port: parseInt(process.env.MYSQL_PORT),
-			user: process.env.MYSQL_USERNAME,
-			password: process.env.MYSQL_PASSWORD,
-			database: process.env.MYSQL_DATABASE
-		});
-
-		this.knex = knex({
-			client: "mysql2",
-			connection: {
-				host: process.env.MYSQL_HOST,
-				port: parseInt(process.env.MYSQL_PORT),
-				user: process.env.MYSQL_USERNAME,
-				password: process.env.MYSQL_PASSWORD,
-				database: process.env.MYSQL_DATABASE,
-				typeCast: (field, next) => {
-					if (field.type == "TINY" && field.length === 1) {
-						const value = field.string();
-						return value ? (value === "1") : null;
-					}
-					return next();
-				},
-				supportBigNumbers: true,
-				bigNumberStrings: true
-			}
-		});
-
-		this.minigamePlayers = new Set();
-		/** @type {TextChannel} */
-		this.guildDisplayChannel = null;
-		/** @type {TextChannel} */
-		this.partnerDisplayChannel = null;
-		this.usersGuessing = new Set();
 	}
 
-	async login(token) {
+	async login(token: string) {
 		await this.initDatabase();
 		return super.login(token);
 	}
@@ -210,7 +204,7 @@ class SantasElf extends AkairoClient {
 	/**
 	 * @returns {Promise<TextChannel?>} The partnered server list channel.
 	 */
-	async getPartnerDisplayChannel() {
+	async getPartnerDisplayChannel(): Promise<TextChannel | null> {
 		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
 			const fetchedChannel = await this.channels.fetch("777263455375720478");
