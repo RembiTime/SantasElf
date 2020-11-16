@@ -10,8 +10,8 @@ import knex from "knex";
 import items = require("./items");
 import Database = require("./Database");
 
-// Load extentions
-AkairoHandler.readdirRecursive(path.join(__dirname, "extentions"))
+// Load extensions
+AkairoHandler.readdirRecursive(path.join(__dirname, "extensions"))
 	.filter(name => (/\.js$/).test(name))
 	.forEach(file => require(file));
 
