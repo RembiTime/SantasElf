@@ -13,7 +13,6 @@ class OpenCommand extends Command {
 	}
 
 	async exec(message, {presentLevel}) {
-
 		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
 
 		if (newUserCheck === null) {

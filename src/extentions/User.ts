@@ -1,12 +1,11 @@
+import Knex from "knex";
 import { Structures, Collection } from "discord.js";
-
 import { AchievementEntry, achievements } from "../achievements";
-
 
 declare module "discord.js" {
 	interface User {
-		ensureDB(): Promise<void>;
-		fetchAchievements(): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
+		ensureDB(transaction?: Knex): Promise<void>;
+		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
 	}
 }
 
@@ -14,24 +13,22 @@ Structures.extend("User", OldUser =>
 	class User extends OldUser {
 		private _ensured = false;
 
-		async ensureDB() {
+		async ensureDB(transaction = this.client.knex) {
 			if (this._ensured) { return; }
 
-			await this.client.knex("userData")
+			await transaction("userData")
 				.insert({ userID: this.id })
 				.onConflict("userID").ignore();
 
 			this._ensured = true;
 		}
 
-		/**
-		 * @returns {Promise<Array<{ achievement: import("../achievements").AchievementEntry, tiers: number[] }>>}
-		 */
-		async fetchAchievements(): Promise<any> {
-			const achievementRows = await this.client.knex("achievements")
+		async fetchAchievements(transaction = this.client.knex): Promise<any> {
+			const achievementRows = await transaction("achievements")
 				.select("id", "tier")
 				.where({ userID: this.id })
-				.orderBy("tier");
+				.orderBy("tier")
+				.forUpdate();
 
 			const achievementColl = new Collection<string, number[]>();
 

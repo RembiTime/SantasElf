@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { MessageEmbed } from "discord.js";
+import { MessageEmbed, Message } from "discord.js";
 import { range } from "../util/array";
 import { showPages } from "../util/discord";
 
@@ -11,7 +11,7 @@ class AchievementCommand extends Command {
 		});
 	}
 
-	async exec(message) {
+	async exec(message: Message) {
 		const pages = [];
 
 		const achievements = await message.author.fetchAchievements();
