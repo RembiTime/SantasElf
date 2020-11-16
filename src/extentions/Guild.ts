@@ -1,4 +1,12 @@
 import { Structures } from "discord.js";
+import { GuildDataRow } from "../Database";
+
+declare module "discord.js" {
+	interface Guild {
+		ensureDB(): Promise<void>;
+		fetchData(): Promise<GuildDataRow>;
+	}
+}
 
 Structures.extend("Guild", OldGuild =>
 	class Guild extends OldGuild {

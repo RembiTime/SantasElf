@@ -1,6 +1,14 @@
 import { Structures, Collection } from "discord.js";
 
-import { achievements } from "../achievements";
+import { AchievementEntry, achievements } from "../achievements";
+
+
+declare module "discord.js" {
+	interface User {
+		ensureDB(): Promise<void>;
+		fetchAchievements(): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
+	}
+}
 
 Structures.extend("User", OldUser =>
 	class User extends OldUser {
