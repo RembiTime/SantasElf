@@ -1,12 +1,12 @@
 export interface GuildDataRow {
-	guildId: string;
+	readonly guildId: string;
 	displayMessageId: string | null;
 	isPartner: boolean;
 	appealed3Deny: boolean;
 	inviteURL: string | null;
 }
 export interface UserDataRow {
-	userID: string;
+	readonly userID: string;
 	userName: string;
 	candyCanes: number;
 	wrongGuesses: number;
@@ -22,4 +22,24 @@ export interface UserDataRow {
 	lvl4Total: number;
 	lvl5Presents: number;
 	lvl5Total: number;
+}
+export interface PresentRow {
+	readonly id: number;
+	code: string;
+	presentLevel: number;
+	timesFound: number;
+	guildID?: string;
+	channelID?: string;
+	hiddenByID: string;
+	usesLeft?: number;
+}
+export interface StaffApprovalRow {
+	readonly messageID: string;
+	status: "ONGOING" | "ACCEPTED" | "DENIED";
+	claimedByID?: string;
+	code: string;
+	presentLevel: number;
+	guildID: string;
+	channelID: string;
+	hiddenByID: string;
 }
