@@ -270,7 +270,7 @@ class SantasElf extends AkairoClient implements Extension {
 	 */
 	async setupGuildDisplayMessages() {
 		for (const guildData of await this.database.getAllGuilds()) {
-			await this.updateDisplayForGuild(guildData.guildId);
+			await this.updateDisplayForGuild(guildData.guildID);
 		}
 	}
 
@@ -280,11 +280,11 @@ class SantasElf extends AkairoClient implements Extension {
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
 		const guildData = await this.database.getGuildDataById(guildID);
-		const { displayMessageId } = guildData;
+		const { displayMessageID } = guildData;
 		const channel = guildData.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
 			try {
-				return displayMessageId && await channel.messages.fetch(displayMessageId);
+				return displayMessageID && await channel.messages.fetch(displayMessageID);
 			} catch (err) {
 				if (err instanceof DiscordAPIError && err.code === 10008) return null;
 				throw err;
@@ -303,7 +303,7 @@ class SantasElf extends AkairoClient implements Extension {
 		if (!displayMessage) {
 			const msg = await channel.send(embed);
 			await this.knex("guildData").update({
-				displayMessageId: msg.id
+				displayMessageID: msg.id
 			}).where({ guildID: guild.id });
 		} else await displayMessage.edit(embed);
 	}
