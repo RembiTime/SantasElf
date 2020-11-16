@@ -40,6 +40,7 @@ class HideCommand extends Command {
 		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			message.channel.send("You must have administrator permissions in this server to use this command!");
+			return;
 		}
 		if (present !== null || queuePresent !== null) {
 			message.channel.send("That code already exists!");

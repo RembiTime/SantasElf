@@ -19,11 +19,11 @@ class Database {
 	 */
 	async getPresent(options) {
 		if ("id" in options) {
-			const [results] = await this.pool.execute("SELECT * FROM presents WHERE id = ?", [options.id]);
+			const [results] = await this.client.knex.select("*").from("presents").where({id: options.id});
 			return results ?? null;
 		} else if ("code" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
-			const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [options.code]);
+			const [results] = await this.client.knex.select("*").from("presents").where({code: options.code});
 			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -32,7 +32,7 @@ class Database {
 
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
+		const [results] = await this.client.knex.select("*").from("guildData").where({guildID});
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -41,7 +41,7 @@ class Database {
 
 	async checkPresentUses({ code }) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM presents WHERE code = ?", [code]);
+		const [results] = await this.client.knex.select("*").from("presents").where({code});
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -50,10 +50,14 @@ class Database {
 
 	async subtractUse({ code }) {
 		//if ("id" in options) {
-		await this.pool.execute("UPDATE presents SET usesLeft = usesLeft - 1 WHERE code = ?", [code]);
+		await this.client.knex("userData")
+			.decrement("usesLeft", 1)
+			.where("code", "=", code);
 		const [checkZero] = await this.client.knex.select("usesLeft as uses").from("presents").where({ code });
 		if (checkZero.uses === 0) {
-			await this.pool.execute("DELETE FROM presents WHERE code = ?", [code]);
+			await this.client.knex('presents')
+  				.where("code", "=", code)
+  				.del()
 		}
 		return;
 		/*} else {
@@ -63,7 +67,7 @@ class Database {
 
 	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
-		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
+		const [results] = await this.client.knex.select("*").from("guildData").where({guildID});
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -74,8 +78,8 @@ class Database {
 	 * @returns {Promise<string?>}
 	 */
 	async getGuildDisplayMessageID({ guildID }) {
-		const [results] = await this.pool.execute("SELECT displayMessageId FROM guildData WHERE guildID = ?", [guildID]);
-		return results[0]?.displayMessageId ?? null;
+		const [results] = await this.client.knex.select("displayMessageId").from("guildData").where({guildID});
+		return results ?? null;
 	}
 
 	/**
@@ -111,8 +115,8 @@ class Database {
 	async checkStaffApprovalIDs(options) {
 		if ("messageID" in options) {
 			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [options.messageID]);
-			return newGuild.length ? newGuild[0] : null;
+			const [newGuild] = await this.client.knex.select("*").from("staffApproval").where({messageID: options.messageID});
+			return newGuild ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
@@ -121,8 +125,8 @@ class Database {
 	async checkApprovalIfOngoing(options) {
 		if ("messageID" in options) {
 			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ? AND status = 'ONGOING'", [options.messageID]);
-			return newGuild.length ? newGuild[0] : null;
+			const [results] = await this.client.knex.select("*").from("staffApproval").where({ messageID: options.messageID, status: "ONGOING" });
+			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
@@ -131,8 +135,8 @@ class Database {
 	async checkOngoingIfCodeDupe(options) {
 		if ("code" in options) {
 			//Check if message is stored
-			const [newGuild] = await this.pool.execute("SELECT * FROM staffApproval WHERE code = ? AND status = 'ONGOING'", [options.code]);
-			return newGuild.length ? newGuild[0] : null;
+			const [newGuild] = await this.client.knex.select("*").from("staffApproval").where({ code: options.code, status: "ONGOING" });
+			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}
@@ -140,7 +144,7 @@ class Database {
 
 	async findIfDupe(options) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM foundPresents WHERE userID = ? AND presentCode = ?", [options.userID, options.presentCode]);
+		const [results] = await this.client.knex.select("*").from("foundPresents").where({ userID: options.userID, presentCode: options.presentCode });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -160,13 +164,13 @@ class Database {
 	}
 
 	async userHasItem({userID, itemName}) {
-		const [results] = await this.pool.execute("SELECT 1 FROM items WHERE name = ? AND userID = ?", [itemName, userID]);
-		return !!results.length;
+		const [results] = await this.client.knex.select("1").from("items").where({ name: itemName, userID: userID });
+		return !!results;
 	}
 
 	async itemCheck({userID, itemName}) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM items WHERE name = ? AND userID = ?", [itemName, userID]);
+		const [results] = await this.client.knex.select("*").from("items").where({ name: itemName, userID: userID });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -175,7 +179,7 @@ class Database {
 
 	async findIfClaimedBy({ messageID }) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM staffApproval WHERE messageID = ?", [messageID]);
+		const [results] = await this.client.knex.select("*").from("staffApproval").where({ messageID });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -188,7 +192,7 @@ class Database {
 	 */
 	async findIfGuildExists({ guildID }) {
 		//if ("id" in options) {
-		const [results] = await this.pool.execute("SELECT * FROM guildData WHERE guildID = ?", [guildID]);
+		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -199,7 +203,7 @@ class Database {
 	 * @returns {GuildDataRow?}
 	 */
 	getGuildDataFromId(guildID) {
-		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0]?.[0] ?? null;
+		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0] ?? null;
 	}
 	
 
@@ -213,68 +217,27 @@ class Database {
 	}
 
 	async checkAchievement({ name, userID }) {
-		const [results] = await this.pool.execute("SELECT * FROM achievements WHERE userID = ? AND name = ?", [userID, name]);
-		const checkHas = results.length ? results[0] : null;
+		const [results] = await this.client.knex.select("*").from("achievements").where({ userID, name });
+		const checkHas = results ?? null;
 		if (checkHas !== null) {
 			return true;
 		} return false;
 	}
 
 	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft }) {
-		await this.pool.execute(`
-			INSERT INTO presents SET
-				code = ?,
-				presentLevel = ?,
-				timesFound = ?,
-				guildID = ?,
-				channelID = ?,
-				hiddenByID = ?,
-				usesLeft = ?
-			`, [code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft]);
+		await this.client.knex("presents").insert({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft});
 	}
 
 	async presentFound({ userID, userName, presentCode }) {
-		await this.pool.execute(`
-			INSERT INTO foundPresents SET
-				userID = ?,
-				userName = ?,
-				presentCode = ?
-			`, [userID, userName, presentCode]);
+		await this.client.knex("foundPresents").insert({ userID, userName, presentCode });
 	}
 
 	async addNewUser({ userID, userName }) {
-		await this.pool.execute(`
-			INSERT INTO userData SET
-				userID = ?,
-				userName = ?,
-				candyCanes = 0,
-				wrongGuesses = 0,
-				firstFinder = 0,
-				totalPresents = 0,
-				lvl1Presents = 0,
-				lvl1Total = 0,
-				lvl2Presents = 0,
-				lvl2Total = 0,
-				lvl3Presents = 0,
-				lvl3Total = 0,
-				lvl4Presents = 0,
-				lvl4Total = 0,
-				lvl5Presents = 0,
-				lvl5Total = 0
-			`, [userID, userName]);
+		await this.client.knex("userData").insert({ userID, userName, candyCanes: 0, wrongGuesses: 0, firstFinder: 0, totalPresents: 0, lvl1Presents: 0, lvl1Total: 0, lvl2Presents: 0, lvl2Total: 0, lvl3Presents: 0, lvl3Total: 0, lvl4Presents: 0, lvl4Total: 0, lvl5Presents: 0, lvl5Total: 0 });
 	}
 
 	async addStaffApprovalID({ messageID, status, code, presentLevel, guildID, channelID, hiddenByID }) {
-		await this.pool.execute(`
-			INSERT INTO staffApproval SET
-				messageID = ?,
-				status = ?,
-				code = ?,
-				presentLevel = ?,
-				guildID = ?,
-				channelID = ?,
-				hiddenByID = ?
-			`, [messageID, status, code, presentLevel, guildID, channelID, hiddenByID]);
+		await this.client.knex("staffApproval").insert({ messageID, status, code, presentLevel, guildID, channelID, hiddenByID });
 	}
 
 	async addNewGuild({ guildID }) {
@@ -284,34 +247,33 @@ class Database {
 	}
 
 	async notClaimed({ messageID }) {
-		await this.pool.execute("UPDATE staffApproval SET claimedByID = NULL WHERE messageID = ?", [messageID]);
+		await this.client.knex("staffApproval").where({messageID}).update({claimedByID: null});
 	}
 
 	async claimedUpdate({ userID, messageID }) {
-		await this.pool.execute("UPDATE staffApproval SET claimedByID = ? WHERE messageID = ?", [userID, messageID]);
+		await this.client.knex("staffApproval").where({messageID}).update({claimedByID: userID});
 	}
 
 	async approvalStatusUpdate({ status, messageID }) {
-		await this.pool.execute("UPDATE staffApproval SET status = ? WHERE messageID = ?", [status, messageID]);
+		await this.client.knex("staffApproval").where({messageID}).update({status});
 	}
 
 	async addPartner({ guildID }) {
-		await this.pool.execute("UPDATE guildData SET isPartner = TRUE WHERE guildID = ?", [guildID]);
+		await this.client.knex("guildData").where({guildID}).update({isPartner: "TRUE"});
 	}
 
 	async changeLevel({ presentLevel, messageID }) {
-		await this.pool.execute("UPDATE staffApproval SET presentLevel = ? WHERE messageID = ?", [presentLevel, messageID]);
+		await this.client.knex("staffApproval").where({messageID}).update({presentLevel});
 	}
 
 	async appealAccept({ guildID }) {
-		await this.pool.execute("UPDATE guildData SET appealed3Deny = TRUE WHERE guildID = ?", [guildID]);
+		await this.client.knex("guildData").where({guildID}).update({appealed3Deny: "TRUE"});
 	}
 
 	async addUserPresent({ presentLevel, userID }) {
 		let presentAmt = "lvl" + presentLevel + "Presents";
 		let presentTotal = "lvl" + presentLevel + "Total";
-		await this.pool.execute(`UPDATE userData SET ${presentAmt} = ${presentAmt} + 1 WHERE userID = ?`, [userID]);
-		await this.pool.execute(`UPDATE userData SET ${presentTotal} = ${presentTotal} + 1 WHERE userID = ?`, [userID]);
+		await this.client.knex("userData").where({userID}).increment({[presentLevel]: 1, [presentTotal]: 1});
 	}
 
 	async getGlobalStats() {
@@ -365,24 +327,29 @@ class Database {
 		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
 			guildID
 		});
-		return result;
+		return results ?? null;
 	}
 
 	// ITEM STUFF
 
 	async addCandyCanes({ amount, userID }) {
-		await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [amount, userID]);
+		await this.client.knex("userData").where({userID}).increment({candyCanes: amount});
 	}
 
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
+		await this.client.knex("items")
+			.insert({name: itemName, userID, amount: 1, presentLevel: 1})
+			.onConflict("userID")
+			.merge()
+		/* Keeping just in case...
 		await this.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, [itemName, userID]);
-		await this.pool.execute(`UPDATE userData SET ${presentLevel} = ${presentLevel} - 1 WHERE userID = ?`, [userID]);
+		`, [itemName, userID]); */
+		await this.client.knex("userData").where({userID}).decrement({[presentLevel]: 1});
 	}
 
 	async foundAchievement({ achName, userID, message }) {
@@ -395,16 +362,15 @@ class Database {
 			.then(results => results.length ? results[0] : null);
 
 		if (!present) {
-			await this.pool.execute(`
-                    INSERT INTO achievements (name, userID) VALUES (?, ?)
-                `, [achName, userID]); //We might need a race condition check
+			await this.client.knex("achievements").insert({name: achName, userID});
+			//We might need a race condition check
 			message.channel.send("✨ Achievement Unlocked: **" + achName + "**! You can view all your achievements with `,achievements`. ✨");
 			return 1;
 		} return 0;
 	}
 
 	async removeItem({ itemName, userID }) {
-		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", [itemName, userID]);
+		await this.client.knex("items").where({name: itemName, userID}).decrement({amount: 1});
 	}
 
 	/**
@@ -453,19 +419,19 @@ class Database {
 
 	async agivePresent({ message, userID, presentLevel, amount}) {
 		if (presentLevel == 1) {
-			await this.pool.execute(`UPDATE userData SET lvl1Presents = lvl1Presents + ${amount} WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).increment({lvl1Presents: amount});
 			message.channel.send("Added " + amount + " level 1 present(s)");
 		} else if (presentLevel == 2) {
-			await this.pool.execute(`UPDATE userData SET lvl2Presents = lvl2Presents + ${amount} WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).increment({lvl2Presents: amount});
 			message.channel.send("Added " + amount + " level 2 present(s)");
 		} else if (presentLevel == 3) {
-			await this.pool.execute(`UPDATE userData SET lvl3Presents = lvl3Presents + ${amount} WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).increment({lvl3Presents: amount});
 			message.channel.send("Added " + amount + " level 3 present(s)");
 		} else if (presentLevel == 4) {
-			await this.pool.execute(`UPDATE userData SET lvl4Presents = lvl4Presents + ${amount} WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).increment({lvl4Presents: amount});
 			message.channel.send("Added " + amount + " level 4 present(s)");
 		} else if (presentLevel == 5) {
-			await this.pool.execute(`UPDATE userData SET lvl5Presents = lvl5Presents + ${amount} WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).increment({lvl5Presents: amount});
 			message.channel.send("Added " + amount + " level 5 present(s)");
 		}
 	}
@@ -540,7 +506,7 @@ class Database {
 			await this.addItem({ itemName: item.id, userID, presentLevel });
 		} else if (item.defaultBehavior === false) {
 			let lvlPresents = "lvl" + presentLevel + "Presents";
-			this.pool.execute(`UPDATE userData SET ${lvlPresents} = ${lvlPresents} - 1 WHERE userID = ?`, [userID]);
+			await this.client.knex("userData").where({userID}).decrement({[lvlPresents]: 1});
 		}
 
 		if (typeof item.onFind === "function") {
@@ -571,9 +537,9 @@ class Database {
 			kissMessage.delete();
 			await mentionMsg.delete();
 			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [15, message.author.id]);
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [15, kissedID]);
-			await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", ["mistletoe", message.author.id]);
+			await this.client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 15});
+			await this.client.knex("userData").where({userID: kissedID}).increment({candyCanes: 15});
+			await this.client.knex("items").where({name: "mistletoe", userID: message.author.id}).decrement({amount: 1});
 			return;
 		} if (mentionMsg.mentions.users.size > 1) {
 			message.channel.send("Please only mention one user!");
@@ -585,22 +551,22 @@ class Database {
 
 	async useMeme({message}) {
 		let candyCaneAmt = Math.floor(Math.random() * 41) - 10;
-		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", ["meme", message.author.id]);
+		await this.client.knex("items").where({name: "meme", userID: message.author.id}).decrement({amount: 1});
 		if (candyCaneAmt === 0) {
 			message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
 			return;
 		} if (candyCaneAmt < 0) {
 			let positiveNum = Math.abs(candyCaneAmt);
 			message.channel.send("Wow, people did not like your meme! You lost " + positiveNum + " candy canes! Welcome to controversial.");
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes - ? WHERE userID = ?", [positiveNum, message.author.id]);
+			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: positiveNum});
 			return;
 		} if (candyCaneAmt > 0 && candyCaneAmt <= 15) {
 			message.channel.send("People liked your meme, which made it to hot! You gained " + candyCaneAmt + " candy canes!");
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [candyCaneAmt, message.author.id]);
+			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
 			return;
 		} if (candyCaneAmt > 15) {
 			message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCaneAmt + " candy canes!");
-			await this.pool.execute("UPDATE userData SET candyCanes = candyCanes + ? WHERE userID = ?", [candyCaneAmt, message.author.id]);
+			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
 			return;
 		}
 	}
