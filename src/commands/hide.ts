@@ -95,10 +95,11 @@ class HideCommand extends Command {
 			channelID: message.channel.id,
 			hiddenByID: message.author.id
 		});
+
 		const approvalMessage = await staffQueue.messages.fetch(sent.id);
-		approvalMessage.react("❗");
-		approvalMessage.react("✅");
-		approvalMessage.react("❌");
+		await approvalMessage.react("❗");
+		await approvalMessage.react("✅");
+		await approvalMessage.react("❌");
 	}
 }
 
