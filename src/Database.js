@@ -86,8 +86,8 @@ class Database {
 	 * @returns {Promise<boolean>}
 	 */
 	async isPartner(guildID) {
-		const data = await this.getGuildDataById(guildID);
-		return data.isPartner;
+		const [results] = await this.client.knex.select("isPartner").from("guildData");
+		return results ?? null;
 	}
 	/**
 	 * @param {{guildID: string}} guildID
@@ -152,7 +152,7 @@ class Database {
 		if ("code" in options) {
 			//Check if message is stored
 			const [newGuild] = await this.client.knex.select("*").from("staffApproval").where({ code: options.code, status: "ONGOING" });
-			return results ?? null;
+			return newGuild ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
 		}

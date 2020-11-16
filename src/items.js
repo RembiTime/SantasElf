@@ -16,13 +16,18 @@ module.exports = [
 		response: "Honk! The present is torn open and out pops a very naughty goose! In your bewilderment, it stole 20 of your candy canes",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
+			await client.knex("items")
+				.insert({name: "goose", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/* Just in case...
 			await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["goose", message.author.id]);
-			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes - 20 WHERE userID = ?", [message.author.id]);
+		`, ["goose", message.author.id]); */
+			await client.knex("userData").where({userID: message.author.id}).decrement({candyCanes: 20});
 			//await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
 		}
 	},
@@ -135,13 +140,17 @@ module.exports = [
 		displayName: "singleCandy",
 		response: "You found a singular candy cane! Make sure not to spend it all in one place!", // changed: reworded, also what the fuck? -Walrus
 		onFind: async (client, message) => {
-			await client.database.pool.execute(`
+			await client.knex("items")
+				.insert({name: "singleCandy", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["singleCandy", message.author.id]);
-			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 1 WHERE userID = ?", [message.author.id]);
+		`, ["singleCandy", message.author.id]);*/
+		await client.knex({userData}).where({userID: message.author.id}).increment({candyCanes: 1});
 		}
 	},
 	{
@@ -231,13 +240,16 @@ module.exports = [
 		response: "Nice! You found a keyboard! It's rattling with anticipation", // changed: reworded -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-
-			await client.database.pool.execute(`
+			await client.knex("items")
+				.insert({name: "keyboard", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["keyboard", message.author.id]);
+		`, ["keyboard", message.author.id]);*/
 			const rand = Math.random();
 			let prompt = "Type in the following for the keyboard to give you candy!\n\n";
 			if (rand < 1 / 3) {
@@ -252,7 +264,7 @@ module.exports = [
 			message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
-				await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 20 WHERE userID = ?", [collected.first().author.id]);
+				await client.knex("userData").where({userID: collected.first().author.id}).increment({candyCanes: 20});
 			} catch {
 				return message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}
@@ -317,13 +329,17 @@ module.exports = [
 		response: "Wow! You found a simp! You're a little concerned that he snuck into your house, but hey, he'll pay you 50 candy canes to notice him. You take the money and promptly ignore him. Nice try buddy.", // changed: reworded, also what the fuck? -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 50 WHERE userID = ?", [message.author.id]);
-			await client.database.pool.execute(`
+			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 50});
+			await client.knex("items")
+				.insert({name: "simp", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["simp", message.author.id]);
+		`, ["simp", message.author.id]);*/
 		}
 	},
 	{
@@ -351,12 +367,16 @@ module.exports = [
 		onFind: async (client, message) => {
 			let d= new Date();
 			let timeStamp = d.getTime();
-			await client.database.pool.execute(`
+			await client.knex("items")
+				.insert({userID: message.author.id, active: "TRUE", timeFound: timeStamp})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 				INSERT INTO dragonEggData SET
 					userID = ?,
 					active = ?,
 					timeFound = ?
-				`, [message.author.id, "TRUE", timeStamp]);
+				`, [message.author.id, "TRUE", timeStamp]);*/
 		}
 	},
 	{
@@ -366,12 +386,16 @@ module.exports = [
 		response: "WHA?? You found a role! You feel special-er.",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.database.pool.execute(`
+			await client.knex("items")
+				.insert({name: "role", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["role", message.author.id]);
+		`, ["role", message.author.id]);*/
 			// TODO: message.member.addRole("ROLE ID HERE");
 		}
 	},
@@ -420,13 +444,17 @@ module.exports = [
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.database.pool.execute("UPDATE userData SET candyCanes = candyCanes + 174 WHERE userID = ?", [message.author.id]);
-			await client.database.pool.execute(`
+			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 174});
+			await client.knex("items")
+				.insert({name: "glitch", userID: message.author.id, amount: 1, presentLevel: 1})
+				.onConflict("userID")
+				.merge()
+			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["glitch", message.author.id]);
+		`, ["glitch", message.author.id]);*/
 			//wait client.database.foundAchievement({achName: findGlitch, userID: message.author.id, message: message})
 		}
 	},

@@ -67,6 +67,7 @@ class HideCommand extends Command {
 				return;
 			}
 		}
+		//Needs to be fixed:
 		const checkPending = await this.client.database.checkIfPendingPresent({ guildID: message.guild.id });
 		if (+checkPending === 0) {
 			message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.");
