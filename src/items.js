@@ -251,20 +251,24 @@ module.exports = [
 				record = GREATEST(amount, record)
 		`, ["keyboard", message.author.id]);*/
 			const rand = Math.random();
-			let prompt = "Type in the following for the keyboard to give you candy!\n\n";
+			let prompt = "Type in the following for the keyboard to give you candy! (Anyone can participate, but only the first person wins!)\n\n";
 			if (rand < 1 / 3) {
 				prompt = prompt + "This is an example typing test";
+				let answer = "This is an example typing test";
 			} else if (rand < 2 / 3) {
 				prompt = prompt + "This is another example of a prompt";
+				let answer = "This is another example of a prompt";
 			} else {
 				prompt = prompt + "I've run out of ideas";
+				let answer = "I've run out of ideas";
 			}
-			const filter = response => response.content === prompt;
+			const filter = response => response.content === answer;
 
 			message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
 				await client.knex("userData").where({userID: collected.first().author.id}).increment({candyCanes: 20});
+				return message.channel.send("<@" + collected.author.id + "> was the first to type correctly and got 20 candy canes!");
 			} catch {
 				return message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}

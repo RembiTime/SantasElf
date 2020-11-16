@@ -15,13 +15,21 @@ class InventoryCommand extends Command {
 	 * @param {import("discord.js").Message} message 
 	 */
 	async exec(message) {
-		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
+		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
 		const items = await this.client.database.getAllItems({ userID: message.author.id });
 
-		if (items.length === 0) {
+		if (newUserCheck === null) {
+			await this.client.database.addNewUser({
+				userID: message.author.id,
+				userName: "REMOVE THIS COLUMN"
+			});
+		}
+		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
+
+		/*if (items.length === 0) {
 			await message.channel.send(`You don't have any items, ${message.author}!`);
 			return;
-		}
+		}*/
 
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 

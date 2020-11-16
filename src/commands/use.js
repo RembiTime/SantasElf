@@ -26,8 +26,12 @@ class UseCommand extends Command {
 			message.channel.send("This item can't be used! Try `,sell`ing it instead.");
 			return;
 		} else if (item && "rank" in item) {
+			if (item.id === "fractal" || item.id === "slime" || item.id === "spanner" || item.id === "dragon" || item.id === "mysteriousPart") {
+				message.channel.send("You can't use that item... Maybe you have to build something with it?");
+				return;
+			}
 			if (item.id === "mistletoe") {
-				const itemCheck = this.client.database.userHasItem({userID: message.author.id, itemName: "mistletoe"});
+				const itemCheck = await this.client.database.itemCheck({userID: message.author.id, itemName: "mistletoe"});
 				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;

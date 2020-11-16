@@ -180,7 +180,7 @@ class Database {
 	}
 
 	async userHasItem({userID, itemName}) {
-		const [results] = await this.client.knex.select("1").from("items").where({ name: itemName, userID: userID });
+		const [results] = await this.client.knex.select(1).from("items").where({ name: itemName, userID: userID });
 		return !!results;
 	}
 
@@ -577,9 +577,8 @@ class Database {
 			message.channel.send("You didn't answer in time! Please run the command again to try again.");
 			return;
 		}
-		await console.log(mentionMsg);
-		if (mentionMsg.mentions.users.size === 1) {
-			let kissedID = mentionMsg.mentions.users.first().id;
+		if (mentionMsg.first().mentions.users.size === 1) {
+			let kissedID = mentionMsg.first().mentions.users.first().id;
 			if (kissedID === message.author.id) {
 				message.channel.send("You can't kiss yourself!");
 				return;
@@ -588,14 +587,21 @@ class Database {
 			kissMessage.delete();
 			await mentionMsg.delete();
 			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
+			const newUserCheck = this.client.database.userDataCheck({userID: kissedID});
+			if (newUserCheck === null) {
+			await this.client.database.addNewUser({
+				userID: kissedID,
+				userName: "REMOVE THIS COLUMN"
+			});
+		}
 			await this.client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 15});
 			await this.client.knex("userData").where({userID: kissedID}).increment({candyCanes: 15});
 			await this.client.knex("items").where({name: "mistletoe", userID: message.author.id}).decrement({amount: 1});
 			return;
-		} if (mentionMsg.mentions.users.size > 1) {
+		} if (mentionMsg.first().mentions.users.size > 1) {
 			message.channel.send("Please only mention one user!");
 			return;
-		} if (mentionMsg.mentions.users.size === 0) {
+		} if (mentionMsg.first().mentions.users.size === 0) {
 			message.channel.send("Please mention someone to kiss!");
 		}
 	}
