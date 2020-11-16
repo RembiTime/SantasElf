@@ -1,6 +1,8 @@
-import { Message, MessageEmbed, TextChannel, User } from "discord.js";
+import { Message, MessageEmbed, User } from "discord.js";
 
-export const showPages = async (pages: (MessageEmbed | string)[], channel: TextChannel, user: User, time = 30000): Promise<Message> => {
+export type TextBasedChannel = Message["channel"];
+
+export const showPages = async (pages: (MessageEmbed | string)[], channel: TextBasedChannel, user: User, time = 30000): Promise<Message> => {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 

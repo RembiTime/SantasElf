@@ -8,12 +8,21 @@
 		"checkJs": false, // TODO: enable
 		"sourceMap": true,
 		"outDir": "./dist",
-		"strict": false, // TODO: enable
+		// "strict": false, // TODO: enable
 		"esModuleInterop": true,
 		"skipLibCheck": true,
 		"forceConsistentCasingInFileNames": true,
 		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true
+		"emitDecoratorMetadata": true,
+
+		// Strict option family
+		"alwaysStrict": true,
+		"strictNullChecks": false,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictPropertyInitialization": false,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
 	},
 	"include": ["src/**/*.js", "src/**/*.ts"]
 }
