@@ -53,7 +53,7 @@ class HideCommand extends Command {
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount >= 3) {
-			if (!checkNewGuild.appealed3Deny) {
+			if (!checkNewGuild?.appealed3Deny) {
 				message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 				return;
 			} else if (guildDeniedAmount >= 5) {

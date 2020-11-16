@@ -479,4 +479,4 @@ const items = [
 ];
 
 // TODO: don't use `as`
-export = items as ItemEntry[];
+export = items as unknown as ItemEntry[];

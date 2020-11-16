@@ -37,7 +37,7 @@ class GuessCommand extends Command {
 		let presentExpired = false;
 		let stopCollector = false;
 
-		const filter = m => m.channel.type === "dm" && m.author.id !== this.client.user.id;
+		const filter = m => m.channel.type === "dm" && m.author.id !== this.client.user!.id;
 		const dmChannel = await message.author.createDM();
 		const collector = dmChannel.createMessageCollector(filter, { time: 900000 });
 		collector.on("collect", async m => {

@@ -14,7 +14,7 @@ export const showPages = async (pages: (MessageEmbed | string)[], channel: TextB
 	let timeout;
 
 	collector.on("collect", (reaction, reactor) => {
-		if (reactor.id === reactor.client.user.id) { return; }
+		if (reactor.id === reactor.client.user!.id) { return; }
 
 		if (reactor.id !== user.id) { return; }
 

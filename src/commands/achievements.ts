@@ -12,7 +12,7 @@ class AchievementCommand extends Command {
 	}
 
 	async exec(message: Message) {
-		const pages = [];
+		const pages: MessageEmbed[] = [];
 
 		const achievements = await message.author.fetchAchievements();
 

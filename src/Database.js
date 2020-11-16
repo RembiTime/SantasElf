@@ -458,9 +458,6 @@ class Database {
 		await this.pool.execute("UPDATE items SET amount = amount - 1 WHERE name = ? AND userID = ?", [itemName, userID]);
 	}
 
-	/**
-	 * @param {{ userData: UserDataRow, presentLevel: number }} args
-	 */
 	removePresent({ userData, presentLevel }) {
 		if (presentLevel == 1) {
 			if (userData.lvl1Presents < 1) {

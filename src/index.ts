@@ -39,7 +39,7 @@ class SantasElf extends AkairoClient implements Extension {
 
 	public database = new Database(this, {
 		host: process.env.MYSQL_HOST,
-		port: parseInt(process.env.MYSQL_PORT),
+		port: parseInt(process.env.MYSQL_PORT!),
 		user: process.env.MYSQL_USERNAME,
 		password: process.env.MYSQL_PASSWORD,
 		database: process.env.MYSQL_DATABASE
@@ -49,7 +49,7 @@ class SantasElf extends AkairoClient implements Extension {
 		client: "mysql2",
 		connection: {
 			host: process.env.MYSQL_HOST,
-			port: parseInt(process.env.MYSQL_PORT),
+			port: parseInt(process.env.MYSQL_PORT!),
 			user: process.env.MYSQL_USERNAME,
 			password: process.env.MYSQL_PASSWORD,
 			database: process.env.MYSQL_DATABASE,
@@ -67,12 +67,14 @@ class SantasElf extends AkairoClient implements Extension {
 
 	public minigamePlayers: Set<string> = new Set();
 	public usersGuessing: Set<string> = new Set();
-	public guildDisplayChannel: TextChannel = null;
-	public partnerDisplayChannel: TextChannel = null;
+
+	// TODO: check
+	public guildDisplayChannel: TextChannel = null!;
+	public partnerDisplayChannel: TextChannel = null!;
 
 	constructor() {
 		super(
-			{ ownerID: process.env.OWNER_IDS.split(",") },
+			{ ownerID: process.env.OWNER_IDS!.split(",") },
 			{ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ] }
 		);
 
@@ -280,8 +282,8 @@ class SantasElf extends AkairoClient implements Extension {
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
 		const guildData = await this.database.getGuildDataById(guildID);
-		const { displayMessageID } = guildData;
-		const channel = guildData.isPartner ? partnerChannel : displayChannel;
+		const { displayMessageID } = guildData!;
+		const channel = guildData!.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
 			try {
 				return displayMessageID && await channel.messages.fetch(displayMessageID);
@@ -314,7 +316,7 @@ declare module "discord.js" {
 }
 
 const client = new SantasElf();
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN!);
 
 
 module.exports = {

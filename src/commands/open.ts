@@ -23,7 +23,7 @@ class OpenCommand extends Command {
 		}
 
 		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
-		const presentCheck = await this.client.database.removePresent({userData: userData, presentLevel: presentLevel});
+		const presentCheck = await this.client.database.removePresent({ userData, presentLevel });
 		if (presentCheck == 0) {
 			message.channel.send("You don't have any level " + presentLevel + " presents to open!");
 			return;

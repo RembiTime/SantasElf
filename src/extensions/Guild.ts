@@ -38,12 +38,12 @@ Structures.extend("Guild", OldGuild => class Guild extends OldGuild {
 	async isPartner(transaction = this.client.knex) {
 		await this.ensureDB(transaction);
 
-		const { isPartner } = await transaction("guildData")
+		const data = await transaction("guildData")
 			.first("isPartner")
 			.where({ guildID: this.id })
 			.forUpdate();
 
-		return isPartner;
+		return data!.isPartner;
 	}
 
 	async setPartner(partner: boolean, transaction = this.client.knex) {

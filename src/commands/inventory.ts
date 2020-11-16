@@ -15,7 +15,7 @@ class InventoryCommand extends Command {
 	 * @param {import("discord.js").Message} message
 	 */
 	async exec(message) {
-		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
+		const userData = (await this.client.database.userDataCheck({ userID: message.author.id }))!;
 		const items = await this.client.database.getAllItems({ userID: message.author.id });
 
 		if (items.length === 0) {

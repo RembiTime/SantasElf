@@ -34,7 +34,7 @@ Structures.extend("User", OldUser =>
 
 			for (const { id, tier } of achievementRows) {
 				if (achievementColl.has(id)) {
-					achievementColl.get(id).push(tier);
+					achievementColl.get(id)!.push(tier);
 				} else {
 					achievementColl.set(id, [tier]);
 				}
