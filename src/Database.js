@@ -769,8 +769,8 @@ class Database {
 
 module.exports = Database;
 
-util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataById instead.");
-util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataById instead.");
+util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromId instead.");
+util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromId instead.");
 util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
 util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
 util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");
