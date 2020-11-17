@@ -14,6 +14,10 @@ class GuessCommand extends Command {
 	}
 
 	async exec(message, { code }) {
+		if (message.channel.type === "dm") {
+			message.channel.send("Please run this command in a server!");
+			return;
+		}
 		await message.delete();
 		if (this.client.usersGuessing.has(message.author.id)) {
 			message.author.send("You're already guessing! Please `,stop` before guessing somewhere else.");

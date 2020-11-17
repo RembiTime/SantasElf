@@ -26,17 +26,10 @@ class HideCommand extends Command {
 	}
 
 	async exec(message, { code, level, description }) {
-		const present = await this.client.database.getPresent({ code });
-		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
-		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
-		const isPartner = await this.client.database.isPartner(message.guild.id);
 		
 		if (message.channel.type === "dm") {
+			message.channel.send("Please run this command in a server!");
 			return;
-		}
-		console.log("message.channel.type")
-		if (checkNewGuild === null) {
-			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			await message.channel.send("You must have administrator permissions in this server to use this command!");
@@ -53,6 +46,13 @@ class HideCommand extends Command {
 		if (code.startsWith(",")) {
 			await message.channel.send("Please don't hide codes that start with ,!");
 			return;
+		}
+		const present = await this.client.database.getPresent({ code });
+		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
+		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
+		const isPartner = await this.client.database.isPartner(message.guild.id);
+		if (checkNewGuild === null) {
+			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
 		if (present !== null || queuePresent !== null) {
 			await message.channel.send("That code already exists!");

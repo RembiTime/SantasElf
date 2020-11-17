@@ -12,6 +12,10 @@ class DeleteCommand extends Command {
 		});
 	}
 	async exec(message, { code }) {
+		if (message.channel.type === "dm") {
+			message.channel.send("Please run this command in a server!");
+			return;
+		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			await message.channel.send("You must have administrator permissions in this server to use this command!");
 			return;

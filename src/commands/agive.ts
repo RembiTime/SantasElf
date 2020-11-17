@@ -24,7 +24,7 @@ class AdminGiveCommand extends Command {
 	}
 
 	async exec(message, { user, presentLevel, amount }) {
-		await user.givePresent(presentLevel, amount);
+		await this.client.database.agivePresent({ message, userID: user.id, presentLevel, amount})
 		await message.channel.send(`Gave ${amount} level ${presentLevel} present(s) to ${user}`);
 	}
 }

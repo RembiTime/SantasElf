@@ -41,7 +41,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "meme") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "meme" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				}
@@ -49,7 +49,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "palette") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "palette" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				} if (this.client.minigamePlayers.has(message.author.id)) {
@@ -60,7 +60,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "watch") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "watch" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				} if (this.client.minigamePlayers.has(message.author.id)) {
@@ -68,6 +68,10 @@ class UseCommand extends Command {
 					return;
 				}
 				this.client.database.useWatch({ message: message });
+			}
+			else if (item.id === "role") {
+				message.channel.send("Not done yet");
+				return;
 			}
 		} else {
 			message.channel.send("That item does not exist!");
