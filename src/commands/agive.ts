@@ -1,4 +1,5 @@
 import { Argument, Command } from "discord-akairo";
+import { Message, User } from "discord.js";
 
 class AdminGiveCommand extends Command {
 	constructor() {
@@ -23,8 +24,8 @@ class AdminGiveCommand extends Command {
 		});
 	}
 
-	async exec(message, { user, presentLevel, amount }) {
-		await user.givePresent(presentLevel, amount);
+	async exec(message: Message, { user, presentLevel, amount }: { user: User, presentLevel: number, amount: number }) {
+		await user.givePresents(presentLevel, amount);
 		await message.channel.send(`Gave ${amount} level ${presentLevel} present(s) to ${user}`);
 	}
 }
