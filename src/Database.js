@@ -390,7 +390,7 @@ class Database {
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
 		await this.client.knex("items")
-			.insert({name: itemName, userID, amount: 1, presentLevel: 1})
+			.insert({name: itemName, userID, amount: 1, record: 1})
 			.onConflict("userID")
 			.merge()
 		/* Keeping just in case...
@@ -585,7 +585,7 @@ class Database {
 			}
 			message.delete();
 			kissMessage.delete();
-			await mentionMsg.delete();
+			await mentionMsg.first().delete();
 			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
 			const newUserCheck = this.client.database.userDataCheck({userID: kissedID});
 			if (newUserCheck === null) {

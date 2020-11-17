@@ -35,11 +35,24 @@ class HideCommand extends Command {
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
 		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
 		const isPartner = await this.client.database.isPartner(message.guild.id);
+		
+		if (message.channel.type === "dm") {
+			return;
+		}
+		console.log("message.channel.type")
 		if (checkNewGuild === null) {
 			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			await message.channel.send("You must have administrator permissions in this server to use this command!");
+			return;
+		}
+		if (code === null) {
+			await message.channel.send("Please enter a code!");
+			return;
+		}
+		if (code.length >= 1024) {
+			await message.channel.send("That code it too long!");
 			return;
 		}
 		if (code.startsWith(",")) {
