@@ -34,36 +34,41 @@ class HideCommand extends Command {
 			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
-			message.channel.send("You must have administrator permissions in this server to use this command!");
+			await message.channel.send("You must have administrator permissions in this server to use this command!");
+			return;
+		}
+		if (code.startsWith(",")) {
+			await message.channel.send("Please don't hide codes that start with ,!");
+			return;
 		}
 		if (present !== null || queuePresent !== null) {
-			message.channel.send("That code already exists!");
+			await message.channel.send("That code already exists!");
 			return;
 		}
 		if (!isPartner) {
 			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
 			if (level > 3) {
-				message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
+				await message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
 				return;
 			}
 			if (presentAmount > 3) {
-				message.channel.send("Your server has reached the maximum amount of presents in your server. If you would like more, please apply to be a partner.");
+				await message.channel.send("Your server has reached the maximum amount of presents in your server. If you would like more, please apply to be a partner.");
 				return;
 			}
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount >= 3) {
 			if (!checkNewGuild?.appealed3Deny) {
-				message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
+				await message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 				return;
 			} else if (guildDeniedAmount >= 5) {
-				message.channel.send("Your server has been denied 5 times already. Because you have already appealed, you can no longer submit any presents");
+				await message.channel.send("Your server has been denied 5 times already. Because you have already appealed, you can no longer submit any presents");
 				return;
 			}
 		}
 		const checkPending = await this.client.database.checkIfPendingPresent({ guildID: message.guild.id });
-		if (+checkPending === 0) {
-			message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.");
+		if (+checkPending !== 0) {
+			await message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.");
 			return;
 		}
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");
