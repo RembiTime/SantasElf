@@ -16,6 +16,11 @@ class SellCommand extends Command {
 
 	async exec(message, {itemName}) {
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
+		if (!item) {
+			await message.channel.send("That item does not exist!");
+			return;
+		}
+
 		if (item.id === "fractal" || item.id === "slime" || item.id === "spanner" || item.id === "dragon" || item.id === "mysteriousPart") {
 			message.channel.send("You can't sell that item... Maybe you have to build something with it?");
 			return;

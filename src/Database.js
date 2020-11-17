@@ -94,7 +94,7 @@ class Database {
 	 * @returns {Promise<string?>}
 	 */
 	async getGuildDisplayMessageID({ guildID }) {
-		const [results] = await this.client.knex.select("displayMessageId").from("guildData").where({guildID});
+		const [results] = await this.client.knex.select("displayMessageID").from("guildData").where({guildID});
 		return results ?? null;
 	}
 
@@ -114,7 +114,7 @@ class Database {
 		/** @type {GuildDataRow[]} */
 		const results = await this.client.knex.select("inviteURL")
 			.from("guildData")
-			.where({ guildId: guild.id });
+			.where({ guildID: guild.id });
 		return results[0]?.inviteURL ?? null;
 	}
 	/**
@@ -125,7 +125,7 @@ class Database {
 	async setInviteURLOfGuild(guild, inviteURL) {
 		await this.client.knex("guildData")
 			.update({ inviteURL })
-			.where({ guildId: guild.id });
+			.where({ guildID: guild.id });
 	}
 
 	async checkStaffApprovalIDs(options) {
@@ -231,7 +231,7 @@ class Database {
 	 * @param {string} guildID
 	 * @returns {Promise<GuildDataRow?>}
 	 */
-	getGuildDataFromId(guildID) {
+	getGuildDataFromID(guildID) {
 		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0] ?? null;
 	}
 
@@ -772,8 +772,8 @@ class Database {
 
 module.exports = Database;
 
-util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromId instead.");
-util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromId instead.");
+util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromID instead.");
+util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromID instead.");
 util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
 util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
 util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");

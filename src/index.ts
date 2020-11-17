@@ -192,7 +192,7 @@ class SantasElf extends AkairoClient implements Extension {
 		if (!await this.knex.schema.hasTable("guildData")) {
 			await this.knex.schema.createTable("guildData", table => {
 				table.bigInteger("guildID").unsigned().primary();
-				table.bigInteger("displayMessageId").unsigned();
+				table.bigInteger("displayMessageID").unsigned();
 				table.boolean("isPartner").notNullable().defaultTo(false);
 				table.boolean("appealed3Deny").notNullable().defaultTo(false);
 				table.string("inviteURL");
@@ -281,7 +281,7 @@ class SantasElf extends AkairoClient implements Extension {
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
-		const guildData = await this.database.getGuildDataById(guildID);
+		const guildData = await this.database.getGuildDataFromID(guildID);
 		const { displayMessageID } = guildData!;
 		const channel = guildData!.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
