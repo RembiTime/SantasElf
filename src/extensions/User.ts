@@ -6,6 +6,7 @@ declare module "discord.js" {
 	interface User {
 		ensureDB(transaction?: Knex): Promise<void>;
 		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
+		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>
 	}
 }
 
@@ -23,7 +24,7 @@ Structures.extend("User", OldUser =>
 			this._ensured = true;
 		}
 
-		async fetchAchievements(transaction = this.client.knex): Promise<any> {
+		async fetchAchievements(transaction = this.client.knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>> {
 			const achievementRows = await transaction("achievements")
 				.select("id", "tier")
 				.where({ userID: this.id })
@@ -41,9 +42,18 @@ Structures.extend("User", OldUser =>
 			}
 
 			return achievementColl.map((tiers, id) => ({
-				achievement: achievements.find(achievement => achievement.id === id),
+				// TODO: validate that achievement exists?
+				achievement: achievements.find(achievement => achievement.id === id)!,
 				tiers
 			}));
+		}
+
+		async givePresents(level, amount, transaction = this.client.knex): Promise<void> {
+			await this.ensureDB(transaction);
+
+			await transaction("userData")
+				.increment(`lvl${level}Presents`, amount)
+				.where({ userID: this.id });
 		}
 	}
 );
