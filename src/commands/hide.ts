@@ -1,6 +1,5 @@
-const { Argument } = require("discord-akairo");
-const { Command } = require("../Command");
-const { MessageEmbed, TextChannel, DMChannel } = require("discord.js");
+import { Argument, Command } from "discord-akairo";
+import { MessageEmbed, TextChannel, DMChannel } from "discord.js";
 
 class HideCommand extends Command {
 	constructor() {
@@ -26,10 +25,6 @@ class HideCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message 
-	 * @param {{ code: string, level: number, description: string }} args
-	 */
 	async exec(message, { code, level, description }) {
 		const present = await this.client.database.getPresent({ code });
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
@@ -76,7 +71,7 @@ class HideCommand extends Command {
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount >= 3) {
-			if (!checkNewGuild.appealed3Deny) {
+			if (!checkNewGuild?.appealed3Deny) {
 				await message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 				return;
 			} else if (guildDeniedAmount >= 5) {
@@ -118,11 +113,12 @@ class HideCommand extends Command {
 			channelID: message.channel.id,
 			hiddenByID: message.author.id
 		});
+
 		const approvalMessage = await staffQueue.messages.fetch(sent.id);
-		approvalMessage.react("❗");
-		approvalMessage.react("✅");
-		approvalMessage.react("❌");
+		await approvalMessage.react("❗");
+		await approvalMessage.react("✅");
+		await approvalMessage.react("❌");
 	}
 }
 
-module.exports = HideCommand;
+export = HideCommand;

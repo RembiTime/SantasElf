@@ -1,5 +1,4 @@
-const { Argument } = require("discord-akairo");
-const { Command } = require("../Command");
+import { Argument, Command } from "discord-akairo";
 
 class AdminGiveCommand extends Command {
 	constructor() {
@@ -24,18 +23,10 @@ class AdminGiveCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 * @param {{ user: import("discord.js").User, presentLevel: number, amount: number }} args
-	 */
 	async exec(message, { user, presentLevel, amount }) {
-		await user.ensureDB();
-		await this.client.knex("userData")
-			.increment(`lvl${presentLevel}Presents`, amount)
-			.where("userID", "=", user.id);
-
+		await user.givePresent(presentLevel, amount);
 		await message.channel.send(`Gave ${amount} level ${presentLevel} present(s) to ${user}`);
 	}
 }
 
-module.exports = AdminGiveCommand;
+export = AdminGiveCommand;

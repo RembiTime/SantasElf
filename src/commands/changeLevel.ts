@@ -1,5 +1,5 @@
-const { Argument } = require("discord-akairo");
-const { Command } = require("../Command");
+import { Argument, Command } from "discord-akairo";
+
 class ChangeLevelCommand extends Command {
 	constructor() {
 		super("changeLevel", {
@@ -18,10 +18,6 @@ class ChangeLevelCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message 
-	 * @param {{ presentLevel: number, messageID: string }} args
-	 */
 	async exec(message, { presentLevel, messageID }) {
 		// TODO: not hardcode this (and review this command  in general)
 		if (message.channel.id !== "766143817497313331") {
@@ -57,4 +53,4 @@ class ChangeLevelCommand extends Command {
 	}
 }
 
-module.exports = ChangeLevelCommand;
+export = ChangeLevelCommand;

@@ -1,0 +1,28 @@
+// https://aka.ms/tsconfig.json
+{
+	"compilerOptions": {
+		"incremental": true,
+		"target": "ESNext",
+		"module": "CommonJS",
+		"allowJs": true,
+		"checkJs": false, // TODO: enable
+		"sourceMap": true,
+		"outDir": "./dist",
+		// "strict": false, // TODO: enable
+		"esModuleInterop": true,
+		"skipLibCheck": true,
+		"forceConsistentCasingInFileNames": true,
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		// Strict option family
+		"alwaysStrict": true,
+		"strictNullChecks": true,
+		"strictBindCallApply": true,
+		"strictFunctionTypes": true,
+		"strictPropertyInitialization": true,
+		"noImplicitAny": false,
+		"noImplicitThis": true,
+	},
+	"include": ["src/**/*.js", "src/**/*.ts"]
+}

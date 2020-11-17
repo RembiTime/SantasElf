@@ -1,11 +1,12 @@
-export interface GuildDataRow {
-	readonly guildId: string;
-	displayMessageId: string | null;
+export type GuildDataRow = Readonly<{
+	readonly guildID: string;
+	displayMessageID: string | null;
 	isPartner: boolean;
 	appealed3Deny: boolean;
 	inviteURL: string | null;
-}
-export interface UserDataRow {
+}>
+
+export type UserDataRow = Readonly<{
 	readonly userID: string;
 	userName: string;
 	candyCanes: number;
@@ -22,9 +23,10 @@ export interface UserDataRow {
 	lvl4Total: number;
 	lvl5Presents: number;
 	lvl5Total: number;
-}
-export interface PresentRow {
-	readonly id: number;
+}>
+
+export type PresentRow = Readonly<{
+	id: number;
 	code: string;
 	presentLevel: number;
 	timesFound: number;
@@ -32,8 +34,9 @@ export interface PresentRow {
 	channelID?: string;
 	hiddenByID: string;
 	usesLeft?: number;
-}
-export interface StaffApprovalRow {
+}>
+
+export type StaffApprovalRow = Readonly<{
 	readonly messageID: string;
 	status: "ONGOING" | "ACCEPTED" | "DENIED";
 	claimedByID?: string;
@@ -42,4 +45,13 @@ export interface StaffApprovalRow {
 	guildID: string;
 	channelID: string;
 	hiddenByID: string;
+}>
+
+declare module "knex/types/tables" {
+	interface Tables {
+		presents: PresentRow,
+		guildData: GuildDataRow,
+		userData: UserDataRow,
+		staffApproval: StaffApprovalRow
+	}
 }

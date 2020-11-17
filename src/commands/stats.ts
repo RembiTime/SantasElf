@@ -1,6 +1,6 @@
-const { Command } = require("../Command");
-const { showPages } = require("../util/discord");
-const { MessageEmbed } = require("discord.js");
+import { Command } from "discord-akairo";
+import { MessageEmbed } from "discord.js";
+import { showPages } from "../util/discord";
 
 class StatsCommand extends Command {
 	constructor() {
@@ -11,8 +11,8 @@ class StatsCommand extends Command {
 	}
 
 	/**
-	 * 
-	 * @param {import("discord.js").Message} message 
+	 *
+	 * @param {import("discord.js").Message} message
 	 */
 	async exec(message) {
 		const [{ presentsFound }] = await this.client.knex("foundPresents")
@@ -47,4 +47,4 @@ class StatsCommand extends Command {
 	}
 }
 
-module.exports = StatsCommand;
+export = StatsCommand;

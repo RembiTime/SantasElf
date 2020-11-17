@@ -1,12 +1,8 @@
-/**
- * 
- * @param {import("discord.js").MessageEmbed[]} pages 
- * @param {import("discord.js").TextChannel} channel 
- * @param {import("discord.js").User} user 
- * @param {number} time 
- * @returns {Promise<import("discord.js").Message>}
- */
-const showPages = async (pages, channel, user, time = 30000) => {
+import { Message, MessageEmbed, User } from "discord.js";
+
+export type TextBasedChannel = Message["channel"];
+
+export const showPages = async (pages: (MessageEmbed | string)[], channel: TextBasedChannel, user: User, time = 30000): Promise<Message> => {
 	const message = await channel.send(pages[0]);
 	const collector = message.createReactionCollector(() => true);
 
@@ -18,7 +14,7 @@ const showPages = async (pages, channel, user, time = 30000) => {
 	let timeout;
 
 	collector.on("collect", (reaction, reactor) => {
-		if (reactor.id === reactor.client.user.id) { return; }
+		if (reactor.id === reactor.client.user!.id) { return; }
 
 		if (reactor.id !== user.id) { return; }
 
@@ -54,5 +50,3 @@ const showPages = async (pages, channel, user, time = 30000) => {
 
 	return message;
 };
-
-module.exports = { showPages };

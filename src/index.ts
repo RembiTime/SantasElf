@@ -1,78 +1,89 @@
-require("dotenv").config();
+import dotenv from "dotenv";
+dotenv.config();
 
-const { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler: { readdirRecursive } } = require("discord-akairo");
-const { DiscordAPIError, MessageEmbed, TextChannel } = require("discord.js");
+import { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler } from "discord-akairo";
+import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
 
-const path = require("path");
-const knex = require("knex");
+import path from "path";
+import knex from "knex";
 
-const items = require("./items");
-const Database = require("./Database");
-// Load extentions
-readdirRecursive(path.join(__dirname, "extentions"))
+import items = require("./items");
+import Database = require("./Database");
+
+// Load extensions
+AkairoHandler.readdirRecursive(path.join(__dirname, "extensions"))
 	.filter(name => (/\.js$/).test(name))
 	.forEach(file => require(file));
 
-class SantasElf extends AkairoClient {
+interface Extension {
+	commandHandler: CommandHandler;
+	listenerHandler: ListenerHandler;
+	database: Database;
+	knex: knex;
+
+	minigamePlayers: Set<string>;
+	usersGuessing: Set<string>;
+	guildDisplayChannel: TextChannel;
+	partnerDisplayChannel: TextChannel;
+}
+
+class SantasElf extends AkairoClient implements Extension {
+	public commandHandler = new CommandHandler(this, {
+		directory: path.join(__dirname, "commands"),
+		prefix: ","
+	});
+
+	public listenerHandler = new ListenerHandler(this, {
+		directory: path.join(__dirname, "listeners"),
+	});
+
+	public database = new Database(this, {
+		host: process.env.MYSQL_HOST,
+		port: parseInt(process.env.MYSQL_PORT!),
+		user: process.env.MYSQL_USERNAME,
+		password: process.env.MYSQL_PASSWORD,
+		database: process.env.MYSQL_DATABASE
+	});
+
+	public knex = knex({
+		client: "mysql2",
+		connection: {
+			host: process.env.MYSQL_HOST,
+			port: parseInt(process.env.MYSQL_PORT!),
+			user: process.env.MYSQL_USERNAME,
+			password: process.env.MYSQL_PASSWORD,
+			database: process.env.MYSQL_DATABASE,
+			typeCast: (field, next) => {
+				if (field.type == "TINY" && field.length === 1) {
+					const value = field.string();
+					return value ? (value === "1") : null;
+				}
+				return next();
+			},
+			supportBigNumbers: true,
+			bigNumberStrings: true
+		}
+	});
+
+	public minigamePlayers: Set<string> = new Set();
+	public usersGuessing: Set<string> = new Set();
+
+	// TODO: check
+	public guildDisplayChannel: TextChannel = null!;
+	public partnerDisplayChannel: TextChannel = null!;
+
 	constructor() {
 		super(
-			{
-				ownerID: process.env.OWNER_IDS.split(",")
-			}, {
-				partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ]
-			}
+			{ ownerID: process.env.OWNER_IDS!.split(",") },
+			{ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ] }
 		);
-
-		this.commandHandler = new CommandHandler(this, {
-			directory: path.join(__dirname, "commands"),
-			prefix: ","
-		});
-
-		this.listenerHandler = new ListenerHandler(this, {
-			directory: path.join(__dirname, "listeners"),
-		});
 
 		this.commandHandler.loadAll();
 		this.commandHandler.useListenerHandler(this.listenerHandler);
 		this.listenerHandler.loadAll();
-
-		this.database = new Database(this, {
-			host: process.env.MYSQL_HOST,
-			port: parseInt(process.env.MYSQL_PORT),
-			user: process.env.MYSQL_USERNAME,
-			password: process.env.MYSQL_PASSWORD,
-			database: process.env.MYSQL_DATABASE
-		});
-
-		this.knex = knex({
-			client: "mysql2",
-			connection: {
-				host: process.env.MYSQL_HOST,
-				port: parseInt(process.env.MYSQL_PORT),
-				user: process.env.MYSQL_USERNAME,
-				password: process.env.MYSQL_PASSWORD,
-				database: process.env.MYSQL_DATABASE,
-				typeCast: (field, next) => {
-					if (field.type == "TINY" && field.length === 1) {
-						const value = field.string();
-						return value ? (value === "1") : null;
-					}
-					return next();
-				},
-				supportBigNumbers: true,
-				bigNumberStrings: true
-			}
-		});
-
-		this.minigamePlayers = new Set();
-		/** @type {TextChannel} */
-		this.guildDisplayChannel = null;
-		/** @type {TextChannel} */
-		this.partnerDisplayChannel = null;
-		this.usersGuessing = new Set();
 	}
 
-	async login(token) {
+	async login(token: string) {
 		await this.initDatabase();
 		return super.login(token);
 	}
@@ -181,7 +192,7 @@ class SantasElf extends AkairoClient {
 		if (!await this.knex.schema.hasTable("guildData")) {
 			await this.knex.schema.createTable("guildData", table => {
 				table.bigInteger("guildID").unsigned().primary();
-				table.bigInteger("displayMessageId").unsigned();
+				table.bigInteger("displayMessageID").unsigned();
 				table.boolean("isPartner").notNullable().defaultTo(false);
 				table.boolean("appealed3Deny").notNullable().defaultTo(false);
 				table.string("inviteURL");
@@ -207,10 +218,11 @@ class SantasElf extends AkairoClient {
 			else throw err;
 		}
 	}
+
 	/**
 	 * @returns {Promise<TextChannel?>} The partnered server list channel.
 	 */
-	async getPartnerDisplayChannel() {
+	async getPartnerDisplayChannel(): Promise<TextChannel | null> {
 		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
 			const fetchedChannel = await this.channels.fetch("777263455375720478");
@@ -249,7 +261,7 @@ class SantasElf extends AkairoClient {
 			.setDescription(`[Join!](${invite})`)
 			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
 			.addField("Total Present Count", presents.length);
-		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, presents.length, true);
+		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, (presents as any /* TODO */).length, true);
 		if (this.database.isPartner(guild.id)) {
 			embed.setColor(0x789fbf);
 		} else embed.setColor(0x949494);
@@ -260,20 +272,21 @@ class SantasElf extends AkairoClient {
 	 */
 	async setupGuildDisplayMessages() {
 		for (const guildData of await this.database.getAllGuilds()) {
-			await this.updateDisplayForGuild(guildData.guildId);
+			await this.updateDisplayForGuild(guildData.guildID);
 		}
 	}
+
 	async updateDisplayForGuild(guildID) {
 		const displayChannel = await this.getGuildDisplayChannel();
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
-		const guildData = await this.database.getGuildDataById(guildID);
-		const { displayMessageId } = guildData;
-		const channel = guildData.isPartner ? partnerChannel : displayChannel;
+		const guildData = await this.database.getGuildDataFromID(guildID);
+		const { displayMessageID } = guildData!;
+		const channel = guildData!.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
 			try {
-				return displayMessageId && await channel.messages.fetch(displayMessageId);
+				return displayMessageID && await channel.messages.fetch(displayMessageID);
 			} catch (err) {
 				if (err instanceof DiscordAPIError && err.code === 10008) return null;
 				throw err;
@@ -292,13 +305,19 @@ class SantasElf extends AkairoClient {
 		if (!displayMessage) {
 			const msg = await channel.send(embed);
 			await this.knex("guildData").update({
-				displayMessageId: msg.id
+				displayMessageID: msg.id
 			}).where({ guildID: guild.id });
 		} else await displayMessage.edit(embed);
 	}
 }
+
+declare module "discord.js" {
+	interface Client extends Extension {}
+}
+
 const client = new SantasElf();
-client.login(process.env.TOKEN);
+client.login(process.env.TOKEN!);
+
 
 module.exports = {
 	SantasElf

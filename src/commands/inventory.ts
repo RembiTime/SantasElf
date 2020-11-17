@@ -1,7 +1,7 @@
-const { Command } = require("../Command");
-const { partition } = require("../util/array");
-const { showPages } = require("../util/discord");
-const { MessageEmbed } = require("discord.js");
+import { Command } from "discord-akairo";
+import { MessageEmbed } from "discord.js";
+import { partition } from "../util/array";
+import { showPages } from "../util/discord";
 
 class InventoryCommand extends Command {
 	constructor() {
@@ -12,7 +12,7 @@ class InventoryCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 */
 	async exec(message) {
 		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
@@ -24,7 +24,7 @@ class InventoryCommand extends Command {
 				userName: "REMOVE THIS COLUMN"
 			});
 		}
-		const userData = await this.client.database.userDataCheck({ userID: message.author.id });
+		const userData = (await this.client.database.userDataCheck({ userID: message.author.id }))!;
 
 		/*if (items.length === 0) {
 			await message.channel.send(`You don't have any items, ${message.author}!`);
@@ -47,7 +47,7 @@ class InventoryCommand extends Command {
 			.addField("Level 4 presents", userData.lvl4Presents, true)
 			.addField("Level 5 presents", userData.lvl5Presents, true);
 
-		const itemSets = partition(item => item.item.rank, items).sort((x, y) => x[0].item.rank - y[0].item.rank);
+		const itemSets = partition<any>(item => item.item.rank, items).sort((x, y) => x[0].item.rank - y[0].item.rank);
 		const rankNames = ["Negative", "Common", "Uncommon", "Rare", "Legendary", "Mythic", "Unique"];
 		const rankPics = ["https://i.imgur.com/TtiJNGG.png", "https://i.imgur.com/oazdKuu.png", "https://i.imgur.com/4MC50bd.png", "https://i.imgur.com/6fIQ6fT.png", "https://i.imgur.com/riRGZKp.png", "https://i.imgur.com/1cEZyOx.png", "https://i.imgur.com/1cEZyOx.png"];
 
@@ -69,4 +69,4 @@ class InventoryCommand extends Command {
 	}
 }
 
-module.exports = InventoryCommand;
+export = InventoryCommand;

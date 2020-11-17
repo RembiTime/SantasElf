@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+import { Command } from "discord-akairo";
 
 class AppealAcceptCommand extends Command {
 	constructor() {
@@ -13,10 +13,6 @@ class AppealAcceptCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 * @param {{ guild: import("discord.js").Guild }} args
-	 */
 	async exec(message, { guild }) {
 		// TODO: ensure guild has actually appealed?
 
@@ -40,4 +36,4 @@ class AppealAcceptCommand extends Command {
 	}
 }
 
-module.exports = AppealAcceptCommand;
+export = AppealAcceptCommand;

@@ -1,4 +1,5 @@
-const { Command } = require("../Command");
+import { Command } from "discord-akairo";
+import { TextChannel } from "discord.js";
 
 class GuessCommand extends Command {
 	constructor() {
@@ -12,10 +13,6 @@ class GuessCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message 
-	 * @param {{ code: string }} args
-	 */
 	async exec(message, { code }) {
 		await message.delete();
 		if (this.client.usersGuessing.has(message.author.id)) {
@@ -40,7 +37,7 @@ class GuessCommand extends Command {
 		let presentExpired = false;
 		let stopCollector = false;
 
-		const filter = m => m.channel.type === "dm" && m.author.id !== this.client.user.id;
+		const filter = m => m.channel.type === "dm" && m.author.id !== this.client.user!.id;
 		const dmChannel = await message.author.createDM();
 		const collector = dmChannel.createMessageCollector(filter, { time: 900000 });
 		collector.on("collect", async m => {
@@ -49,7 +46,7 @@ class GuessCommand extends Command {
 				stopCollector = true;
 				collector.stop();
 			}
-			
+
 			await this.client.knex.transaction(async trx => {
 				[present] = await this.client.knex("presents")
 					.select("timesFound", "hiddenByID", "presentLevel", "usesLeft")
@@ -66,7 +63,7 @@ class GuessCommand extends Command {
 					}
 					return;
 				}
-				
+
 				this.client.usersGuessing.delete(message.author.id);
 				collector.stop();
 
@@ -118,7 +115,7 @@ class GuessCommand extends Command {
 						.increment("timesFound", 1)
 						.transacting(trx)
 						.where("code", "=", m.content);
-				
+
 					if (firstFinder) {
 						await this.client.knex("userData")
 							.increment("firstFinder", 1)
@@ -134,22 +131,21 @@ class GuessCommand extends Command {
 					await dmChannel.send("Guessing stopped. If you would like to open it again, please send `,g` in a channel again.");
 				} else {
 					await dmChannel.send("That present does not exist!");
-				}} else if (finderIsHider) {
+				}
+			} else if (finderIsHider) {
 				await dmChannel.send("You can't claim a present that you hid!");
 			} else if (alreadyFound) {
 				await dmChannel.send("You've already claimed that present!");
 			} else if (presentExpired) {
 				await dmChannel.send("This code has expired!");
 			} else if (firstFinder && !tempPresent) {
-				/** @type {*} */
-				const publicLogs = await this.client.channels.cache.get("777276173508018216");
-				let {guild} = message;
+				const publicLogs = await this.client.channels.cache.get("777276173508018216") as TextChannel;
+				let { guild } = message;
 				publicLogs.send("**" + message.author.tag + "** was the first one to find a level " + present.presentLevel + " present in **" + guild.name + "**");
 				await dmChannel.send(`You were the first one to find this present! It had a difficulty of \`${present.presentLevel}\`.`);
 			} else {
-				/** @type {*} */
-				const publicLogs = await this.client.channels.cache.get("777276173508018216");
-				let {guild} = message;
+				const publicLogs = await this.client.channels.cache.get("777276173508018216") as TextChannel;
+				let { guild } = message;
 				publicLogs.send("**" + message.author.tag + "** just found a level " + present.presentLevel + " present in **" + guild.name + "**");
 				await dmChannel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
 			}
@@ -161,4 +157,4 @@ class GuessCommand extends Command {
 }
 
 
-module.exports = GuessCommand;
+export = GuessCommand;

@@ -1,4 +1,4 @@
-const { Command } = require("../Command");
+import { Command } from "discord-akairo";
 
 class DeleteCommand extends Command {
 	constructor() {
@@ -23,9 +23,9 @@ class DeleteCommand extends Command {
 			return;
 		}
 		await this.client.knex("presents").where({code}).del();
-		message.channel.send("Present deleted")
+		message.channel.send("Present deleted");
 
 	}
 }
 
-module.exports = DeleteCommand;
+export = DeleteCommand;

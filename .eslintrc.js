@@ -5,8 +5,24 @@ module.exports = {
 	},
 	extends: "eslint:recommended",
 	parserOptions: {
-		ecmaVersion: 12
+		ecmaVersion: 12,
+		sourceType: "module"
 	},
+	overrides: [
+		{
+			files: ["*.ts"],
+			parser: "@typescript-eslint/parser",
+			plugins: ["@typescript-eslint"],
+			extends: [
+				// "@typescript-eslint/recommended",
+				// "@typescript-eslint/recommended-requiring-type-checking"
+			],
+			rules: {
+				"no-unused-vars": "off",
+				"@typescript-eslint/no-unused-vars": "error"
+			}
+		}
+	],
 	ignorePatterns: ["*.d.ts"],
 	rules: {
 		"indent": [

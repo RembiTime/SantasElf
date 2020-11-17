@@ -1,10 +1,10 @@
-/* eslint-disable no-unused-vars */
+/* eslint-disable no-unused-vars, @typescript-eslint/no-unused-vars */
 
 const Akairo = require("discord-akairo");
 const Discord = require("discord.js");
 const util = require("util");
 
-const { Command } = require("../Command");
+const { Command } = require("discord-akairo");
 
 class EvalCommand extends Command {
 	constructor() {
@@ -40,7 +40,7 @@ class EvalCommand extends Command {
 	}
 
 	/**
-	 * @param {import("discord.js").Message} message 
+	 * @param {import("discord.js").Message} message
 	 * @param {{ silent: boolean, delsrc: boolean, depth: number, code: string }} args
 	 */
 	async exec(message, { silent, delsrc, depth, code }) {
@@ -74,4 +74,4 @@ class EvalCommand extends Command {
 	}
 }
 
-module.exports = EvalCommand;
+export = EvalCommand;

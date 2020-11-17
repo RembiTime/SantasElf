@@ -15,8 +15,8 @@ class Database {
 		this.pool = mysql.createPool({ ...options, supportBigNumbers: true, bigNumberStrings: true }).promise();
 	}
 	/**
-	 * 
-	 * @param {{ id: string } | { code: string }} options 
+	 *
+	 * @param {{ id: string } | { code: string }} options
 	 */
 	async getPresent(options) {
 		if ("id" in options) {
@@ -31,7 +31,7 @@ class Database {
 		}
 	}
 	/**
-	 * @param {{ guildID: string }} guildID 
+	 * @param {{ guildID: string }} guildID
 	 * @returns {Promise<GuildDataRow?>}
 	 * @deprecated
 	 */
@@ -70,7 +70,7 @@ class Database {
 		}*/
 	}
 	/**
-	 * @param {{ guildID: string }} guildID 
+	 * @param {{ guildID: string }} guildID
 	 * @deprecated
 	 */
 	async checkIfPartner({ guildID }) {
@@ -82,7 +82,7 @@ class Database {
 		}*/
 	}
 	/**
-	 * @param {string} guildID 
+	 * @param {string} guildID
 	 * @returns {Promise<boolean>}
 	 */
 	async isPartner(guildID) {
@@ -94,7 +94,7 @@ class Database {
 	 * @returns {Promise<string?>}
 	 */
 	async getGuildDisplayMessageID({ guildID }) {
-		const [results] = await this.client.knex.select("displayMessageId").from("guildData").where({guildID});
+		const [results] = await this.client.knex.select("displayMessageID").from("guildData").where({guildID});
 		return results ?? null;
 	}
 
@@ -114,7 +114,7 @@ class Database {
 		/** @type {GuildDataRow[]} */
 		const results = await this.client.knex.select("inviteURL")
 			.from("guildData")
-			.where({ guildId: guild.id });
+			.where({ guildID: guild.id });
 		return results[0]?.inviteURL ?? null;
 	}
 	/**
@@ -125,7 +125,7 @@ class Database {
 	async setInviteURLOfGuild(guild, inviteURL) {
 		await this.client.knex("guildData")
 			.update({ inviteURL })
-			.where({ guildId: guild.id });
+			.where({ guildID: guild.id });
 	}
 
 	async checkStaffApprovalIDs(options) {
@@ -167,7 +167,7 @@ class Database {
 		}*/
 	}
 	/**
-	 * @param {{ userID: string }} userID 
+	 * @param {{ userID: string }} userID
 	 * @returns {Promise<UserDataRow?>}
 	 */
 	async userDataCheck({ userID }) {
@@ -193,7 +193,7 @@ class Database {
 		}*/
 	}
 	/**
-	 * @param {{ messageID: string }} messageID 
+	 * @param {{ messageID: string }} messageID
 	 * @returns {Promise<StaffApprovalRow>}
 	 * @deprecated
 	 */
@@ -207,7 +207,7 @@ class Database {
 	}
 
 	/**
-	 * @param {string} messageID 
+	 * @param {string} messageID
 	 * @returns {Promise<StaffApprovalRow>}
 	 */
 	async getStaffApprovalFromMessageID(messageID) {
@@ -216,7 +216,7 @@ class Database {
 	}
 	/**
 	 * @deprecated
-	 * @param {{ guildID: string }} guildID 
+	 * @param {{ guildID: string }} guildID
 	 * @returns {Promise<GuildDataRow?>}
 	 */
 	async findIfGuildExists({ guildID }) {
@@ -228,13 +228,13 @@ class Database {
 		}*/
 	}
 	/**
-	 * @param {string} guildID 
+	 * @param {string} guildID
 	 * @returns {Promise<GuildDataRow?>}
 	 */
-	getGuildDataFromId(guildID) {
+	getGuildDataFromID(guildID) {
 		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0] ?? null;
 	}
-	
+
 
 	async getAllItems({ userID }) {
 		const results = await this.client.knex.select("*").from("items").where({ userID });
@@ -270,7 +270,7 @@ class Database {
 	}
 
 	async addNewGuild({ guildID }) {
-		await this.client.knex.insert({ 
+		await this.client.knex.insert({
 			guildID
 		}).into("guildData");
 	}
@@ -424,9 +424,6 @@ class Database {
 		await this.client.knex("items").where({name: itemName, userID}).decrement({amount: 1});
 	}
 
-	/**
-	 * @param {{ userData: UserDataRow, presentLevel: number }} args
-	 */
 	removePresent({ userData, presentLevel }) {
 		if (presentLevel == 1) {
 			if (userData.lvl1Presents < 1) {
@@ -727,7 +724,7 @@ class Database {
 						let timeToReact = endGreen.getTime() - startGreen.getTime();
 						this.client.minigamePlayers.delete(message.author.id);
 						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
-						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) : 
+						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
 							timeToReact < 500 ? 60 : 50);
 						this.client.database.addCandyCanes({amount: toAdd, userID: message.author.id});
 						stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
@@ -775,9 +772,8 @@ class Database {
 
 module.exports = Database;
 
-util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromId instead.");
-util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromId instead.");
+util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromID instead.");
+util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromID instead.");
 util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
 util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
 util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");
-

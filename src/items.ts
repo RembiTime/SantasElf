@@ -1,6 +1,20 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
-module.exports = [
+
+import { Message } from "discord.js";
+
+interface ItemEntry {
+	id: string;
+	rank: number;
+	worth?: number;
+	displayName: string;
+	messageName: string;
+	response: string;
+	defaultBehavior: boolean;
+	onFind(client: unknown, message: Message): void | Promise<void>;
+}
+
+const items = [
 	{
 		id: "coal",
 		rank: 0,
@@ -19,7 +33,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "goose", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/* Just in case...
 			await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
@@ -143,14 +157,14 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "singleCandy", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, ["singleCandy", message.author.id]);*/
-		await client.knex({userData}).where({userID: message.author.id}).increment({candyCanes: 1});
+			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 1});
 		}
 	},
 	{
@@ -243,7 +257,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "keyboard", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -252,15 +266,17 @@ module.exports = [
 		`, ["keyboard", message.author.id]);*/
 			const rand = Math.random();
 			let prompt = "Type in the following for the keyboard to give you candy! (Anyone can participate, but only the first person wins!)\n\n";
+			let answer;
+
 			if (rand < 1 / 3) {
 				prompt = prompt + "This is an example typing test";
-				let answer = "This is an example typing test";
+				answer = "This is an example typing test";
 			} else if (rand < 2 / 3) {
 				prompt = prompt + "This is another example of a prompt";
-				let answer = "This is another example of a prompt";
+				answer = "This is another example of a prompt";
 			} else {
 				prompt = prompt + "I've run out of ideas";
-				let answer = "I've run out of ideas";
+				answer = "I've run out of ideas";
 			}
 			const filter = response => response.content === answer;
 
@@ -337,7 +353,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "simp", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -374,7 +390,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({userID: message.author.id, active: "TRUE", timeFound: timeStamp})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 				INSERT INTO dragonEggData SET
 					userID = ?,
@@ -393,7 +409,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "role", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -452,7 +468,7 @@ module.exports = [
 			await client.knex("items")
 				.insert({name: "glitch", userID: message.author.id, amount: 1, presentLevel: 1})
 				.onConflict("userID")
-				.merge()
+				.merge();
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -495,3 +511,6 @@ module.exports = [
 		response: "**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**"
 	}
 ];
+
+// TODO: don't use `as`
+export = items as unknown as ItemEntry[];
