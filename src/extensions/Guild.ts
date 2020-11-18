@@ -8,6 +8,8 @@ declare module "discord.js" {
 		fetchData(transaction?: Knex): Promise<GuildDataRow>;
 		isPartner(transaction?: Knex): Promise<boolean>;
 		setPartner(partner: boolean, transaction?: Knex);
+		appealStatus(transaction?: Knex): Promise<"DENIED" | "ACCEPTED" | null>;
+		setAppealStatus(status: "DENIED" | "ACCEPTED" | null, transaction?: Knex): Promise<void>;
 	}
 }
 
@@ -51,6 +53,28 @@ Structures.extend("Guild", OldGuild => class Guild extends OldGuild {
 
 		await transaction("guildData")
 			.update({ isPartner: partner })
+			.where({ guildID: this.id });
+	}
+
+	async appealStatus(transaction = this.client.knex): Promise<"DENIED" | "ACCEPTED" | null> {
+		await this.ensureDB(transaction);
+
+		const guildData = await transaction("guildData")
+			.first("appealed3Deny")
+			.where({ guildID: this.id })
+			.forUpdate();
+
+		// TODO: allow denying appeals
+		return guildData!.appealed3Deny ? "ACCEPTED" : null;
+	}
+
+	async setAppealStatus(status: "DENIED" | "ACCEPTED" | null, transaction = this.client.knex) {
+		await this.ensureDB(transaction);
+
+		if (status === "DENIED") { throw new Error("DENIED appeal status not yet implemented"); }
+
+		await transaction("guildData")
+			.update({ appealed3Deny: status === "ACCEPTED" ? true : false })
 			.where({ guildID: this.id });
 	}
 });
