@@ -85,7 +85,7 @@ class HideCommand extends Command {
 			return;
 		}
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");
-		const staffQueue = this.client.channels.cache.get("766143817497313331");
+		const staffQueue = this.client.channels.cache.get("778449316288528444");
 		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel!");
 		if (message.channel instanceof DMChannel) return message.channel.send("You cannot do this in a DM.");
 		const invite = await message.channel.createInvite(
