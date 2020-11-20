@@ -70,8 +70,13 @@ class UseCommand extends Command {
 				this.client.database.useWatch({ message: message });
 			}
 			else if (item.id === "role") {
-				message.channel.send("Not done yet");
-				return;
+				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "role" });
+				if (itemCheck === null || itemCheck.amount < 1) {
+					message.channel.send("You don't have any of that item!");
+					return;
+				} if (message.guild.id !== "647915068767338509") {
+					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP")
+				}
 			}
 		} else {
 			message.channel.send("That item does not exist!");

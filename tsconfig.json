@@ -22,7 +22,8 @@
 		"strictFunctionTypes": true,
 		"strictPropertyInitialization": true,
 		"noImplicitAny": false,
-		"noImplicitThis": true
+		"noImplicitThis": true,
+		"resolveJsonModule": true
 	},
 	"include": ["src/**/*.js", "src/**/*.ts"]
 }

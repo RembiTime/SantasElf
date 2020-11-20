@@ -409,7 +409,7 @@ const items = [
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "No way! You found a role! You feel special-er.",
+		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP"
 		/*defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
