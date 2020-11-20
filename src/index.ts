@@ -7,7 +7,7 @@ import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
 import path from "path";
 import knex from "knex";
 
-import items = require("./items");
+import { items } from "./items";
 import Database = require("./Database");
 
 // Load extensions

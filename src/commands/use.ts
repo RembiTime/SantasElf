@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import items = require("../items");
+import { items } from "../items";
 
 class UseCommand extends Command {
 	constructor() {
