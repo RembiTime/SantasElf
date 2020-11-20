@@ -22,20 +22,14 @@ class HideCommand extends Command {
 					type: "string",
 					prompt: { start: "Please enter the steps of how to find your code! Please be as descriptive as possible, so it's easier for staff to find it or you might be denied!", retry: "Please enter the steps of how to find your code! Please be as descriptive as possible, so it's easier for staff to find it or you might be denied!" }
 				}
-			]
+			],
+			channel: "guild",
+			userPermissions: ["ADMINISTRATOR"]
 		});
 	}
 
 	async exec(message, { code, level, description }) {
 		
-		if (message.channel.type === "dm") {
-			message.channel.send("Please run this command in a server!");
-			return;
-		}
-		if (!message.member.hasPermission("ADMINISTRATOR")) {
-			await message.channel.send("You must have administrator permissions in this server to use this command!");
-			return;
-		}
 		if (message.guild.memberCount < 25) {
 			await message.channel.send("Your server must have at least 25 members to submit a present");
 			return;
