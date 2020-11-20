@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { MessageEmbed } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { partition } from "../util/array";
 import { showPages } from "../util/discord";
 
@@ -11,20 +11,9 @@ class InventoryCommand extends Command {
 		});
 	}
 
-	/**
-	 * @param {import("discord.js").Message} message
-	 */
-	async exec(message) {
-		const newUserCheck = await this.client.database.userDataCheck({ userID: message.author.id });
-		const items = await this.client.database.getAllItems({ userID: message.author.id });
-
-		if (newUserCheck === null) {
-			await this.client.database.addNewUser({
-				userID: message.author.id,
-				userName: "REMOVE THIS COLUMN"
-			});
-		}
-		const userData = (await this.client.database.userDataCheck({ userID: message.author.id }))!;
+	async exec(message: Message) {
+		const items = await message.author.fetchItems();
+		const userData = await message.author.fetchData();
 
 		/*if (items.length === 0) {
 			await message.channel.send(`You don't have any items, ${message.author}!`);

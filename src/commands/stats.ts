@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { MessageEmbed } from "discord.js";
+import { Message, MessageEmbed } from "discord.js";
 import { showPages } from "../util/discord";
 
 class StatsCommand extends Command {
@@ -10,11 +10,7 @@ class StatsCommand extends Command {
 		});
 	}
 
-	/**
-	 *
-	 * @param {import("discord.js").Message} message
-	 */
-	async exec(message) {
+	async exec(message: Message) {
 		const [{ presentsFound }] = await this.client.knex("foundPresents")
 			.countDistinct("presentCode", { as: "presentsFound" });
 
