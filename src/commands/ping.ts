@@ -1,4 +1,5 @@
 import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 
 class PingCommand extends Command {
 	constructor() {
@@ -8,7 +9,7 @@ class PingCommand extends Command {
 		});
 	}
 
-	async exec(message) {
+	async exec(message: Message) {
 		await message.channel.send("Pong!");
 	}
 }
