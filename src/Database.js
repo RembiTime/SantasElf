@@ -390,9 +390,12 @@ class Database {
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
 		await this.client.knex("items")
-			.insert({name: itemName, userID, amount: 1, presentLevel: 1})
+			.insert({name: itemName, userID, amount: 1, record: 1})
 			.onConflict("userID")
-			.merge()
+			.merge({
+				  amount: this.client.knex.raw("amount + 1"),
+				  record: this.client.knex.raw("GREATEST(amount, record)")
+			});
 		/* Keeping just in case...
 		await this.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
@@ -468,19 +471,14 @@ class Database {
 	async agivePresent({ message, userID, presentLevel, amount}) {
 		if (presentLevel == 1) {
 			await this.client.knex("userData").where({userID}).increment({lvl1Presents: amount});
-			message.channel.send("Added " + amount + " level 1 present(s)");
 		} else if (presentLevel == 2) {
 			await this.client.knex("userData").where({userID}).increment({lvl2Presents: amount});
-			message.channel.send("Added " + amount + " level 2 present(s)");
 		} else if (presentLevel == 3) {
 			await this.client.knex("userData").where({userID}).increment({lvl3Presents: amount});
-			message.channel.send("Added " + amount + " level 3 present(s)");
 		} else if (presentLevel == 4) {
 			await this.client.knex("userData").where({userID}).increment({lvl4Presents: amount});
-			message.channel.send("Added " + amount + " level 4 present(s)");
 		} else if (presentLevel == 5) {
 			await this.client.knex("userData").where({userID}).increment({lvl5Presents: amount});
-			message.channel.send("Added " + amount + " level 5 present(s)");
 		}
 	}
 
@@ -582,7 +580,7 @@ class Database {
 			}
 			message.delete();
 			kissMessage.delete();
-			await mentionMsg.delete();
+			await mentionMsg.first().delete();
 			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
 			const newUserCheck = this.client.database.userDataCheck({userID: kissedID});
 			if (newUserCheck === null) {
@@ -612,15 +610,15 @@ class Database {
 		} if (candyCaneAmt < 0) {
 			let positiveNum = Math.abs(candyCaneAmt);
 			message.channel.send("Wow, people did not like your meme! You lost " + positiveNum + " candy canes! Welcome to controversial.");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: positiveNum});
+			await this.client.knex("userData").where({userID: message.author.id}).decrement({candyCanes: positiveNum});
 			return;
 		} if (candyCaneAmt > 0 && candyCaneAmt <= 15) {
 			message.channel.send("People liked your meme, which made it to hot! You gained " + candyCaneAmt + " candy canes!");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
+			await this.client.knex("userData").where({userID: message.author.id}).decrement({candyCanes: candyCaneAmt});
 			return;
 		} if (candyCaneAmt > 15) {
 			message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCaneAmt + " candy canes!");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
+			await this.client.knex("userData").where({userID: message.author.id}).decrement({candyCanes: candyCaneAmt});
 			return;
 		}
 	}
