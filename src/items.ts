@@ -1,20 +1,20 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
 
-import { Message } from "discord.js";
+import { Client, Message } from "discord.js";
 
 interface ItemEntry {
 	id: string;
 	rank: number;
 	worth?: number;
 	displayName: string;
-	messageName: string;
+	messageName?: string;
 	response: string;
-	defaultBehavior: boolean;
-	onFind(client: unknown, message: Message): void | Promise<void>;
+	defaultBehavior?: boolean;
+	onFind?: (client: Client, message: Message) => void | Promise<void>;
 }
 
-const items = [
+const items: ItemEntry[] = [
 	{
 		id: "coal",
 		rank: 0,
@@ -44,7 +44,7 @@ const items = [
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, ["goose", message.author.id]); */
-			await client.knex("userData").where({ userID: message.author.id }).decrement({ candyCanes: 20 });
+			await client.knex("userData").where({ userID: message.author.id }).decrement("candyCanes", 20);
 			//await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
 		}
 	},
@@ -170,7 +170,7 @@ const items = [
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, ["singleCandy", message.author.id]);*/
-			await client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 1 });
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 1);
 		}
 	},
 	{
@@ -292,11 +292,12 @@ const items = [
 			message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
+				const response = collected.first()!;
 
-				await client.knex("userData").where({ userID: collected.first().author.id }).increment({ candyCanes: 20 });
-				return message.channel.send("<@" + collected.author.id + "> was the first to type correctly and got 20 candy canes!");
+				await client.knex("userData").where({ userID: response.author.id }).increment("candyCanes", 20);
+				await message.channel.send("<@" + response.author.id + "> was the first to type correctly and got 20 candy canes!");
 			} catch {
-				return message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
+				await message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}
 		}
 	},
@@ -359,7 +360,7 @@ const items = [
 		response: "Wow! You found a simp! You're a little concerned that he snuck into your house, but hey, he'll pay you 50 candy canes to notice him. You take the money and promptly ignore him. Nice try buddy.", // changed: reworded, also what the fuck? -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 50 });
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 50);
 			await client.knex("items")
 				.insert({ name: "simp", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
@@ -472,7 +473,7 @@ const items = [
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 174 });
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 174);
 			await client.knex("items")
 				.insert({ name: "glitch", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
@@ -523,5 +524,4 @@ const items = [
 	}
 ];
 
-// TODO: don't use `as`
-export = items as unknown as ItemEntry[];
+export = items;
