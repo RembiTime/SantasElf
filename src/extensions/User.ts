@@ -22,7 +22,12 @@ declare module "discord.js" {
 		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
 		fetchData(transaction?: Knex): Promise<UserDataRow>;
 		fetchItems(transaction?: Knex): Promise<Array<{ item: Item, amount: number, record: number }>>;
-		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>
+
+		giveItem(item: Item | string, transaction?: Knex): Promise<void>;
+
+		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>;
+		/** @returns true if the presents were successfully removed, false if there were not enough presents in the inventory to take */
+		removePresents(level: number, amount: number, transaction?: Knex): Promise<boolean>;
 	}
 }
 
@@ -103,12 +108,45 @@ Structures.extend("User", OldUser =>
 			}));
 		}
 
+		async giveItem(item: Item | string, transaction = this.client.knex): Promise<void> {
+			await transaction("items")
+				.insert({
+					userID: this.id,
+					name: typeof item === "string" ? item : item.id,
+					amount: 1,
+					record: 1
+				})
+				.onConflict("userID")
+				.merge({
+					amount: transaction.raw("amount + 1"),
+					record: transaction.raw("GREATEST(amount, record)")
+				});
+		}
+
 		async givePresents(level, amount, transaction = this.client.knex): Promise<void> {
 			await this.ensureDB(transaction);
 
 			await transaction("userData")
 				.increment(`lvl${level}Presents`, amount)
 				.where({ userID: this.id });
+		}
+
+		async removePresents(level: number, amount: number, transaction = this.client.knex): Promise<boolean> {
+			try {
+				await this.ensureDB(transaction);
+
+				await transaction("userData")
+					.decrement(`lvl${level}Presents`, amount)
+					.where({ userID: this.id });
+
+				return true;
+			} catch (err) {
+				if (err.code === "ER_WARN_DATA_OUT_OF_RANGE") {
+					return false;
+				} else {
+					throw err;
+				}
+			}
 		}
 	}
 );

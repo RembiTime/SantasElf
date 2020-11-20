@@ -146,21 +146,21 @@ class SantasElf extends AkairoClient implements Extension {
 				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
 
 				table.integer("candyCanes").notNullable().defaultTo(0);
-				table.integer("wrongGuesses").notNullable().defaultTo(0);
+				table.integer("wrongGuesses").unsigned().notNullable().defaultTo(0);
 
 				// TODO: these are all also bad
-				table.integer("firstFinder").notNullable().defaultTo(0);
-				table.integer("totalPresents").notNullable().defaultTo(0);
-				table.integer("lvl1Presents").notNullable().defaultTo(0);
-				table.integer("lvl1Total").notNullable().defaultTo(0);
-				table.integer("lvl2Presents").notNullable().defaultTo(0);
-				table.integer("lvl2Total").notNullable().defaultTo(0);
-				table.integer("lvl3Presents").notNullable().defaultTo(0);
-				table.integer("lvl3Total").notNullable().defaultTo(0);
-				table.integer("lvl4Presents").notNullable().defaultTo(0);
-				table.integer("lvl4Total").notNullable().defaultTo(0);
-				table.integer("lvl5Presents").notNullable().defaultTo(0);
-				table.integer("lvl5Total").notNullable().defaultTo(0);
+				table.integer("firstFinder").unsigned().notNullable().defaultTo(0);
+				table.integer("totalPresents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl1Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl1Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl2Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl2Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl3Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl3Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl4Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl4Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl5Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl5Total").unsigned().notNullable().defaultTo(0);
 			});
 
 		}
