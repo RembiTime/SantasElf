@@ -78,8 +78,12 @@ class SantasElf extends AkairoClient implements Extension {
 			{ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ] }
 		);
 
-		this.commandHandler.loadAll();
 		this.commandHandler.useListenerHandler(this.listenerHandler);
+		this.listenerHandler.setEmitters({
+			commandHandler: this.commandHandler
+		});
+
+		this.commandHandler.loadAll();
 		this.listenerHandler.loadAll();
 	}
 
