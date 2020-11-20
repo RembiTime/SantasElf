@@ -3,7 +3,7 @@
 
 import { Client, Message } from "discord.js";
 
-interface ItemEntry {
+export interface Item {
 	id: string;
 	rank: number;
 	worth?: number;
@@ -14,7 +14,7 @@ interface ItemEntry {
 	onFind?: (client: Client, message: Message) => void | Promise<void>;
 }
 
-export const items: ItemEntry[] = [
+export const items: Item[] = [
 	{
 		id: "coal",
 		rank: 0,

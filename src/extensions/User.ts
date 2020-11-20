@@ -1,6 +1,10 @@
 import Knex from "knex";
 import { Structures, Collection } from "discord.js";
 import { AchievementEntry, achievements } from "../achievements";
+import { Item, items } from "../items";
+import { UserDataRow } from "../typings/tables";
+
+const itemMap = new Map(items.map(item => [item.id, item]));
 
 declare module "discord.js" {
 	interface User {
@@ -16,6 +20,8 @@ declare module "discord.js" {
 		getFlag(flag: string): Promise<boolean>;
 
 		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
+		fetchData(transaction?: Knex): Promise<UserDataRow>;
+		fetchItems(transaction?: Knex): Promise<Array<{ item: Item, amount: number, record: number }>>;
 		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>
 	}
 }
@@ -72,6 +78,28 @@ Structures.extend("User", OldUser =>
 				// TODO: validate that achievement exists?
 				achievement: achievements.find(achievement => achievement.id === id)!,
 				tiers
+			}));
+		}
+
+		async fetchData(transaction = this.client.knex): Promise<UserDataRow> {
+			return transaction("userData")
+				.first("*")
+				.where({ userID: this.id })
+				.forUpdate();
+		}
+
+		async fetchItems(transaction = this.client.knex): Promise<Array<{ item: Item, amount: number, record: number }>> {
+			const results = await transaction("items")
+				.select("name", "amount", "record")
+				.from("items")
+				.where({ userID: this.id })
+				.forUpdate();
+
+
+			return results.map(({ name, amount, record }) => ({
+				item: itemMap.get(name)!,
+				amount,
+				record
 			}));
 		}
 

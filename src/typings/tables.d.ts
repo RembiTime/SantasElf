@@ -47,11 +47,19 @@ export type StaffApprovalRow = Readonly<{
 	hiddenByID: string;
 }>
 
+export type ItemDataRow = Readonly<{
+	name: string,
+	userID: string,
+	amount: number,
+	record: number
+}>;
+
 declare module "knex/types/tables" {
 	interface Tables {
 		presents: PresentRow,
 		guildData: GuildDataRow,
 		userData: UserDataRow,
-		staffApproval: StaffApprovalRow
+		staffApproval: StaffApprovalRow,
+		items: ItemDataRow
 	}
 }

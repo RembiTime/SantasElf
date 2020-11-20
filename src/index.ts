@@ -118,6 +118,7 @@ class SantasElf extends AkairoClient implements Extension {
 
 		if (!await this.knex.schema.hasTable("items")) {
 			await this.knex.schema.createTable("items", table => {
+				// TODO: change `name` to `id`
 				table.string("name").notNullable();
 				table.bigInteger("userID").unsigned().notNullable();
 				table.integer("amount").notNullable();
