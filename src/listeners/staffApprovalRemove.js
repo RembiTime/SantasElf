@@ -13,7 +13,7 @@ class StaffApprovalRemoveListener extends Listener {
 	async exec(reaction, user) {
 		if (reaction.message.partial) { await reaction.message.fetch(); }
 
-		if (reaction.message.channel.id !== channel.staffQueue) {
+		if (reaction.message.channel.id !== channels.staffQueue) {
 			return;
 		}
 		const checkApprovalIfOngoing = await this.client.database.checkApprovalIfOngoing({ messageID: reaction.message.id });
