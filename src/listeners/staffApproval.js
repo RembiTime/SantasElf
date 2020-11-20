@@ -1,5 +1,6 @@
 const { Listener } = require("discord-akairo");
 const { MessageEmbed, TextChannel } = require("discord.js");
+import channels from "../channels.json";
 
 class StaffApprovalListener extends Listener {
 	constructor() {
@@ -13,7 +14,7 @@ class StaffApprovalListener extends Listener {
 		if (reaction.message.partial) { await reaction.message.fetch(); }
 		if (user.partial) { await user.fetch(); }
 
-		if (reaction.message.channel.id !== "778449316288528444") {
+		if (reaction.message.channel.id !== channels.staffQueue) {
 			return;
 		}
 
@@ -27,7 +28,7 @@ class StaffApprovalListener extends Listener {
 		if (checkApprovalIfOngoing === null) {
 			return;
 		}
-		const staffQueue = this.client.channels.cache.get("778449316288528444");
+		const staffQueue = this.client.channels.cache.get(channels.staffQueue);
 		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel.");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
@@ -64,7 +65,7 @@ class StaffApprovalListener extends Listener {
 				.setColor("#8DFF5A")
 				.setFooter("Approved by " + user.username + "#" + user.discriminator);
 			approvalMessage.edit(editedEmbed);
-			const publicLogs = await this.client.channels.cache.get("778450960430530580");
+			const publicLogs = await this.client.channels.cache.get(channels.publicLogs);
 			if (!(publicLogs instanceof TextChannel)) throw new Error("Public logs channel was not a text channel.");
 			const guildName = await this.client.guilds.cache.get(checkStaffApproval.guildID);
 			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!");

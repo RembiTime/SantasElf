@@ -1,5 +1,6 @@
 import { Argument, Command } from "discord-akairo";
 import { MessageEmbed, TextChannel, DMChannel } from "discord.js";
+import channels from "../channels.json";
 
 class HideCommand extends Command {
 	constructor() {
@@ -33,6 +34,10 @@ class HideCommand extends Command {
 		}
 		if (!message.member.hasPermission("ADMINISTRATOR")) {
 			await message.channel.send("You must have administrator permissions in this server to use this command!");
+			return;
+		}
+		if (message.guild.memberCount < 25) {
+			await message.channel.send("Your server must have at least 25 members to submit a present");
 			return;
 		}
 		if (code === null) {
@@ -85,7 +90,7 @@ class HideCommand extends Command {
 			return;
 		}
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");
-		const staffQueue = this.client.channels.cache.get("778449316288528444");
+		const staffQueue = this.client.channels.cache.get(channels.staffQueue);
 		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel!");
 		if (message.channel instanceof DMChannel) return message.channel.send("You cannot do this in a DM.");
 		const invite = await message.channel.createInvite(
