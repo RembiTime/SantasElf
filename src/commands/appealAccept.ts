@@ -17,7 +17,7 @@ class AppealAcceptCommand extends Command {
 	async exec(message: Message, { guild }: { guild: Guild } ) {
 		await this.client.knex.transaction(async trx => {
 			if (await guild.appealStatus(trx) !== null) {
-				await message.channel.send("This guild has been given 2 more attempts");
+				await message.channel.send("This guild has already appealed");
 			} else {
 				await guild.setAppealStatus("ACCEPTED", trx);
 				await message.channel.send("This guild has been given 2 more attempts");
