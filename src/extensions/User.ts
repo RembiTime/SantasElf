@@ -5,6 +5,16 @@ import { AchievementEntry, achievements } from "../achievements";
 declare module "discord.js" {
 	interface User {
 		ensureDB(transaction?: Knex): Promise<void>;
+
+		/**
+		 * Sets a boolean flag on a user
+		 *
+		 * @param flag the name of the flag to set
+		 * @returns true if the flag was updated, false otherwise
+		 */
+		setFlag(flag: string, value: boolean): Promise<boolean>;
+		getFlag(flag: string): Promise<boolean>;
+
 		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
 		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>
 	}
@@ -13,6 +23,23 @@ declare module "discord.js" {
 Structures.extend("User", OldUser =>
 	class User extends OldUser {
 		private _ensured = false;
+		private _flags = new Set<string>();
+
+		async setFlag(flag: string, value: boolean): Promise<boolean> {
+			let previousValue = this._flags.has(flag);
+
+			if (value) {
+				this._flags.add(flag);
+			} else {
+				this._flags.delete(flag);
+			}
+
+			return previousValue !== value;
+		}
+
+		async getFlag(flag: string): Promise<boolean> {
+			return this._flags.has(flag);
+		}
 
 		async ensureDB(transaction = this.client.knex) {
 			if (this._ensured) { return; }

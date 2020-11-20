@@ -36,7 +36,6 @@ module.exports = {
 		"semi": [
 			"error",
 			"always"
-		],
-		"require-await": "error"
+		]
 	}
 };
