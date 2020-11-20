@@ -10,7 +10,6 @@ class PingCommand extends Command {
 
 	async exec(message) {
 		await message.channel.send("Pong!");
-		this.client.database.foundAchievement({achName: "presentTotal", userID: message.author.id, message: message});
 	}
 }
 
