@@ -204,6 +204,15 @@ export class SantasElf extends AkairoClient implements Extension {
 			});
 		}
 
+		if (!await this.knex.schema.hasTable("eggData")) {
+			await this.knex.schema.createTable("eggData", table => {
+				table.increments("eggID").primary();
+				table.bigInteger("userID").unsigned();
+				table.bigInteger("timeFound").unsigned();
+				table.enum("status", ["UNCLAIMED", "CLAIMED", "LOST"]).notNullable();
+			});
+		}
+
 		await Promise.all(items.map(item =>
 			this.knex("itemsConfig").insert({ name: item.id, rank: item.rank }).onConflict("name").ignore()
 		));

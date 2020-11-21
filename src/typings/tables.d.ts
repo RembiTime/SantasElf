@@ -54,12 +54,20 @@ export type ItemDataRow = Readonly<{
 	record: number
 }>;
 
+export type EggDataRow = Readonly<{
+	eggID: number,
+	userID: string,
+	timeFound: string,
+	status: string
+}>
+
 declare module "knex/types/tables" {
 	interface Tables {
 		presents: PresentRow,
 		guildData: GuildDataRow,
 		userData: UserDataRow,
 		staffApproval: StaffApprovalRow,
-		items: ItemDataRow
+		items: ItemDataRow,
+		eggData: EggDataRow
 	}
 }

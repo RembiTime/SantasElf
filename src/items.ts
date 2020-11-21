@@ -399,10 +399,16 @@ export const items: Item[] = [
 		response: "No way! You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			// let timestamp = Date.now();
-			/* TODO:
 			await client.knex("items")
-				.insert({userID: message.author.id, active: "TRUE", timeFound: timeStamp});*/
+				.insert({ name: "dragonEgg", userID: message.author.id, amount: 1, record: 1 })
+				.onConflict("userID")
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
+			let timestamp = Date.now();
+			await client.knex("eggData")
+				.insert({userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED"});
 		}
 	},
 	{
