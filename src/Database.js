@@ -229,10 +229,10 @@ class Database {
 	}
 	/**
 	 * @param {string} guildID
-	 * @returns {Promise<GuildDataRow?>}
+	 * @returns {}
 	 */
 	getGuildDataFromID(guildID) {
-		return this.client.knex.select("*").from("guildData").where({ guildID })?.[0] ?? null;
+		return this.client.knex("guildData").where({ guildID })?.[0] ?? null;
 	}
 
 

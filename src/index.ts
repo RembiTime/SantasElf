@@ -281,23 +281,21 @@ export class SantasElf extends AkairoClient implements Extension {
 		} else embed.setColor(0x949494);
 		return embed;
 	}
-	/**
-	 * @returns {Promise<void>}
-	 */
 	async setupGuildDisplayMessages() {
 		for (const guildData of await this.database.getAllGuilds()) {
 			await this.updateDisplayForGuild(guildData.guildID);
 		}
 	}
 
-	async updateDisplayForGuild(guildID) {
+	async updateDisplayForGuild(guildID: string) {
 		const displayChannel = await this.getGuildDisplayChannel();
 		if (displayChannel === null) throw new Error("No guild display channel was found! Please check the provided ID.");
 		const partnerChannel = await this.getPartnerDisplayChannel();
 		if (partnerChannel === null) throw new Error("No partnered guild display channel was found! Please check the provided ID.");
 		const guildData = await this.database.getGuildDataFromID(guildID);
-		const { displayMessageID } = guildData!;
-		const channel = guildData!.isPartner ? partnerChannel : displayChannel;
+		if (guildData === null) return;
+		const { displayMessageID } = guildData;
+		const channel = guildData.isPartner ? partnerChannel : displayChannel;
 		const displayMessage = await (async() => {
 			try {
 				return displayMessageID && await channel.messages.fetch(displayMessageID);
