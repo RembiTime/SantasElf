@@ -15,7 +15,7 @@ AkairoHandler.readdirRecursive(path.join(__dirname, "extensions"))
 	.filter(name => (/\.js$/).test(name))
 	.forEach(file => require(file));
 
-interface Extension {
+export interface Extension {
 	commandHandler: CommandHandler;
 	listenerHandler: ListenerHandler;
 	database: Database;

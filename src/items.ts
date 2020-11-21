@@ -1,8 +1,8 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
 
-import type { Message } from "discord.js";
-import type { SantasElf } from ".";
+import type { Message, Client } from "discord.js";
+import type { Extension } from ".";
 export interface Item {
 	id: string;
 	rank: number;
@@ -11,7 +11,7 @@ export interface Item {
 	messageName?: string;
 	response: string;
 	defaultBehavior?: boolean;
-	onFind?(client: SantasElf, message: Message): unknown | Promise<unknown>;
+	onFind?(client: Client & Extension, message: Message): unknown | Promise<unknown>;
 }
 
 export const items: Item[] = [
