@@ -1,7 +1,6 @@
 // https://aka.ms/tsconfig.json
 {
 	"compilerOptions": {
-		"incremental": true,
 		"target": "ESNext",
 		"module": "CommonJS",
 		"allowJs": true,
@@ -22,7 +21,8 @@
 		"strictFunctionTypes": true,
 		"strictPropertyInitialization": true,
 		"noImplicitAny": false,
-		"noImplicitThis": true
+		"noImplicitThis": true,
+		"resolveJsonModule": true
 	},
 	"include": ["src/**/*.js", "src/**/*.ts"]
 }

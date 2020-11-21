@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import items = require("../items");
+import { items } from "../items";
 
 class UseCommand extends Command {
 	constructor() {
@@ -41,7 +41,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "meme") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "meme" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				}
@@ -49,7 +49,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "palette") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "palette" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				} if (this.client.minigamePlayers.has(message.author.id)) {
@@ -60,7 +60,7 @@ class UseCommand extends Command {
 			}
 			else if (item.id === "watch") {
 				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "watch" });
-				if (!itemCheck) {
+				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
 				} if (this.client.minigamePlayers.has(message.author.id)) {
@@ -68,6 +68,26 @@ class UseCommand extends Command {
 					return;
 				}
 				this.client.database.useWatch({ message: message });
+			}
+			else if (item.id === "role") {
+				const itemCheck = await this.client.database.itemCheck({ userID: message.author.id, itemName: "role" });
+				if (itemCheck === null || itemCheck.amount < 1) {
+					message.channel.send("You don't have any of that item!");
+					return;
+				} if (message.guild.id !== "647915068767338509") {
+					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP")
+					return;
+				} if (message.member.roles.cache.has("778022401858338846")) {
+					message.channel.send("You already have the role, so have 50 candy canes instead!");
+					this.client.database.addCandyCanes({ amount: 50, userID: message.author.id });
+					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+					return;
+				} else {
+					message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.")
+					message.member.roles.add("778022401858338846");
+					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+					return;
+				}
 			}
 		} else {
 			message.channel.send("That item does not exist!");

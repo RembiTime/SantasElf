@@ -8,23 +8,30 @@ class DeleteCommand extends Command {
 			args: [{
 				id: "code",
 				type: "string"
-			}]
+			}],
+			channel: "guild",
+			userPermissions: ["ADMINISTRATOR"]
 		});
 	}
-	async exec(message, { code }) {
-		if (!message.member.hasPermission("ADMINISTRATOR")) {
-			await message.channel.send("You must have administrator permissions in this server to use this command!");
-			return;
-		}
-		const [results] = await this.client.knex.select("*").from("presents").where({code});
-		const checkValid = results ?? null;
-		if (checkValid === null) {
-			message.channel.send("This present does not exist!");
-			return;
-		}
-		await this.client.knex("presents").where({code}).del();
-		message.channel.send("Present deleted");
 
+	async exec(message, { code }) {
+		await this.client.knex.transaction(async trx => {
+			const present = await trx("presents")
+				.first("*")
+				.where({ code })
+				.forUpdate();
+
+			if (!present) {
+				await trx("presents")
+					.where({ code })
+					.delete();
+
+				await message.channel.send("Present deleted");
+			} else {
+				await message.channel.send("This present does not exist!");
+
+			}
+		});
 	}
 }
 

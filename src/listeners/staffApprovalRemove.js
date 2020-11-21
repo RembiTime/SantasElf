@@ -1,5 +1,6 @@
 const { Listener } = require("discord-akairo");
 const { MessageEmbed, TextChannel } = require("discord.js");
+import channels from "../channels.json";
 
 class StaffApprovalRemoveListener extends Listener {
 	constructor() {
@@ -12,7 +13,7 @@ class StaffApprovalRemoveListener extends Listener {
 	async exec(reaction, user) {
 		if (reaction.message.partial) { await reaction.message.fetch(); }
 
-		if (reaction.message.channel.id !== "766143817497313331") {
+		if (reaction.message.channel.id !== channels.staffQueue) {
 			return;
 		}
 		const checkApprovalIfOngoing = await this.client.database.checkApprovalIfOngoing({ messageID: reaction.message.id });
@@ -21,7 +22,7 @@ class StaffApprovalRemoveListener extends Listener {
 			return;
 		}
 
-		const staffQueue = this.client.channels.cache.get("766143817497313331");
+		const staffQueue = this.client.channels.cache.get(channels.staffQueue);
 		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel.");
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 

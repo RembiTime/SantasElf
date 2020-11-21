@@ -7,7 +7,7 @@ import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
 import path from "path";
 import knex from "knex";
 
-import items = require("./items");
+import { items } from "./items";
 import Database = require("./Database");
 
 // Load extensions
@@ -78,8 +78,12 @@ export class SantasElf extends AkairoClient implements Extension {
 			{ partials: ["USER", "CHANNEL", "GUILD_MEMBER", "MESSAGE", "REACTION" ] }
 		);
 
-		this.commandHandler.loadAll();
 		this.commandHandler.useListenerHandler(this.listenerHandler);
+		this.listenerHandler.setEmitters({
+			commandHandler: this.commandHandler
+		});
+
+		this.commandHandler.loadAll();
 		this.listenerHandler.loadAll();
 	}
 
@@ -118,6 +122,7 @@ export class SantasElf extends AkairoClient implements Extension {
 
 		if (!await this.knex.schema.hasTable("items")) {
 			await this.knex.schema.createTable("items", table => {
+				// TODO: change `name` to `id`
 				table.string("name").notNullable();
 				table.bigInteger("userID").unsigned().notNullable();
 				table.integer("amount").notNullable();
@@ -145,21 +150,21 @@ export class SantasElf extends AkairoClient implements Extension {
 				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
 
 				table.integer("candyCanes").notNullable().defaultTo(0);
-				table.integer("wrongGuesses").notNullable().defaultTo(0);
+				table.integer("wrongGuesses").unsigned().notNullable().defaultTo(0);
 
 				// TODO: these are all also bad
-				table.integer("firstFinder").notNullable().defaultTo(0);
-				table.integer("totalPresents").notNullable().defaultTo(0);
-				table.integer("lvl1Presents").notNullable().defaultTo(0);
-				table.integer("lvl1Total").notNullable().defaultTo(0);
-				table.integer("lvl2Presents").notNullable().defaultTo(0);
-				table.integer("lvl2Total").notNullable().defaultTo(0);
-				table.integer("lvl3Presents").notNullable().defaultTo(0);
-				table.integer("lvl3Total").notNullable().defaultTo(0);
-				table.integer("lvl4Presents").notNullable().defaultTo(0);
-				table.integer("lvl4Total").notNullable().defaultTo(0);
-				table.integer("lvl5Presents").notNullable().defaultTo(0);
-				table.integer("lvl5Total").notNullable().defaultTo(0);
+				table.integer("firstFinder").unsigned().notNullable().defaultTo(0);
+				table.integer("totalPresents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl1Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl1Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl2Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl2Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl3Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl3Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl4Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl4Total").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl5Presents").unsigned().notNullable().defaultTo(0);
+				table.integer("lvl5Total").unsigned().notNullable().defaultTo(0);
 			});
 
 		}

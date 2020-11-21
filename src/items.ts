@@ -3,7 +3,7 @@
 
 import type { Message } from "discord.js";
 import type { SantasElf } from ".";
-interface ItemEntry {
+export interface Item {
 	id: string;
 	rank: number;
 	worth?: number;
@@ -14,7 +14,7 @@ interface ItemEntry {
 	onFind?(client: SantasElf, message: Message): unknown | Promise<unknown>;
 }
 
-const items: ItemEntry[] = [
+export const items: Item[] = [
 	{
 		id: "coal",
 		rank: 0,
@@ -31,9 +31,12 @@ const items: ItemEntry[] = [
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
-				.insert({name: "goose", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({ name: "goose", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
-				.merge();
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
 			/* Just in case...
 			await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
@@ -41,7 +44,7 @@ const items: ItemEntry[] = [
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, ["goose", message.author.id]); */
-			await client.knex("userData").where({userID: message.author.id}).decrement({candyCanes: 20});
+			await client.knex("userData").where({ userID: message.author.id }).decrement("candyCanes", 20);
 			//await client.database.foundAchievement({achName: findGoose, userID: message.author.id, message: message})
 		}
 	},
@@ -155,16 +158,19 @@ const items: ItemEntry[] = [
 		response: "You found a singular candy cane! Make sure not to spend it all in one place!", // changed: reworded, also what the fuck? -Walrus
 		onFind: async (client, message) => {
 			await client.knex("items")
-				.insert({name: "singleCandy", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({ name: "singleCandy", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
-				.merge();
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, ["singleCandy", message.author.id]);*/
-			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 1});
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 1);
 		}
 	},
 	{
@@ -255,9 +261,12 @@ const items: ItemEntry[] = [
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
-				.insert({name: "keyboard", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({ name: "keyboard", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
-				.merge();
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -283,10 +292,12 @@ const items: ItemEntry[] = [
 			message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
-				await client.knex("userData").where({userID: collected.first().author.id}).increment({candyCanes: 20});
-				return message.channel.send("<@" + collected.author.id + "> was the first to type correctly and got 20 candy canes!");
+				const response = collected.first()!;
+
+				await client.knex("userData").where({ userID: response.author.id }).increment("candyCanes", 20);
+				await message.channel.send("<@" + response.author.id + "> was the first to type correctly and got 20 candy canes!");
 			} catch {
-				return message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
+				await message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}
 		}
 	},
@@ -349,11 +360,14 @@ const items: ItemEntry[] = [
 		response: "Wow! You found a simp! You're a little concerned that he snuck into your house, but hey, he'll pay you 50 candy canes to notice him. You take the money and promptly ignore him. Nice try buddy.", // changed: reworded, also what the fuck? -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 50});
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 50);
 			await client.knex("items")
-				.insert({name: "simp", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({ name: "simp", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
-				.merge();
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -376,72 +390,67 @@ const items: ItemEntry[] = [
 		worth: 115,
 		displayName: "Car",
 		messageName: "a car",
-		response: "WHA?? You found a car! You can't wait to take it for a spin!" // changed: reworked -Walrus
+		response: "No way! You found a car! You can't wait to take it for a spin!" // changed: reworked -Walrus
 	},
 	{
 		id: "dragonEgg",
 		rank: 4,
 		displayName: "Dragon Egg",
-		response: "WHA?? You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
+		response: "No way! You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			let d= new Date();
-			let timeStamp = d.getTime();
+			// let timestamp = Date.now();
+			/* TODO:
 			await client.knex("items")
-				.insert({userID: message.author.id, active: "TRUE", timeFound: timeStamp})
-				.onConflict("userID")
-				.merge();
-			/*await client.database.pool.execute(`
-				INSERT INTO dragonEggData SET
-					userID = ?,
-					active = ?,
-					timeFound = ?
-				`, [message.author.id, "TRUE", timeStamp]);*/
+				.insert({userID: message.author.id, active: "TRUE", timeFound: timeStamp});*/
 		}
 	},
 	{
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "WHA?? You found a role! You feel special-er.",
-		defaultBehavior: false,
+		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP"
+		/*defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
-				.insert({name: "role", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({name: "role", userID: message.author.id, amount: 1, record: 1})
 				.onConflict("userID")
-				.merge();
+				.merge({
+						amount: client.knex.raw("amount + 1"),
+						record: client.knex.raw("GREATEST(amount, record)")
+			});
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
 				amount = amount + 1,
 				record = GREATEST(amount, record)
-		`, ["role", message.author.id]);*/
+		`, ["role", message.author.id]);
 			// TODO: message.member.addRole("ROLE ID HERE");
-		}
+		}*/
 	},
 	{
 		id: "spanner",
 		rank: 4,
 		displayName: "Spanner",
-		response: "WHA?? You found a spanner! It's like a wrench, but better! You can feel its magical powers flowing through it"
+		response: "No way! You found a spanner! It's like a wrench, but better! You can feel its magical powers flowing through it"
 	},
 	{
 		id: "slime",
 		rank: 4,
 		displayName: "Slime",
-		response: "WHA?? You found a slime! It's dark sky-blue and you can almost see a smiling face on it. It seems alive..."
+		response: "No way! You found a slime! It's dark sky-blue and you can almost see a smiling face on it. It seems alive..."
 	},
 	{
 		id: "dragon",
 		rank: 4,
 		displayName: "Dragon",
-		response: "WHA?? You found a dragon! It looks like a wireframe dragon figure with raw power pulsing through it"
+		response: "No way! You found a dragon! It looks like a wireframe dragon figure with raw power pulsing through it"
 	},
 	{
 		id: "fractal",
 		rank: 4,
 		displayName: "Fractal",
-		response: "WHA?? You found a fractal! It seems like a core to a magical symbol..."
+		response: "No way! You found a fractal! It seems like a core to a magical symbol..."
 	},
 	/*{ Keep this commented pls
 		id: "walrus",
@@ -464,11 +473,14 @@ const items: ItemEntry[] = [
 		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 174});
+			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 174);
 			await client.knex("items")
-				.insert({name: "glitch", userID: message.author.id, amount: 1, presentLevel: 1})
+				.insert({ name: "glitch", userID: message.author.id, amount: 1, record: 1 })
 				.onConflict("userID")
-				.merge();
+				.merge({
+					amount: client.knex.raw("amount + 1"),
+					record: client.knex.raw("GREATEST(amount, record)")
+				});
 			/*await client.database.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
 			ON DUPLICATE KEY UPDATE
@@ -511,6 +523,3 @@ const items: ItemEntry[] = [
 		response: "**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**"
 	}
 ];
-
-// TODO: don't use `as`
-export = items;

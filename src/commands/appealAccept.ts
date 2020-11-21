@@ -1,4 +1,5 @@
 import { Command } from "discord-akairo";
+import { Guild, Message } from "discord.js";
 
 class AppealAcceptCommand extends Command {
 	constructor() {
@@ -13,26 +14,15 @@ class AppealAcceptCommand extends Command {
 		});
 	}
 
-	async exec(message, { guild }) {
-		// TODO: ensure guild has actually appealed?
-
-		if (!guild) {
-			await message.channel.send("The bot is not in that guild!");
-			return;
-		}
-
-		const guildData = await guild.fetchData();
-
-		if (guildData.appealed3Deny) {
-			await message.channel.send("This server has already appealed.");
-			return;
-		}
-
-		await this.client.knex("guildData")
-			.update({ appealed3Deny: true })
-			.where({ guildID: guild.id });
-
-		await message.channel.send("This guild has been given 2 more attempts");
+	async exec(message: Message, { guild }: { guild: Guild } ) {
+		await this.client.knex.transaction(async trx => {
+			if (await guild.appealStatus(trx) !== null) {
+				await message.channel.send("This guild has already appealed");
+			} else {
+				await guild.setAppealStatus("ACCEPTED", trx);
+				await message.channel.send("This guild has been given 2 more attempts");
+			}
+		});
 	}
 }
 

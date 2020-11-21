@@ -218,6 +218,14 @@ const achievements: Readonly<AchievementEntry[]> = [
 			description: "Construct a mysterious object",
 			prize: { type: "present", level: 5 }
 		}]
+	},
+	{
+		id: "ping",
+		tiers: [{
+			displayName: "Ping",
+			description: "Pong!",
+			prize: {type: "present", level: 1 }
+		}]
 	}
 ];
 

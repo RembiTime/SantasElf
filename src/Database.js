@@ -20,11 +20,11 @@ class Database {
 	 */
 	async getPresent(options) {
 		if ("id" in options) {
-			const [results] = await this.client.knex.select("*").from("presents").where({id: options.id});
+			const [results] = await this.client.knex.select("*").from("presents").where({ id: options.id });
 			return results ?? null;
 		} else if ("code" in options) {
 			// TODO: Handle multiple presents with same code at different times in one guild?
-			const [results] = await this.client.knex.select("*").from("presents").where({code: options.code});
+			const [results] = await this.client.knex.select("*").from("presents").where({ code: options.code });
 			return results ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -37,7 +37,7 @@ class Database {
 	 */
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
-		const [results] = await this.client.knex.select("*").from("guildData").where({guildID});
+		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -46,7 +46,7 @@ class Database {
 
 	async checkPresentUses({ code }) {
 		//if ("id" in options) {
-		const [results] = await this.client.knex.select("*").from("presents").where({code});
+		const [results] = await this.client.knex.select("*").from("presents").where({ code });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -60,9 +60,9 @@ class Database {
 			.where("code", "=", code);
 		const [checkZero] = await this.client.knex.select("usesLeft as uses").from("presents").where({ code });
 		if (checkZero.uses === 0) {
-			await this.client.knex('presents')
-  				.where("code", "=", code)
-  				.del()
+			await this.client.knex("presents")
+				.where("code", "=", code)
+				.del();
 		}
 		return;
 		/*} else {
@@ -75,7 +75,7 @@ class Database {
 	 */
 	async checkIfPartner({ guildID }) {
 		//yes, it's the exact same as above but with a different name :<
-		const [results] = await this.client.knex.select("*").from("guildData").where({guildID});
+		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
 		return results ?? null;
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
@@ -86,7 +86,7 @@ class Database {
 	 * @returns {Promise<boolean>}
 	 */
 	async isPartner(guildID) {
-		const [results] = await this.client.knex.select("isPartner").from("guildData");
+		const [results] = await this.client.knex.select("isPartner").from("guildData").where({ guildID });
 		return results ?? null;
 	}
 	/**
@@ -94,7 +94,7 @@ class Database {
 	 * @returns {Promise<string?>}
 	 */
 	async getGuildDisplayMessageID({ guildID }) {
-		const [results] = await this.client.knex.select("displayMessageID").from("guildData").where({guildID});
+		const [results] = await this.client.knex.select("displayMessageID").from("guildData").where({ guildID });
 		return results ?? null;
 	}
 
@@ -131,7 +131,7 @@ class Database {
 	async checkStaffApprovalIDs(options) {
 		if ("messageID" in options) {
 			//Check if message is stored
-			const [newGuild] = await this.client.knex.select("*").from("staffApproval").where({messageID: options.messageID});
+			const [newGuild] = await this.client.knex.select("*").from("staffApproval").where({ messageID: options.messageID });
 			return newGuild ?? null;
 		} else {
 			throw new Error("Invalid getPresent() call");
@@ -179,12 +179,12 @@ class Database {
 		}*/
 	}
 
-	async userHasItem({userID, itemName}) {
+	async userHasItem({ userID, itemName }) {
 		const [results] = await this.client.knex.select(1).from("items").where({ name: itemName, userID: userID });
 		return !!results;
 	}
 
-	async itemCheck({userID, itemName}) {
+	async itemCheck({ userID, itemName }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("items").where({ name: itemName, userID: userID });
 		return results ?? null;
@@ -254,7 +254,7 @@ class Database {
 	}
 
 	async addPresent({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft }) {
-		await this.client.knex("presents").insert({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft});
+		await this.client.knex("presents").insert({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft });
 	}
 
 	async presentFound({ userID, userName, presentCode }) {
@@ -276,33 +276,33 @@ class Database {
 	}
 
 	async notClaimed({ messageID }) {
-		await this.client.knex("staffApproval").where({messageID}).update({claimedByID: null});
+		await this.client.knex("staffApproval").where({ messageID }).update({ claimedByID: null });
 	}
 
 	async claimedUpdate({ userID, messageID }) {
-		await this.client.knex("staffApproval").where({messageID}).update({claimedByID: userID});
+		await this.client.knex("staffApproval").where({ messageID }).update({ claimedByID: userID });
 	}
 
 	async approvalStatusUpdate({ status, messageID }) {
-		await this.client.knex("staffApproval").where({messageID}).update({status});
+		await this.client.knex("staffApproval").where({ messageID }).update({ status });
 	}
 
 	async addPartner({ guildID }) {
-		await this.client.knex("guildData").where({guildID}).update({isPartner: "TRUE"});
+		await this.client.knex("guildData").where({ guildID }).update({ isPartner: "TRUE" });
 	}
 
 	async changeLevel({ presentLevel, messageID }) {
-		await this.client.knex("staffApproval").where({messageID}).update({presentLevel});
+		await this.client.knex("staffApproval").where({ messageID }).update({ presentLevel });
 	}
 
 	async appealAccept({ guildID }) {
-		await this.client.knex("guildData").where({guildID}).update({appealed3Deny: "TRUE"});
+		await this.client.knex("guildData").where({ guildID }).update({ appealed3Deny: "TRUE" });
 	}
 
 	async addUserPresent({ presentLevel, userID }) {
 		let presentAmt = "lvl" + presentLevel + "Presents";
 		let presentTotal = "lvl" + presentLevel + "Total";
-		await this.client.knex("userData").where({userID}).increment({[presentLevel]: 1, [presentTotal]: 1});
+		await this.client.knex("userData").where({ userID }).increment({ [presentAmt]: 1, [presentTotal]: 1 });
 	}
 
 	async getGlobalStats() {
@@ -322,22 +322,22 @@ class Database {
 	}
 
 	async getGlobalUsersWithPresents() {
-		const [{count: result}] = await this.client.knex.countDistinct("userID").from("foundPresents");
+		const [{ count: result }] = await this.client.knex.countDistinct("userID").from("foundPresents");
 		return result;
 	}
 
 	async getGlobalGuildsWithPresents() {
-		const [{count: result}] = await this.client.knex.countDistinct("guildID").from("presents");
+		const [{ count: result }] = await this.client.knex.countDistinct("guildID").from("presents");
 		return result;
 	}
 
 	async getGlobalPresentsFound() {
-		const [{count: result}] = await this.client.knex.countDistinct("presentCode").from("foundPresents");
+		const [{ count: result }] = await this.client.knex.countDistinct("presentCode").from("foundPresents");
 		return result;
 	}
 
 	async checkGuildDeniedAmount({ guildID }) {
-		const [{count: result}] = await this.client.knex.count("* as count").from("staffApproval").where({
+		const [{ count: result }] = await this.client.knex.count("* as count").from("staffApproval").where({
 			status: "DENIED",
 			guildID
 		});
@@ -345,7 +345,7 @@ class Database {
 	}
 
 	async checkIfPendingPresent({ guildID }) {
-		const [{count: result}] = await this.client.knex.count("* as count").from("staffApproval").where({
+		const [{ count: result }] = await this.client.knex.count("* as count").from("staffApproval").where({
 			status: "ONGOING",
 			guildID
 		});
@@ -356,16 +356,16 @@ class Database {
 	 * @deprecated
 	 */
 	async checkPresentAmount({ guildID }) {
-		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+		const [{ count: result }] = await this.client.knex.count("* as count").from("presents").where({
 			guildID
 		});
-		return results ?? null;
+		return result ?? null;
 	}
 	/**
 	 * @param {string} guildID
 	 */
 	async getPresentAmountForGuild(guildID) {
-		const [{count: result}] = await this.client.knex.count("* as count").from("presents").where({
+		const [{ count: result }] = await this.client.knex.count("* as count").from("presents").where({
 			guildID
 		});
 		return result;
@@ -384,15 +384,18 @@ class Database {
 	// ITEM STUFF
 
 	async addCandyCanes({ amount, userID }) {
-		await this.client.knex("userData").where({userID}).increment({candyCanes: amount});
+		await this.client.knex("userData").where({ userID }).increment({ candyCanes: amount });
 	}
 
 	async addItem({ itemName, userID, presentLevel }) {
 		presentLevel = "lvl" + presentLevel + "Presents";
 		await this.client.knex("items")
-			.insert({name: itemName, userID, amount: 1, record: 1})
+			.insert({ name: itemName, userID, amount: 1, record: 1 })
 			.onConflict("userID")
-			.merge()
+			.merge({
+				amount: this.client.knex.raw("amount + 1"),
+				record: this.client.knex.raw("GREATEST(amount, record)")
+			});
 		/* Keeping just in case...
 		await this.pool.execute(`
 			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
@@ -400,7 +403,7 @@ class Database {
 				amount = amount + 1,
 				record = GREATEST(amount, record)
 		`, [itemName, userID]); */
-		await this.client.knex("userData").where({userID}).decrement({[presentLevel]: 1});
+		await this.client.knex("userData").where({ userID }).decrement({ [presentLevel]: 1 });
 	}
 
 	async foundAchievement({ achName, userID, message }) {
@@ -413,7 +416,7 @@ class Database {
 			.then(results => results.length ? results[0] : null);
 
 		if (!present) {
-			await this.client.knex("achievements").insert({name: achName, userID});
+			await this.client.knex("achievements").insert({ name: achName, userID });
 			//We might need a race condition check
 			message.channel.send("✨ Achievement Unlocked: **" + achName + "**! You can view all your achievements with `,achievements`. ✨");
 			return 1;
@@ -421,7 +424,7 @@ class Database {
 	}
 
 	async removeItem({ itemName, userID }) {
-		await this.client.knex("items").where({name: itemName, userID}).decrement({amount: 1});
+		await this.client.knex("items").where({ name: itemName, userID }).decrement({ amount: 1 });
 	}
 
 	removePresent({ userData, presentLevel }) {
@@ -465,22 +468,17 @@ class Database {
 		}
 	}
 
-	async agivePresent({ message, userID, presentLevel, amount}) {
+	async agivePresent({ userID, presentLevel, amount }) {
 		if (presentLevel == 1) {
-			await this.client.knex("userData").where({userID}).increment({lvl1Presents: amount});
-			message.channel.send("Added " + amount + " level 1 present(s)");
+			await this.client.knex("userData").where({ userID }).increment({ lvl1Presents: amount });
 		} else if (presentLevel == 2) {
-			await this.client.knex("userData").where({userID}).increment({lvl2Presents: amount});
-			message.channel.send("Added " + amount + " level 2 present(s)");
+			await this.client.knex("userData").where({ userID }).increment({ lvl2Presents: amount });
 		} else if (presentLevel == 3) {
-			await this.client.knex("userData").where({userID}).increment({lvl3Presents: amount});
-			message.channel.send("Added " + amount + " level 3 present(s)");
+			await this.client.knex("userData").where({ userID }).increment({ lvl3Presents: amount });
 		} else if (presentLevel == 4) {
-			await this.client.knex("userData").where({userID}).increment({lvl4Presents: amount});
-			message.channel.send("Added " + amount + " level 4 present(s)");
+			await this.client.knex("userData").where({ userID }).increment({ lvl4Presents: amount });
 		} else if (presentLevel == 5) {
-			await this.client.knex("userData").where({userID}).increment({lvl5Presents: amount});
-			message.channel.send("Added " + amount + " level 5 present(s)");
+			await this.client.knex("userData").where({ userID }).increment({ lvl5Presents: amount });
 		}
 	}
 
@@ -521,10 +519,10 @@ class Database {
 	generateRarity({ presentLevel }) {
 		// Rows are weights for present ranks for different present levels
 		const weights = [
-			[10, 45, 25, 15,  4,  1],
-			[10, 35, 25, 20,  8,  2],
-			[10, 25, 25, 25, 12,  3],
-			[10, 15, 20, 30, 20,  5],
+			[10, 45, 25, 15, 4, 1],
+			[10, 35, 25, 20, 8, 2],
+			[10, 25, 25, 25, 12, 3],
+			[10, 15, 20, 30, 20, 5],
 			[10, 10, 15, 20, 30, 15]
 		][presentLevel - 1];
 
@@ -554,7 +552,7 @@ class Database {
 			await this.addItem({ itemName: item.id, userID, presentLevel });
 		} else if (item.defaultBehavior === false) {
 			let lvlPresents = "lvl" + presentLevel + "Presents";
-			await this.client.knex("userData").where({userID}).decrement({[lvlPresents]: 1});
+			await this.client.knex("userData").where({ userID }).decrement({ [lvlPresents]: 1 });
 		}
 
 		if (typeof item.onFind === "function") {
@@ -566,11 +564,11 @@ class Database {
 		}
 	}
 
-	async useMistletoe({message}) {
+	async useMistletoe({ message }) {
 		let kissMessage = await message.channel.send("Who would you like to kiss?");
 		const filter = m => m.author.id === message.author.id;
-		const mentionMsg = (await message.channel.awaitMessages(filter, { max: 1, time: 120000}));
-		if (mentionMsg.size === 0){
+		const mentionMsg = (await message.channel.awaitMessages(filter, { max: 1, time: 120000 }));
+		if (mentionMsg.size === 0) {
 			message.channel.send("You didn't answer in time! Please run the command again to try again.");
 			return;
 		}
@@ -584,16 +582,16 @@ class Database {
 			kissMessage.delete();
 			await mentionMsg.first().delete();
 			message.channel.send("<@" + message.author.id + "> kissed <@" + kissedID + ">! Congrats! (You both get 15 candy canes!)");
-			const newUserCheck = this.client.database.userDataCheck({userID: kissedID});
+			const newUserCheck = this.client.database.userDataCheck({ userID: kissedID });
 			if (newUserCheck === null) {
-			await this.client.database.addNewUser({
-				userID: kissedID,
-				userName: "REMOVE THIS COLUMN"
-			});
-		}
-			await this.client.knex("userData").where({userID: message.author.id}).increment({candyCanes: 15});
-			await this.client.knex("userData").where({userID: kissedID}).increment({candyCanes: 15});
-			await this.client.knex("items").where({name: "mistletoe", userID: message.author.id}).decrement({amount: 1});
+				await this.client.database.addNewUser({
+					userID: kissedID,
+					userName: "REMOVE THIS COLUMN"
+				});
+			}
+			await this.client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 15 });
+			await this.client.knex("userData").where({ userID: kissedID }).increment({ candyCanes: 15 });
+			await this.client.knex("items").where({ name: "mistletoe", userID: message.author.id }).decrement({ amount: 1 });
 			return;
 		} if (mentionMsg.first().mentions.users.size > 1) {
 			message.channel.send("Please only mention one user!");
@@ -603,29 +601,29 @@ class Database {
 		}
 	}
 
-	async useMeme({message}) {
+	async useMeme({ message }) {
 		let candyCaneAmt = Math.floor(Math.random() * 41) - 10;
-		await this.client.knex("items").where({name: "meme", userID: message.author.id}).decrement({amount: 1});
+		await this.client.knex("items").where({ name: "meme", userID: message.author.id }).decrement({ amount: 1 });
 		if (candyCaneAmt === 0) {
 			message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
 			return;
 		} if (candyCaneAmt < 0) {
 			let positiveNum = Math.abs(candyCaneAmt);
 			message.channel.send("Wow, people did not like your meme! You lost " + positiveNum + " candy canes! Welcome to controversial.");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: positiveNum});
+			await this.client.knex("userData").where({ userID: message.author.id }).decrement({ candyCanes: positiveNum });
 			return;
 		} if (candyCaneAmt > 0 && candyCaneAmt <= 15) {
 			message.channel.send("People liked your meme, which made it to hot! You gained " + candyCaneAmt + " candy canes!");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
+			await this.client.knex("userData").where({ userID: message.author.id }).decrement({ candyCanes: candyCaneAmt });
 			return;
 		} if (candyCaneAmt > 15) {
 			message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCaneAmt + " candy canes!");
-			await this.client.knex("userData").where({userID: message.author.id}).decreamenet({candyCanes: candyCaneAmt});
+			await this.client.knex("userData").where({ userID: message.author.id }).decrement({ candyCanes: candyCaneAmt });
 			return;
 		}
 	}
 
-	async usePalette({message}) {
+	async usePalette({ message }) {
 		this.client.minigamePlayers.add(message.author.id);
 		let colorArray = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬜", "⬛", "🟫",];
 		colorArray = colorArray.sort(() => Math.random() - 0.5);
@@ -648,8 +646,8 @@ class Database {
 		let seconds = 10;
 		const msg = await message.channel.send(`Memorize these colors, they will disappear in ${seconds} seconds`);
 		const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
-		for(const x of numberEmojis) botMessage.react(x);
-		const timer = setInterval(async() => {
+		for (const x of numberEmojis) botMessage.react(x);
+		const timer = setInterval(async () => {
 			seconds = seconds - 2;
 			await msg.edit(`Memorize these colors, they will disappear in ${seconds} seconds`);
 			if (seconds <= 0) {
@@ -659,8 +657,8 @@ class Database {
 				const filter = (reaction, user) => {
 					return ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"].includes(reaction.emoji.name) && user.id === message.author.id;
 				};
-				const reaction = (await botMessage.awaitReactions(filter, { max: 1, time: 30000}));
-				if (reaction.size === 0){
+				const reaction = (await botMessage.awaitReactions(filter, { max: 1, time: 30000 }));
+				if (reaction.size === 0) {
 					this.client.minigamePlayers.delete(message.author.id);
 					msg.edit("You didn't answer in time! Please run the command again to try again.");
 					return;
@@ -679,14 +677,14 @@ class Database {
 				const reactionAnswer = lookupMap[reaction.first().emoji.name];
 				if (reactionAnswer !== answer) {
 					this.client.minigamePlayers.delete(message.author.id);
-					this.client.database.removeItem({itemName: "palette", userID: message.author.id});
+					this.client.database.removeItem({ itemName: "palette", userID: message.author.id });
 					answer = answer + 1;
-					msg.edit("That's incorrect, it was "+ answer + ". Try again next time!");
+					msg.edit("That's incorrect, it was " + answer + ". Try again next time!");
 					return;
 				} else {
-					this.client.database.addCandyCanes({amount: 25, userID: message.author.id});
+					this.client.database.addCandyCanes({ amount: 25, userID: message.author.id });
 					this.client.minigamePlayers.delete(message.author.id);
-					this.client.database.removeItem({itemName: "palette", userID: message.author.id});
+					this.client.database.removeItem({ itemName: "palette", userID: message.author.id });
 					msg.edit("That's correct! You got 25 candy canes!");
 					return;
 				}
@@ -694,13 +692,13 @@ class Database {
 		}, 2000);
 	}
 
-	async useWatch({message}) {
+	async useWatch({ message }) {
 		this.client.minigamePlayers.add(message.author.id);
 		let timeRed = (Math.floor(Math.random() * 9) + 2) * 1000;
 		let seconds = 6;
 		let stopMsg = await message.channel.send(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
 		stopMsg.react("🛑");
-		const timer = setInterval(async() => {
+		const timer = setInterval(async () => {
 			seconds = seconds - 2;
 			await stopMsg.edit(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
 			if (seconds <= 0) {
@@ -709,30 +707,30 @@ class Database {
 				const filter = (reaction, user) => {
 					return reaction.emoji.name === "🛑" && user.id === message.author.id;
 				};
-				const redReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: timeRed}));
+				const redReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: timeRed }));
 				if (redReaction.size === 0) {
 					await stopMsg.edit("🟩");
 					let startGreen = new Date();
-					const greenReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: 8000}));
+					const greenReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: 8000 }));
 					if (greenReaction.size === 0) {
 						this.client.minigamePlayers.delete(message.author.id);
-						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+						this.client.database.removeItem({ itemName: "watch", userID: message.author.id });
 						stopMsg.edit("You were too slow! Click it as soon as it turns green next time.");
 						return;
 					} else {
 						let endGreen = new Date();
 						let timeToReact = endGreen.getTime() - startGreen.getTime();
 						this.client.minigamePlayers.delete(message.author.id);
-						this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+						this.client.database.removeItem({ itemName: "watch", userID: message.author.id });
 						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
 							timeToReact < 500 ? 60 : 50);
-						this.client.database.addCandyCanes({amount: toAdd, userID: message.author.id});
+						this.client.database.addCandyCanes({ amount: toAdd, userID: message.author.id });
 						stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
 						return;
 					}
 				} else {
 					this.client.minigamePlayers.delete(message.author.id);
-					this.client.database.removeItem({itemName: "watch", userID: message.author.id});
+					this.client.database.removeItem({ itemName: "watch", userID: message.author.id });
 					stopMsg.edit("You were too quick! Wait for it to turn green next time.");
 					return;
 				}
