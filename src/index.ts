@@ -27,7 +27,7 @@ interface Extension {
 	partnerDisplayChannel: TextChannel;
 }
 
-class SantasElf extends AkairoClient implements Extension {
+export class SantasElf extends AkairoClient implements Extension {
 	public commandHandler = new CommandHandler(this, {
 		directory: path.join(__dirname, "commands"),
 		prefix: ","
@@ -319,6 +319,3 @@ const client = new SantasElf();
 client.login(process.env.TOKEN!);
 
 
-module.exports = {
-	SantasElf
-};

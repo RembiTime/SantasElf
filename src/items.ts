@@ -1,20 +1,20 @@
 // TODO: make handlers atomic
 // TODO: handle present level updates
 
-import { Message } from "discord.js";
-
+import type { Message } from "discord.js";
+import type { SantasElf } from ".";
 interface ItemEntry {
 	id: string;
 	rank: number;
 	worth?: number;
 	displayName: string;
-	messageName: string;
+	messageName?: string;
 	response: string;
-	defaultBehavior: boolean;
-	onFind(client: unknown, message: Message): void | Promise<void>;
+	defaultBehavior?: boolean;
+	onFind?(client: SantasElf, message: Message): unknown | Promise<unknown>;
 }
 
-const items = [
+const items: ItemEntry[] = [
 	{
 		id: "coal",
 		rank: 0,
@@ -513,4 +513,4 @@ const items = [
 ];
 
 // TODO: don't use `as`
-export = items as unknown as ItemEntry[];
+export = items;
