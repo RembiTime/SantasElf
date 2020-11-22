@@ -375,10 +375,7 @@ class Database {
 	 * @returns {Promise<import("./typings/tables").PresentRow[]>}
 	 */
 	async getPresentsForGuild(guildID) {
-		const [result] = await this.client.knex.select("*").from("presents").where({
-			guildID
-		});
-		return result;
+		return this.client.knex.select("*").from("presents").where({ guildID });
 	}
 
 	// ITEM STUFF
