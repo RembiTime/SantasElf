@@ -69,6 +69,7 @@ class StaffApprovalListener extends Listener {
 			if (!(publicLogs instanceof TextChannel)) throw new Error("Public logs channel was not a text channel.");
 			const guildName = await this.client.guilds.cache.get(checkStaffApproval.guildID);
 			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!");
+			await this.client.updateDisplayForGuild(checkStaffApproval.guildID);
 		}
 		if (reaction.emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });

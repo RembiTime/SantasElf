@@ -3,7 +3,7 @@ dotenv.config();
 
 import { AkairoClient, CommandHandler, ListenerHandler, AkairoHandler } from "discord-akairo";
 import { DiscordAPIError, MessageEmbed, TextChannel } from "discord.js";
-
+import type { PresentRow } from "./typings/tables";
 import path from "path";
 import knex from "knex";
 
@@ -25,6 +25,8 @@ export interface Extension {
 	usersGuessing: Set<string>;
 	guildDisplayChannel: TextChannel;
 	partnerDisplayChannel: TextChannel;
+
+	updateDisplayForGuild(guildID: string): Promise<void>;
 }
 
 export class SantasElf extends AkairoClient implements Extension {
@@ -268,14 +270,14 @@ export class SantasElf extends AkairoClient implements Extension {
 	async generateDisplayEmbedForGuild(guild) {
 		const invite = await this.getOrCreateInvite(guild);
 		const presents = await this.database.getPresentsForGuild(guild.id);
-		/** @type [string, import("./typings/tables").PresentRow[]][] */
-		const groupedPresents = Object.entries(presents.reduce((l, c) => (l[c.presentLevel] ? l[c.presentLevel].push(c) : l[c.presentLevel] = [c], l), {}));
+		const groupedPresents: [string, PresentRow[]][] = Object.entries(presents.reduce((l, c) => (l[c.presentLevel] ? l[c.presentLevel].push(c) : l[c.presentLevel] = [c], l), {}));
 		const embed = new MessageEmbed()
 			.setTitle(guild.name)
 			.setDescription(`[Join!](${invite})`)
 			.setThumbnail(guild.iconURL({ size: 512, dynamic: true }))
-			.addField("Total Present Count", presents.length);
-		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, (presents as any /* TODO */).length, true);
+			.addField("Total Present Count", presents.length)
+			.addField("Total Presents Found", presents.reduce((l, c: PresentRow) => l + c.timesFound, 0));
+		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, presents.length, true);
 		if (this.database.isPartner(guild.id)) {
 			embed.setColor(0x789fbf);
 		} else embed.setColor(0x949494);
