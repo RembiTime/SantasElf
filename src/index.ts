@@ -10,6 +10,7 @@ import knex from "knex";
 import { items } from "./items";
 import Database = require("./Database");
 
+import channels from "./channels.json";
 // Load extensions
 AkairoHandler.readdirRecursive(path.join(__dirname, "extensions"))
 	.filter(name => (/\.js$/).test(name))
@@ -226,7 +227,7 @@ export class SantasElf extends AkairoClient implements Extension {
 	async getGuildDisplayChannel() {
 		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
-			const fetchedChannel = await this.channels.fetch("777012969842278402");
+			const fetchedChannel = await this.channels.fetch(channels.publicQueue);
 			if (!(fetchedChannel instanceof TextChannel)) throw new Error("The guild display channel is of the wrong type!");
 			return this.guildDisplayChannel ?? (this.guildDisplayChannel = fetchedChannel);
 		} catch (err) {
@@ -239,9 +240,8 @@ export class SantasElf extends AkairoClient implements Extension {
 	 * @returns {Promise<TextChannel?>} The partnered server list channel.
 	 */
 	async getPartnerDisplayChannel(): Promise<TextChannel | null> {
-		// TODO: THIS IS BAD! Eventually remember to make a configuration file for the channel IDs.
 		try {
-			const fetchedChannel = await this.channels.fetch("777263455375720478");
+			const fetchedChannel = await this.channels.fetch(channels.partnerQueue);
 			if (!(fetchedChannel instanceof TextChannel)) throw new Error("The guild display channel is of the wrong type!");
 			return this.partnerDisplayChannel ?? (this.partnerDisplayChannel = fetchedChannel);
 		} catch (err) {
