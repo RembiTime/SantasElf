@@ -104,13 +104,14 @@ class UseCommand extends Command {
 					message.channel.send("The egg is still hatching! Please wait " + hoursLeft + " hours and " + minsLeft + " minutes.")
 					return;
 				} else if (eggAge < 172800000) {
-					const eggCount = await this.client.knex("eggData")
-						.count("eggID")
+					let eggCount = await this.client.knex("eggData")
+						.count("eggID", { as: "eggCount" })
 						.where({ userID: message.author.id, status: "UNCLAIMED" })
 						.then(([{ eggCount }]) => eggCount as number);
-					await console.log(eggCount)
-					if (eggCount > 0) {
-						message.channel.send("Your dragon hatched... TODO. You have " + eggCount + " eggs left unhatched!")
+					if (eggCount > 2) {
+						message.channel.send("Your dragon hatched... TODO. You have " + --eggCount + " eggs left unhatched!")
+					} else if (eggCount === 2) {
+						message.channel.send("Your dragon hatched... TODO. You have 1 egg left unhatched!")
 					} else {
 						message.channel.send("Your dragon hatched... TODO")
 					}

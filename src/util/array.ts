@@ -1,10 +1,10 @@
 export const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] => {
-	const subsets = new Map();
+	const subsets = new Map<unknown, T[]>();
 
 	for (const elem of array) {
 		const value = valueOf(elem);
 		if (subsets.has(value)) {
-			subsets.get(value).push(elem);
+			subsets.get(value)!.push(elem);
 		} else {
 			subsets.set(value, [elem]);
 		}
