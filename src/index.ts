@@ -255,7 +255,7 @@ export class SantasElf extends AkairoClient implements Extension {
 	async getOrCreateInvite(guild) {
 		const inviteURL = await this.database.getInviteURLIfExistsForGuild(guild);
 		if (inviteURL) return inviteURL;
-		const invite = await guild.channels.cache.first()?.createInvite({ maxAge: 0, unique: true });
+		const invite = await guild.channels.cache.find(x => x.type === "text")?.createInvite({ maxAge: 0, unique: true });
 		if (!invite) return "Not Found";
 		await this.database.setInviteURLOfGuild(guild, invite.url);
 		return invite.url;
