@@ -152,7 +152,7 @@ class GuessCommand extends Command {
 				publicLogs.send("**" + message.author.tag + "** just found a level " + present.presentLevel + " present in **" + guild.name + "**");
 				await dmChannel.send(`You just claimed the present! It had a difficulty of \`${present.presentLevel}\`.`);
 			}
-			await this.client.updateDisplayForGuild(message.guild.id);
+			if (present?.guildID) await this.client.updateDisplayForGuild(present.guildID);
 		});
 		collector.on("end", () => {
 			this.client.usersGuessing.delete(message.author.id);
