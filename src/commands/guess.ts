@@ -7,6 +7,7 @@ class GuessCommand extends Command {
 		super("guess", {
 			aliases: ["guess", "g"],
 			description: "Command to be used when you find a present",
+			channel: "guild",
 			args: [{
 				id: "code",
 				type: "string"
