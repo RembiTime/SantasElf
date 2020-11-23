@@ -30,7 +30,7 @@ class HideCommand extends Command {
 
 	async exec(message, { code, level, description }) {
 		
-		if (message.guild.memberCount < 25) {
+		if (message.guild.memberCount < 25 && message.guild.id !== "761076559813279754") {
 			await message.channel.send("Your server must have at least 25 members to submit a present");
 			return;
 		}

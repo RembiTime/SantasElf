@@ -9,7 +9,7 @@ export interface Item {
 	worth?: number;
 	displayName: string;
 	messageName?: string;
-	response: string;
+	response?: string;
 	defaultBehavior?: boolean;
 	onFind?(client: Client & Extension, message: Message): unknown | Promise<unknown>;
 }
@@ -257,7 +257,6 @@ export const items: Item[] = [
 		id: "keyboard",
 		rank: 2,
 		displayName: "Keyboard",
-		response: "Nice! You found a keyboard! It's rattling with anticipation", // changed: reworded -Walrus
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
@@ -274,7 +273,7 @@ export const items: Item[] = [
 				record = GREATEST(amount, record)
 		`, ["keyboard", message.author.id]);*/
 			const rand = Math.random();
-			let prompt = "Type in the following for the keyboard to give you candy! (Anyone can participate, but only the first person wins!)\n\n";
+			let prompt = "Nice! You found a keyboard! It's rattling with anticipation.\n**Type in the following for the keyboard to give you candy!** (Anyone can participate, but only the first person wins!)\n\n";
 			let answer;
 
 			if (rand < 1 / 3) {
