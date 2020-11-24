@@ -18,10 +18,5 @@ export const partition = <T>(valueOf: (value: T) => unknown, array: T[]): T[][] 
  */
 export const range = function(min: number, max: number): number[] {
 	const result = Array(max - min);
-
-	for (let i = 0; i < result.length; i++) {
-		result[i] = i + min;
-	}
-
-	return result;
+	return result.fill(0).map((x, i) => i + min);
 };
