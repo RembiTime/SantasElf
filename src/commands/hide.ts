@@ -24,11 +24,18 @@ class HideCommand extends Command {
 				}
 			],
 			channel: "guild",
-			userPermissions: ["ADMINISTRATOR"]
+			userPermissions: ["ADMINISTRATOR"],
+			//regex: /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/ sam help, this doesn't work
 		});
 	}
 
 	async exec(message, { code, level, description }) {
+
+		const validChars = /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/;
+		if(!validChars.test(code)) {
+			await message.channel.send("Please only use English charaters");
+			return;
+		}
 		
 		if (message.guild.memberCount < 25 && message.guild.id !== "761076559813279754") {
 			await message.channel.send("Your server must have at least 25 members to submit a present");
