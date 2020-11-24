@@ -257,12 +257,12 @@ class Database {
 		await this.client.knex("presents").insert({ code, presentLevel, timesFound, guildID, channelID, hiddenByID, usesLeft });
 	}
 
-	async presentFound({ userID, userName, presentCode }) {
-		await this.client.knex("foundPresents").insert({ userID, userName, presentCode });
+	async presentFound({ userID, presentCode }) {
+		await this.client.knex("foundPresents").insert({ userID, presentCode });
 	}
 
-	async addNewUser({ userID, userName }) {
-		await this.client.knex("userData").insert({ userID, userName, candyCanes: 0, wrongGuesses: 0, firstFinder: 0, totalPresents: 0, lvl1Presents: 0, lvl1Total: 0, lvl2Presents: 0, lvl2Total: 0, lvl3Presents: 0, lvl3Total: 0, lvl4Presents: 0, lvl4Total: 0, lvl5Presents: 0, lvl5Total: 0 });
+	async addNewUser({ userID }) {
+		await this.client.knex("userData").insert({ userID, candyCanes: 0, wrongGuesses: 0, firstFinder: 0, totalPresents: 0, lvl1Presents: 0, lvl1Total: 0, lvl2Presents: 0, lvl2Total: 0, lvl3Presents: 0, lvl3Total: 0, lvl4Presents: 0, lvl4Total: 0, lvl5Presents: 0, lvl5Total: 0 });
 	}
 
 	async addStaffApprovalID({ messageID, status, code, presentLevel, guildID, channelID, hiddenByID }) {
@@ -582,8 +582,7 @@ class Database {
 			const newUserCheck = this.client.database.userDataCheck({ userID: kissedID });
 			if (newUserCheck === null) {
 				await this.client.database.addNewUser({
-					userID: kissedID,
-					userName: "REMOVE THIS COLUMN"
+					userID: kissedID
 				});
 			}
 			await this.client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 15 });

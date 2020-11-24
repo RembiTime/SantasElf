@@ -16,10 +16,7 @@ class UseCommand extends Command {
 	async exec(message, { itemName }) {
 		const newUserCheck = this.client.database.userDataCheck({ userID: message.author.id });
 		if (newUserCheck === null) {
-			await this.client.database.addNewUser({
-				userID: message.author.id,
-				userName: message.member.user.tag
-			});
+			await this.client.database.addNewUser({userID: message.author.id});
 		}
 
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);

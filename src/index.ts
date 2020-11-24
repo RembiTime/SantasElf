@@ -149,9 +149,6 @@ export class SantasElf extends AkairoClient implements Extension {
 		if (!await this.knex.schema.hasTable("userData")) {
 			await this.knex.schema.createTable("userData", table => {
 				table.bigInteger("userID").unsigned().primary();
-				// TODO: we shouldn't have this
-				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
-
 				table.integer("candyCanes").notNullable().defaultTo(0);
 				table.integer("wrongGuesses").unsigned().notNullable().defaultTo(0);
 
@@ -177,7 +174,6 @@ export class SantasElf extends AkairoClient implements Extension {
 			await this.knex.schema.createTable("foundPresents", table => {
 				table.increments("id").primary();
 				table.bigInteger("userID").unsigned().notNullable();
-				table.string("userName").notNullable().defaultTo("[default username - this column should be removed]");
 				table.string("presentCode").notNullable();
 			});
 		}

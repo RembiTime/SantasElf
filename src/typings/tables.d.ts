@@ -8,7 +8,6 @@ export type GuildDataRow = Readonly<{
 
 export type UserDataRow = Readonly<{
 	readonly userID: string;
-	userName: string;
 	candyCanes: number;
 	wrongGuesses: number;
 	firstFinder: number; // what is this even for
