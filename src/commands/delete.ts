@@ -22,11 +22,14 @@ class DeleteCommand extends Command {
 				.forUpdate();
 
 			if (!present) {
+				const [p] = await trx("presents")
+					.where({ code });
 				await trx("presents")
 					.where({ code })
 					.delete();
 
 				await message.channel.send("Present deleted");
+				if (p?.guildID) await this.client.updateDisplayForGuild(p.guildID);
 			} else {
 				await message.channel.send("This present does not exist!");
 

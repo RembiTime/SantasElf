@@ -50,7 +50,7 @@ class Database {
 
 	async addLog(msg) {
 		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
-		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
+		await appendFile(join(__dirname,"../logs/log.txt"), `[${(new Date()).toISOString()}] ` + msg + "\n");
 		console.log(msg);
 	}
 
