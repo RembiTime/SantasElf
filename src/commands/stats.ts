@@ -61,24 +61,24 @@ class StatsCommand extends Command {
 		const [{ totalItems }] = await this.client
 			.knex("items")
 			.sum("record", {as: "totalItems"})
-			.where({userID: message.author.id})
+			.where({userID: message.author.id});
 
 		const [{currentItems}] = await this.client
 			.knex("items")
 			.sum("amount", {as: "currentItems"})
-			.where({userID: message.author.id})
+			.where({userID: message.author.id});
 
-		const soldItems = totalItems - currentItems
+		const soldItems = totalItems - currentItems;
 
 		const [{ gTotalItems }] = await this.client
 			.knex("items")
-			.sum("record", {as: "gTotalItems"})
+			.sum("record", {as: "gTotalItems"});
 
 		const [{gCurrentItems}] = await this.client
 			.knex("items")
-			.sum("amount", {as: "gCurrentItems"})
+			.sum("amount", {as: "gCurrentItems"});
 
-		const gSoldItems = gTotalItems - gCurrentItems
+		const gSoldItems = gTotalItems - gCurrentItems;
 
 		const ccLeaderboard = await this.client
 			.knex("userData")

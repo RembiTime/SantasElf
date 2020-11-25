@@ -1,7 +1,8 @@
 const mysql = require("mysql2");
 const items = require("./items");
 const util = require("util");
-const { appendFile, mkdir, exists } = require("fs/promises");
+const { appendFile, mkdir } = require("fs/promises");
+const { existsSync } = require("fs");
 const { join } = require("path");
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
@@ -39,7 +40,7 @@ class Database {
 	 */
 
 	async addLog(msg) {
-		if (!await exists(join(__dirname,"../logs/"))) await mkdir(join(__dirname,"../logs/"));
+		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
 		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
 		console.log(msg);
 	}
