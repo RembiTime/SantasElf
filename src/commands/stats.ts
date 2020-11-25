@@ -118,12 +118,12 @@ class StatsCommand extends Command {
 		for (const [index, entry] of ccLeaderboard.entries()) {
 			const username = await (async() => {
 				try {
-					return this.client.users.fetch(entry.userID);
+					return (await this.client.users.fetch(entry.userID))?.tag;
 				} catch (e) {
 					if (!(e instanceof DiscordAPIError) || e.code !== 10013) throw e;
-					return `Unknown User ${entry.userID}`;
+					return;
 				}
-			})();
+			})() ?? `Unknown User ${entry.userID}`;
 			leaderboardEmbed.addField(`#${index + 1}: ${username}`, `${entry.candyCanes} Candy Canes\n${entry.totalPresents} Total Presents`);
 		}
 
