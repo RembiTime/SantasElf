@@ -127,7 +127,7 @@ class StatsCommand extends Command {
 			leaderboardEmbed.addField(`#${index + 1}: ${username}`, `${entry.candyCanes} Candy Canes\n${entry.totalPresents} Total Presents`);
 		}
 
-		const pages = [uStatsEmbed, gstatsEmbed];
+		const pages = [uStatsEmbed, gstatsEmbed, leaderboardEmbed];
 
 		showPages(pages, message.channel, message.author, 120000);
 	}
