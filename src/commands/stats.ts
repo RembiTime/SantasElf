@@ -116,7 +116,7 @@ class StatsCommand extends Command {
 			.setColor(hexColor)
 			.setTitle("Candy Cane Leaderboard");
 		for (const [index, entry] of ccLeaderboard.entries()) {
-			const username = (async() => {
+			const username = await (async() => {
 				try {
 					return this.client.users.fetch(entry.userID);
 				} catch (e) {
