@@ -1,5 +1,5 @@
 import { Command } from "discord-akairo";
-import { Message, MessageEmbed } from "discord.js";
+import { Message, MessageEmbed, DiscordAPIError } from "discord.js";
 import { showPages } from "../util/discord";
 
 class StatsCommand extends Command {
@@ -11,6 +11,7 @@ class StatsCommand extends Command {
 	}
 
 	async exec(message: Message) {
+		await message.author.ensureDB();
 		const [{ presentsFound }] = await this.client.knex("foundPresents")
 			.countDistinct("id", { as: "presentsFound" });
 
@@ -36,6 +37,17 @@ class StatsCommand extends Command {
 
 		const [{ totalPresents}] = await this.client.knex("presents").countDistinct("code", { as: "totalPresents" })
 
+		const ccLeaderboard = await this.client.knex("userData").orderBy("candyCanes", "DESC").limit(15)
+		const topUsernames = await Promise.all(ccLeaderboard.map(async x => {
+			try { return (await this.client.users.fetch(x.userID))?.tag }
+			catch (e) {
+			if (!(e instanceof DiscordAPIError)) throw e;
+			else return null;
+			}
+			}));
+			
+		console.log(topUsernames)
+
 		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 
 		const uStatsEmbed = new MessageEmbed()
@@ -53,7 +65,9 @@ class StatsCommand extends Command {
 		const leaderboardEmbed = new MessageEmbed()
 			.setColor(hexColor)
 			.setTitle("Candy Cane Leaderboard")
-			.addField("TODO", "todo")
+		for (const i of topUsernames) {
+			leaderboardEmbed.setDescription("**" + i + "**: " + "TODO: Candy cane amt")
+		}
 		
 		const pages = [uStatsEmbed, gstatsEmbed];
 
