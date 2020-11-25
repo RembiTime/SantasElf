@@ -39,12 +39,6 @@ class Database {
 	 * @deprecated
 	 */
 
-	async addLog(msg) {
-		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
-		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
-		console.log(msg);
-	}
-
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
@@ -52,6 +46,12 @@ class Database {
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
+	}
+
+	async addLog(msg) {
+		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
+		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
+		console.log(msg);
 	}
 
 	async checkPresentUses({ code }) {
