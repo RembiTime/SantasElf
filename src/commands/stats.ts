@@ -58,6 +58,28 @@ class StatsCommand extends Command {
 			.knex("presents")
 			.countDistinct("code", { as: "totalPresents" });
 
+		const [{ totalItems }] = await this.client
+			.knex("items")
+			.sum("record", {as: "totalItems"})
+			.where({userID: message.author.id})
+
+		const [{currentItems}] = await this.client
+			.knex("items")
+			.sum("amount", {as: "currentItems"})
+			.where({userID: message.author.id})
+
+		const soldItems = totalItems - currentItems
+
+		const [{ gTotalItems }] = await this.client
+			.knex("items")
+			.sum("record", {as: "gTotalItems"})
+
+		const [{gCurrentItems}] = await this.client
+			.knex("items")
+			.sum("amount", {as: "gCurrentItems"})
+
+		const gSoldItems = gTotalItems - gCurrentItems
+
 		const ccLeaderboard = await this.client
 			.knex("userData")
 			.orderBy("candyCanes", "DESC")
@@ -88,7 +110,9 @@ class StatsCommand extends Command {
 				"Wrong guesses: " +
 					userWrongGuesses.wrongGuesses +
 					"\nTimes you've found a present first: " +
-					foundFirst.firstFinder
+					foundFirst.firstFinder +
+					"\nItems sold: " +
+					soldItems
 			);
 
 		const gstatsEmbed = new MessageEmbed()
@@ -109,7 +133,9 @@ class StatsCommand extends Command {
 					usersWithPresents +
 					"\nServers participating: " +
 					guildTotal +
-					"\nAchievements found: TODO"
+					"\nAchievements found: TODO" +
+					"\nItems sold: " +
+					gSoldItems
 			);
 
 		const leaderboardEmbed = new MessageEmbed()
