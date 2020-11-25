@@ -1,8 +1,8 @@
 const mysql = require("mysql2");
 const items = require("./items");
 const util = require("util");
-import { appendFile, mkdir, exists } from "fs/promises";
-import { join } from "path";
+const { appendFile, mkdir, exists } = require("fs/promises");
+const { join } = require("path");
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
 /** @typedef {import("./typings/tables").StaffApprovalRow} StaffApprovalRow */
