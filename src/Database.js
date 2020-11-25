@@ -1,6 +1,8 @@
 const mysql = require("mysql2");
 const items = require("./items");
 const util = require("util");
+import { appendFile, mkdir, exists } from "fs/promises";
+import { join } from "path";
 /** @typedef {import("./typings/tables").GuildDataRow} GuildDataRow */
 /** @typedef {import("./typings/tables").UserDataRow} UserDataRow */
 /** @typedef {import("./typings/tables").StaffApprovalRow} StaffApprovalRow */
@@ -35,6 +37,13 @@ class Database {
 	 * @returns {Promise<GuildDataRow?>}
 	 * @deprecated
 	 */
+
+	async addLog(msg) {
+		if (!await exists(join(__dirname,"../logs/"))) await mkdir(join(__dirname,"../logs/"));
+		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
+		console.log(msg);
+	}
+
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
 		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
