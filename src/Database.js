@@ -186,7 +186,7 @@ class Database {
 
 	async userHasItem({ userID, itemName }) {
 		const [results] = await this.client.knex("items").where({ name: itemName, userID: userID });
-		return !!(results?.amount);
+		return results?.amount > 0;
 	}
 
 	async itemCheck({ userID, itemName }) {

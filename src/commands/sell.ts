@@ -29,7 +29,7 @@ class SellCommand extends Command {
 		}
 		if (item && "worth" in item) {
 			const itemCheck = await this.client.database.userHasItem({userID: message.author.id, itemName: item.id});
-			if (itemCheck === true) {
+			if (itemCheck) {
 				await this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
 				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
