@@ -25,6 +25,7 @@ class UseCommand extends Command {
 			return;
 		} else if (item && "rank" in item) {
 			if (item.id === "fractal" || item.id === "slime" || item.id === "spanner" || item.id === "dragon" || item.id === "mysteriousPart") {
+				this.client.database.addLog(message.author.tag + " tried to sell a special item (" + item.id + ")");
 				message.channel.send("You can't use that item... Maybe you have to build something with it?");
 				return;
 			}
@@ -75,11 +76,14 @@ class UseCommand extends Command {
 					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP")
 					return;
 				} if (message.member.roles.cache.has("778022401858338846")) {
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					this.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
 					message.channel.send("You already have the role, so take 150 candy canes instead!");
 					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
 					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 					return;
 				} else {
+					this.client.database.addLog(`${message.author.id} used the role`);
 					message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.")
 					message.member.roles.add("778022401858338846");
 					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
@@ -115,8 +119,11 @@ class UseCommand extends Command {
 					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "CLAIMED"});
 					await this.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					this.client.database.addLog(`${message.author.id} hatched an egg successfully. They now have ${ccAmt} candy canes`);
 					return;
 				} else {
+					this.client.database.addLog(`${message.author.id} killed a dragon`);
 					message.channel.send("Sadly the egg has gone cold, and so has the life within. Well, at least you have breakfast!")
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "LOST"});
 					await this.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);

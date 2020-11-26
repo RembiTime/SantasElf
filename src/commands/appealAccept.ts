@@ -21,6 +21,7 @@ class AppealAcceptCommand extends Command {
 			} else {
 				await guild.setAppealStatus("ACCEPTED", trx);
 				await message.channel.send("This guild has been given 2 more attempts");
+				this.client.database.addLog(`${message.author.tag} added ${guild.name} as a partner`);
 			}
 		});
 	}

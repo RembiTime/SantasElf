@@ -11,7 +11,6 @@ class PingCommand extends Command {
 
 	async exec(message: Message) {
 		await message.channel.send("Pong!");
-		this.client.database.addLog(message.author.id + " pinged!");
 	}
 }
 

@@ -46,7 +46,7 @@ class HideCommand extends Command {
 			return;
 		}
 		if (code.length >= 1024) {
-			await message.channel.send("That code it too long!");
+			await message.channel.send("That code is too long!");
 			return;
 		}
 		if (code.startsWith(",")) {
@@ -63,7 +63,7 @@ class HideCommand extends Command {
 		if (present !== null || queuePresent !== null) {
 			await message.channel.send("That code already exists!");
 			return;
-		}
+		} 
 		if (!isPartner) {
 			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
 			if (level > 3) {
@@ -90,6 +90,7 @@ class HideCommand extends Command {
 			await message.channel.send("Your server has already submitted a present! Please wait for a decision on your previous present to submit a new one.");
 			return;
 		}
+		this.client.database.addLog(`${message.author.tag} submitted a present with the code ${code} and a level of ${level} in ${message.guild.name}`);
 		await message.channel.send("Your present with the code of `" + code + "` and a difficulty of `" + level + "` has been sent to the staff team to review!");
 		const staffQueue = this.client.channels.cache.get(channels.staffQueue);
 		if (!(staffQueue instanceof TextChannel)) throw new Error("Staff queue channel was not a text channel!");

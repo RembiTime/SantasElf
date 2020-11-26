@@ -18,7 +18,7 @@ class DeleteCommand extends Command {
 		await this.client.knex.transaction(async trx => {
 			const present = await trx("presents")
 				.first("*")
-				.where({ code })
+				.where({ code, guildID: message.guild.id })
 				.forUpdate();
 
 			if (!present) {
@@ -27,6 +27,8 @@ class DeleteCommand extends Command {
 				await trx("presents")
 					.where({ code })
 					.delete();
+
+				this.client.database.addLog(`${message.author.tag} deleted the present ${code} from ${message.guild.name}`);
 
 				await message.channel.send("Present deleted");
 				if (p?.guildID) await this.client.updateDisplayForGuild(p.guildID);

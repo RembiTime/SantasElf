@@ -33,6 +33,8 @@ class TempHideCommand extends Command {
 			return;
 		}
 
+		this.client.database.addLog(`${message.author.tag} hid a temporary present (${code}), which is valid for ${uses} uses`);
+
 		await this.client.database.addPresent({
 			code: code,
 			presentLevel: level,
