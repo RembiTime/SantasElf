@@ -6,7 +6,7 @@ import { chunk } from "../util/array";
 class HelpCommand extends Command {
 	constructor() {
 		super("help", {
-			aliases: ["help", "?", "rpspleasehelpihavenoideawhattodo"],
+			aliases: ["help", "?", "rpspleasehelpihavenoideawhattodo", "commands"],
 			description: "Shows a list of commands",
 		});
 	}
