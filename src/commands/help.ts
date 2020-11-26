@@ -13,7 +13,7 @@ class HelpCommand extends Command {
 
 	async exec(message: Message) {
 		const embedArr: MessageEmbed[] = [];
-		for (const commands of chunk(this.client.commandHandler.modules.array(), 10)) {
+		for (const commands of chunk(this.client.commandHandler.modules.filter(x => !x.ownerOnly).array(), 10)) {
 			const embed = new MessageEmbed();
 			for (const command of commands) embed.addField(command.id, command.description, true);
 			embedArr.push(embed);

@@ -73,10 +73,10 @@ class UseCommand extends Command {
 					message.channel.send("You don't have any of that item!");
 					return;
 				} if (message.guild.id !== "647915068767338509") {
-					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP")
+					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
 					return;
 				} if (message.member.roles.cache.has("778022401858338846")) {
-					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 					this.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
 					message.channel.send("You already have the role, so take 150 candy canes instead!");
 					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
@@ -84,7 +84,7 @@ class UseCommand extends Command {
 					return;
 				} else {
 					this.client.database.addLog(`${message.author.id} used the role`);
-					message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.")
+					message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
 					message.member.roles.add("778022401858338846");
 					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 					return;
@@ -96,13 +96,13 @@ class UseCommand extends Command {
 					message.channel.send("You don't have any of that item!");
 					return;
 				}
-				const eggData = await this.client.knex("eggData").first('*').where({userID: message.author.id, status: "UNCLAIMED"});
+				const eggData = await this.client.knex("eggData").first("*").where({userID: message.author.id, status: "UNCLAIMED"});
 				let eggAge = Date.now() - Number(eggData.timeFound);
 				if (eggAge < 86400000) {
 					let minsLeft = Math.floor((86400000 - eggAge) / 60000);
-					let hoursLeft = Math.round(minsLeft / 60)
+					let hoursLeft = Math.round(minsLeft / 60);
 					minsLeft = minsLeft % 60;
-					message.channel.send("The egg is still hatching! Please wait " + hoursLeft + " hours and " + minsLeft + " minutes.")
+					message.channel.send("The egg is still hatching! Please wait " + hoursLeft + " hours and " + minsLeft + " minutes.");
 					return;
 				} else if (eggAge < 172800000) {
 					let eggCount = await this.client.knex("eggData")
@@ -110,21 +110,21 @@ class UseCommand extends Command {
 						.where({ userID: message.author.id, status: "UNCLAIMED" })
 						.then(([{ eggCount }]) => eggCount as number);
 					if (eggCount > 2) {
-						message.channel.send("Your dragon hatched... TODO. You have " + --eggCount + " eggs left unhatched!")
+						message.channel.send("Your dragon hatched... TODO. You have " + --eggCount + " eggs left unhatched!");
 					} else if (eggCount === 2) {
-						message.channel.send("Your dragon hatched... TODO. You have 1 egg left unhatched!")
+						message.channel.send("Your dragon hatched... TODO. You have 1 egg left unhatched!");
 					} else {
-						message.channel.send("Your dragon hatched... TODO")
+						message.channel.send("Your dragon hatched... TODO");
 					}
 					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "CLAIMED"});
 					await this.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
-					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 					this.client.database.addLog(`${message.author.id} hatched an egg successfully. They now have ${ccAmt} candy canes`);
 					return;
 				} else {
 					this.client.database.addLog(`${message.author.id} killed a dragon`);
-					message.channel.send("Sadly the egg has gone cold, and so has the life within. Well, at least you have breakfast!")
+					message.channel.send("Sadly the egg has gone cold, and so has the life within. Well, at least you have breakfast!");
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "LOST"});
 					await this.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 				}

@@ -31,7 +31,7 @@ class HideCommand extends Command {
 
 	async exec(message, { code, level, description }) {
 
-		const validChars = /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/;
+		const validChars = /^[a-zA-Z\d~!@#$%^&*()-_=+[\]{}|/;':",.<>]+$/;
 		if(!validChars.test(code)) {
 			await message.channel.send("Please only use English charaters");
 			return;
