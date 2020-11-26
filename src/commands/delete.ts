@@ -21,9 +21,7 @@ class DeleteCommand extends Command {
 				.where({ code, guildID: message.guild.id })
 				.forUpdate();
 
-			if (!present) {
-				const [p] = await trx("presents")
-					.where({ code });
+			if (present) {
 				await trx("presents")
 					.where({ code })
 					.delete();
@@ -31,11 +29,8 @@ class DeleteCommand extends Command {
 				this.client.database.addLog(`${message.author.tag} deleted the present ${code} from ${message.guild.name}`);
 
 				await message.channel.send("Present deleted");
-				if (p?.guildID) await this.client.updateDisplayForGuild(p.guildID);
-			} else {
-				await message.channel.send("This present does not exist!");
-
-			}
+				if (present.guildID) await this.client.updateDisplayForGuild(present.guildID);
+			} else await message.channel.send("This present does not exist!");
 		});
 	}
 }
