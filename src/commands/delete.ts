@@ -4,7 +4,7 @@ class DeleteCommand extends Command {
 	constructor() {
 		super("delete", {
 			aliases: ["del", "delete"],
-			description: "Delete a code",
+			description: "(,delete code) Delete a code",
 			args: [{
 				id: "code",
 				type: "string"

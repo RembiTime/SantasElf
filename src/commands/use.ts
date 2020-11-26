@@ -5,7 +5,7 @@ class UseCommand extends Command {
 	constructor() {
 		super("use", {
 			aliases: ["use"],
-			description: "Use an item",
+			description: "(,use itemName) Uses an item",
 			args: [{
 				id: "itemName",
 				type: "string"
@@ -14,6 +14,7 @@ class UseCommand extends Command {
 	}
 
 	async exec(message, { itemName }) {
+		await message.author.ensureDB();
 		const newUserCheck = this.client.database.userDataCheck({ userID: message.author.id });
 		if (newUserCheck === null) {
 			await this.client.database.addNewUser({userID: message.author.id});
@@ -110,11 +111,11 @@ class UseCommand extends Command {
 						.where({ userID: message.author.id, status: "UNCLAIMED" })
 						.then(([{ eggCount }]) => eggCount as number);
 					if (eggCount > 2) {
-						message.channel.send("Your dragon hatched... TODO. You have " + --eggCount + " eggs left unhatched!");
+						message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have " + --eggCount + " eggs left unhatched!");
 					} else if (eggCount === 2) {
-						message.channel.send("Your dragon hatched... TODO. You have 1 egg left unhatched!");
+						message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have 1 egg left unhatched!");
 					} else {
-						message.channel.send("Your dragon hatched... TODO");
+						message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant.");
 					}
 					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "CLAIMED"});

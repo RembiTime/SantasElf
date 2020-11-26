@@ -276,15 +276,36 @@ export const items: Item[] = [
 			let prompt = "Nice! You found a keyboard! It's rattling with anticipation.\n**Type in the following for the keyboard to give you candy!** (Anyone can participate, but only the first person wins!)\n\n";
 			let answer;
 
-			if (rand < 1 / 3) {
-				prompt = prompt + "This is an example typing test";
-				answer = "This is an example typing test";
-			} else if (rand < 2 / 3) {
-				prompt = prompt + "This is another example of a prompt";
-				answer = "This is another example of a prompt";
+			if (rand < 1 / 10) {
+				prompt = prompt + "Snake? Snake?! SNAAAAKE!!";
+				answer = "Snake? Snake?! SNAAAAKE!!";
+			} else if (rand < 2 / 10) {
+				prompt = prompt + "You have died of dysentery";
+				answer = "You have died of dysentery";
+			} else if (rand < 3 / 10) {
+				prompt = prompt + "You must construct additional pylons";
+				answer = "You must construct additional pylons";
+			} else if (rand < 4 / 10) {
+				prompt = prompt + "Cake, and grief counseling, will be available at the conclusion of the test";
+				answer = "Cake, and grief counseling, will be available at the conclusion of the test";
+			} else if (rand < 5 / 10) {
+				prompt = prompt + "Rise and shine, Mister Freeman. Rise and... shine";
+				answer = "Rise and shine, Mister Freeman. Rise and... shine";
+			} else if (rand < 6 / 10) {
+				prompt = prompt + "Thank you Mario! But our Princess is in another castle!";
+				answer = "Thank you Mario! But our Princess is in another castle!";
+			} else if (rand < 7 / 10) {
+				prompt = prompt + "All your base are belong to us!";
+				answer = "All your base are belong to us!";
+			} else if (rand < 8 / 10) {
+				prompt = prompt + "We’ve both said a lot of things that you’re going to regret.";
+				answer = "We’ve both said a lot of things that you’re going to regret.";
+			} else if (rand < 9 / 10) {
+				prompt = prompt + "I used to be an adventurer like you, until I took an arrow to the knee.";
+				answer = "I used to be an adventurer like you, until I took an arrow to the knee.";
 			} else {
-				prompt = prompt + "I've run out of ideas";
-				answer = "I've run out of ideas";
+				prompt = prompt + "Hey you, you're finally awake.";
+				answer = "Hey you, you're finally awake.";
 			}
 			const filter = response => response.content === answer;
 
@@ -414,7 +435,7 @@ export const items: Item[] = [
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP"
+		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP**"
 		/*defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")

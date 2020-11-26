@@ -36,7 +36,7 @@ class OpenCommand extends Command {
 	constructor() {
 		super("open", {
 			aliases: ["open"],
-			description: "Open a present!",
+			description: "(,open #) Opens a present of level #",
 			args: [{
 				id: "presentLevel",
 				type: Argument.range("integer", 1, 5, true)
@@ -45,6 +45,12 @@ class OpenCommand extends Command {
 	}
 
 	async exec(message: Message, { presentLevel }: { presentLevel: number } ) {
+		await message.author.ensureDB();
+		const [presentAmt] = await this.client.knex("userData").select(`lvl${presentLevel}Presents as amtLeft`).where({userID: message.author.id});
+		if (presentAmt.amtLeft === 0) {
+			await message.channel.send("You don't have any level " + presentLevel + " presents to open!");
+			return;
+		}
 		await this.client.knex.transaction(async trx => {
 			const hadEnough = await message.author.removePresents(presentLevel, 1, trx);
 
@@ -68,6 +74,7 @@ class OpenCommand extends Command {
 					await message.channel.send(item.response);
 				}
 			} else {
+				//This didn't work so I put it at the top
 				await message.channel.send("You don't have any level " + presentLevel + " presents to open!");
 			}
 		});

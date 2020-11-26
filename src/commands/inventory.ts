@@ -7,11 +7,12 @@ class InventoryCommand extends Command {
 	constructor() {
 		super("inventory", {
 			aliases: ["inventory", "inv"],
-			description: "Checks your inventory"
+			description: "Shows you your inventory"
 		});
 	}
 
 	async exec(message: Message) {
+		await message.author.ensureDB();
 		const items = await message.author.fetchItems();
 		const userData = await message.author.fetchData();
 

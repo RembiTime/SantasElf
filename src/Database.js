@@ -91,7 +91,7 @@ class Database {
 	 * @returns {Promise<boolean>}
 	 */
 	async isPartner(guildID) {
-		const [results] = await this.client.knex.select("isPartner").from("guildData").where({ guildID });
+		const [results] = await this.client.knex.select("isPartner").from("guildData").where({ guildID, isPartner: true });
 		return results ?? null;
 	}
 	/**

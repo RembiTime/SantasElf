@@ -6,7 +6,7 @@ class StatsCommand extends Command {
 	constructor() {
 		super("stats", {
 			aliases: ["stats", "statistics"],
-			description: "Checks the statistics",
+			description: "Shows you some interesting statistics",
 		});
 	}
 
