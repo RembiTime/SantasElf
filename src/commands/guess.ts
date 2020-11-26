@@ -6,7 +6,7 @@ class GuessCommand extends Command {
 	constructor() {
 		super("guess", {
 			aliases: ["guess", "g"],
-			description: "Command to be used when you find a present",
+			description: "Use this in a channel to start guessing",
 			channel: "guild",
 			args: [{
 				id: "code",

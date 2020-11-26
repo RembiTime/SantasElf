@@ -1,4 +1,5 @@
 import { Argument, Command } from "discord-akairo";
+import channels from "../channels.json";
 
 class ChangeLevelCommand extends Command {
 	constructor() {
@@ -20,7 +21,7 @@ class ChangeLevelCommand extends Command {
 
 	async exec(message, { presentLevel, messageID }) {
 		// TODO: not hardcode this (and review this command in general)
-		if (message.channel.id !== "766143817497313331") {
+		if (message.channel.id !== channels.staffQueue) {
 			return;
 		}
 

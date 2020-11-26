@@ -5,7 +5,7 @@ class SellCommand extends Command {
 	constructor() {
 		super("sell", {
 			aliases: ["sell"],
-			description: "Sell an item",
+			description: "(,sell itemName) Sells an item",
 			args: [{
 				id: "itemName",
 				type: "string"
@@ -15,6 +15,7 @@ class SellCommand extends Command {
 
 
 	async exec(message, {itemName}) {
+		await message.author.ensureDB();
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
 		if (!item) {
 			await message.channel.send("That item does not exist!");
@@ -29,10 +30,10 @@ class SellCommand extends Command {
 		if (item && "worth" in item) {
 			const itemCheck = await this.client.database.userHasItem({userID: message.author.id, itemName: item.id});
 			if (itemCheck === true) {
+				await this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
+				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 				this.client.database.addLog(`${message.author.tag} sold a(n) ${item.id}. They now have ${ccAmt.candyCanes} candy canes`);
-				this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
-				this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				message.channel.send("You sold " + item.messageName + " for " + item.worth + " candy canes");
 				return;
 			} else {

@@ -33,6 +33,8 @@ class StaffApprovalListener extends Listener {
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
 		if (reaction.emoji.name === "❗") {
+			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+			this.client.database.addLog(`${user.tag} claimed the code ${checkStaffApproval.code}`);
 			const findIfClaimedBy = await this.client.database.findIfClaimedBy({ messageID: reaction.message.id });
 			if (findIfClaimedBy.claimedByID !== null) {
 				reaction.users.remove(user);
@@ -47,6 +49,7 @@ class StaffApprovalListener extends Listener {
 		}
 		if (reaction.emoji.name === "✅") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+			this.client.database.addLog(`${user.tag} accepted the code ${checkStaffApproval.code}`);
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			// TODO: handle bot not in guild
 			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was accepted! Your server has been posted and your present has been added for people to find!");
@@ -73,10 +76,11 @@ class StaffApprovalListener extends Listener {
 		}
 		if (reaction.emoji.name === "❌") {
 			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+			this.client.database.addLog(`${user.tag} denied the code ${checkStaffApproval.code}`);
 			const deniedCount = await this.client.database.checkGuildDeniedAmount({ guildID: checkStaffApproval.guildID });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			this.client.database.approvalStatusUpdate({ status: "DENIED", messageID: reaction.message.id });
-			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + deniedCount + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
+			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + ++deniedCount + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
 			const oldEmbed = approvalMessage.embeds[0];
 			const editedEmbed = new MessageEmbed(oldEmbed)
 				.setColor("#FF5A5A")

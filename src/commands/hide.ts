@@ -6,7 +6,7 @@ class HideCommand extends Command {
 	constructor() {
 		super("hide", {
 			aliases: ["hide"],
-			description: "Hide a present!",
+			description: "(,hide code) Hide a present",
 			args: [
 				{
 					id: "code",
@@ -57,6 +57,7 @@ class HideCommand extends Command {
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
 		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
 		const isPartner = await this.client.database.isPartner(message.guild.id);
+		let partnerStatus = true;
 		if (checkNewGuild === null) {
 			await this.client.database.addNewGuild({guildID: message.guild.id});
 		}
@@ -64,7 +65,8 @@ class HideCommand extends Command {
 			await message.channel.send("That code already exists!");
 			return;
 		} 
-		if (!isPartner) {
+		if (isPartner === null) {
+			partnerStatus = false;
 			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
 			if (level > 3) {
 				await message.channel.send("Your server can only have a present up to level 3. If you would like to go up to level 5, please apply to be a partner.");
@@ -106,7 +108,7 @@ class HideCommand extends Command {
 			.setTitle("New present hidden!")
 			.setThumbnail("https://images-ext-2.discordapp.net/external/ruZlz9t0ScVKeriIpD8l8mSsZ7ACks9CR7qz7aksJ4M/https/pbs.twimg.com/media/Dq3swg5W4AAnAXV.jpg%3Alarge?width=671&height=671")
 			.addField("Present Info:", "Present Code: " + code + "\nDifficulty: " + level)
-			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: " + guildDeniedAmount + "\nMembers: " + message.guild.memberCount + "\nDays Created: " + guildAge + "\n Are they a partner? " + isPartner)
+			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: " + guildDeniedAmount + "\nMembers: " + message.guild.memberCount + "\nDays Created: " + guildAge + "\n Are they a partner? " + String(partnerStatus))
 			.addField("Submitter Info:", "Submitted by: " + message.member.user.tag + "\nID: " + message.author.id)
 			.addField("How to find:", description)
 			.addField("Invite:", invite);

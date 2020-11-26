@@ -7,11 +7,13 @@ class AchievementCommand extends Command {
 	constructor() {
 		super("achievements", {
 			aliases: ["ach", "achievements"],
-			description: "Checks your achievements"
+			description: "Brings up the achievements menu"
 		});
 	}
 
 	async exec(message: Message) {
+		message.channel.send("WIP");
+		return;
 		const pages: MessageEmbed[] = [];
 
 		const achievements = await message.author.fetchAchievements();

@@ -7,13 +7,13 @@ class HelpCommand extends Command {
 	constructor() {
 		super("help", {
 			aliases: ["help", "?", "rpspleasehelpihavenoideawhattodo", "commands"],
-			description: "Shows a list of commands",
+			description: "Shows you this list of commands",
 		});
 	}
 
 	async exec(message: Message) {
 		const embedArr: MessageEmbed[] = [];
-		for (const commands of chunk(this.client.commandHandler.modules.filter(x => !x.ownerOnly).array(), 10)) {
+		for (const commands of chunk(this.client.commandHandler.modules.filter(x => !x.ownerOnly).array(), 12)) {
 			const embed = new MessageEmbed()
 			.setTitle("Help Menu")
 			.setColor(0xFF1222);

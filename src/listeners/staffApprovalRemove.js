@@ -27,6 +27,8 @@ class StaffApprovalRemoveListener extends Listener {
 		const approvalMessage = await staffQueue.messages.fetch(reaction.message.id);
 
 		if (reaction.emoji.name === "❗") {
+			const checkStaffApproval = await this.client.database.checkStaffApprovalIDs({ messageID: reaction.message.id });
+			this.client.database.addLog(`${user.tag} unclaimed the code ${checkStaffApproval.code}`);
 			const findIfClaimedBy = await this.client.database.findIfClaimedBy({ messageID: reaction.message.id });
 			if (findIfClaimedBy.claimedByID !== user.id) {
 				return;
