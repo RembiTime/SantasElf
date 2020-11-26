@@ -14,7 +14,9 @@ class HelpCommand extends Command {
 	async exec(message: Message) {
 		const embedArr: MessageEmbed[] = [];
 		for (const commands of chunk(this.client.commandHandler.modules.filter(x => !x.ownerOnly).array(), 10)) {
-			const embed = new MessageEmbed();
+			const embed = new MessageEmbed()
+			.setTitle("Help Menu")
+			.setColor(0xFF1222);
 			for (const command of commands) embed.addField(command.id, command.description, true);
 			embedArr.push(embed);
 		}
