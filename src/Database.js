@@ -185,8 +185,8 @@ class Database {
 	}
 
 	async userHasItem({ userID, itemName }) {
-		const [results] = await this.client.knex.select(1).from("items").where({ name: itemName, userID: userID });
-		return !!results;
+		const [results] = await this.client.knex("items").where({ name: itemName, userID: userID });
+		return !!(results?.amount);
 	}
 
 	async itemCheck({ userID, itemName }) {
@@ -593,8 +593,8 @@ class Database {
 			await this.client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 15 });
 			await this.client.knex("userData").where({ userID: kissedID }).increment({ candyCanes: 15 });
 			await this.client.knex("items").where({ name: "mistletoe", userID: message.author.id }).decrement({ amount: 1 });
-			const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
-			const [kissedCCAmt] = await this.client.knex("userData").select("candyCanes").where({userID: kissedID})
+			const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
+			const [kissedCCAmt] = await this.client.knex("userData").select("candyCanes").where({userID: kissedID});
 			this.client.database.addLog(`${message.author.tag} (who now has ${ccAmt} candy canes) used a mistletoe to kiss ${mentionMsg.first().mentions.users.first().tag} (who now has ${kissedCCAmt} candy canes)`);
 			return;
 		} if (mentionMsg.first().mentions.users.size > 1) {
@@ -608,7 +608,7 @@ class Database {
 	async useMeme({ message }) {
 		let candyCaneAmt = Math.floor(Math.random() * 41) - 10;
 		await this.client.knex("items").where({ name: "meme", userID: message.author.id }).decrement({ amount: 1 });
-		const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+		const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 		this.client.database.addLog(`${message.author.id} used a meme and got ${candyCaneAmt} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
 		if (candyCaneAmt === 0) {
 			message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
@@ -692,7 +692,7 @@ class Database {
 					this.client.database.addCandyCanes({ amount: 25, userID: message.author.id });
 					this.client.minigamePlayers.delete(message.author.id);
 					this.client.database.removeItem({ itemName: "palette", userID: message.author.id });
-					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 					this.client.database.addLog(`${message.author.id} guessed correctly when using a palette. They now have ${ccAmt.candyCanes} candy canes`);
 					msg.edit("That's correct! You got 25 candy canes!");
 					return;
@@ -735,7 +735,7 @@ class Database {
 						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
 							timeToReact < 500 ? 60 : 50);
 						this.client.database.addCandyCanes({ amount: toAdd, userID: message.author.id });
-						const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+						const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 						this.client.database.addLog(`${message.author.id} took ${timeToReact} when using a watch and got ${toAdd} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
 						stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
 						return;

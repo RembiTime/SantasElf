@@ -22,6 +22,7 @@ class DeleteCommand extends Command {
 				.forUpdate();
 
 			if (present) {
+				
 				await trx("presents")
 					.where({ code })
 					.delete();
