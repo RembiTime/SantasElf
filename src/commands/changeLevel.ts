@@ -36,6 +36,9 @@ class ChangeLevelCommand extends Command {
 				return;
 			}
 
+			this.client.database.addLog(`${message.author.tag} changed message ID ${messageID}'s present level from ${staffApproval.presentLevel} to ${presentLevel}`);
+			message.channel.send(`<@${message.author.id}> changed message ID ${messageID}'s present level from ${staffApproval.presentLevel} to ${presentLevel}`)
+
 			await trx("staffApproval")
 				.update({ presentLevel })
 				.where("messageID", "=", messageID);

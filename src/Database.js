@@ -33,17 +33,18 @@ class Database {
 			throw new Error("Invalid getPresent() call");
 		}
 	}
-	/**
-	 * @param {{ guildID: string }} guildID
-	 * @returns {Promise<GuildDataRow?>}
-	 * @deprecated
-	 */
 
 	async addLog(msg) {
 		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
 		await appendFile(join(__dirname,"../logs/log.txt"), msg + "\n");
 		console.log(msg);
 	}
+
+	/**
+	 * @param {{ guildID: string }} guildID
+	 * @returns {Promise<GuildDataRow?>}
+	 * @deprecated
+	 */
 
 	async checkNewGuild({ guildID }) {
 		//if ("id" in options) {
@@ -598,6 +599,9 @@ class Database {
 			await this.client.knex("userData").where({ userID: message.author.id }).increment({ candyCanes: 15 });
 			await this.client.knex("userData").where({ userID: kissedID }).increment({ candyCanes: 15 });
 			await this.client.knex("items").where({ name: "mistletoe", userID: message.author.id }).decrement({ amount: 1 });
+			const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+			const [kissedCCAmt] = await this.client.knex("userData").select("candyCanes").where({userID: kissedID})
+			this.client.database.addLog(`${message.author.tag} (who now has ${ccAmt} candy canes) used a mistletoe to kiss ${mentionMsg.first().mentions.users.first().tag} (who now has ${kissedCCAmt} candy canes)`);
 			return;
 		} if (mentionMsg.first().mentions.users.size > 1) {
 			message.channel.send("Please only mention one user!");
@@ -610,6 +614,8 @@ class Database {
 	async useMeme({ message }) {
 		let candyCaneAmt = Math.floor(Math.random() * 41) - 10;
 		await this.client.knex("items").where({ name: "meme", userID: message.author.id }).decrement({ amount: 1 });
+		const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+		this.client.database.addLog(`${message.author.id} used a meme and got ${candyCaneAmt} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
 		if (candyCaneAmt === 0) {
 			message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
 			return;
@@ -685,12 +691,15 @@ class Database {
 					this.client.minigamePlayers.delete(message.author.id);
 					this.client.database.removeItem({ itemName: "palette", userID: message.author.id });
 					answer = answer + 1;
+					this.client.database.addLog(`${message.author.id} guessed incorrectly when using a palette`);
 					msg.edit("That's incorrect, it was " + answer + ". Try again next time!");
 					return;
 				} else {
 					this.client.database.addCandyCanes({ amount: 25, userID: message.author.id });
 					this.client.minigamePlayers.delete(message.author.id);
 					this.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+					this.client.database.addLog(`${message.author.id} guessed correctly when using a palette. They now have ${ccAmt.candyCanes} candy canes`);
 					msg.edit("That's correct! You got 25 candy canes!");
 					return;
 				}
@@ -721,6 +730,7 @@ class Database {
 					if (greenReaction.size === 0) {
 						this.client.minigamePlayers.delete(message.author.id);
 						this.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+						this.client.database.addLog(`${message.author.id} was too slow when using a watch`);
 						stopMsg.edit("You were too slow! Click it as soon as it turns green next time.");
 						return;
 					} else {
@@ -731,12 +741,15 @@ class Database {
 						const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
 							timeToReact < 500 ? 60 : 50);
 						this.client.database.addCandyCanes({ amount: toAdd, userID: message.author.id });
+						const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id})
+						this.client.database.addLog(`${message.author.id} took ${timeToReact} when using a watch and got ${toAdd} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
 						stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
 						return;
 					}
 				} else {
 					this.client.minigamePlayers.delete(message.author.id);
 					this.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+					this.client.database.addLog(`${message.author.id} was too quick when using a watch`);
 					stopMsg.edit("You were too quick! Wait for it to turn green next time.");
 					return;
 				}

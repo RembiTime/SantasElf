@@ -20,6 +20,7 @@ class AddPartnerCommand extends Command {
 			} else {
 				await message.guild.setPartner(true, trx);
 				await message.channel.send(`**${Util.escapeMarkdown(message.guild.name)}** is now a partner!`);
+				this.client.database.addLog(`${message.guild.name} has been added as a partner`);
 			}
 		});
 	}

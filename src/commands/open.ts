@@ -54,6 +54,8 @@ class OpenCommand extends Command {
 
 				const item = candidates[Math.floor(Math.random() * candidates.length)];
 
+				this.client.database.addLog(`${message.author.tag} opened a level ${presentLevel} present and found a(n) ${item.id}`);
+
 				if (item.defaultBehavior) {
 					await message.author.giveItem(item, trx);
 				}

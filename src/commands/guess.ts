@@ -59,6 +59,7 @@ class GuessCommand extends Command {
 
 				if (!present) {
 					if (!stopCollector) {
+						this.client.database.addLog(`${message.author.tag} guessed ${m.content} in ${message.guild.name}`);
 						await this.client.knex("userData")
 							.increment("wrongGuesses", 1)
 							.transacting(trx)
@@ -71,6 +72,7 @@ class GuessCommand extends Command {
 				collector.stop();
 
 				if (m.author.id === present.hiddenByID) {
+					this.client.database.addLog(`${message.author.tag} tried to guess their own present (${m.content}) in ${message.guild.name}`);
 					finderIsHider = true;
 					return;
 				}
@@ -88,11 +90,15 @@ class GuessCommand extends Command {
 					return;
 				} else {
 					if (present.usesLeft === 0) {
+						this.client.database.addLog(`${message.author.tag} tried to guess an expired present (${m.content}) in ${message.guild.name}`);
 						presentExpired = true;
 						return;
 					} else if (present.usesLeft !== null) {
+						this.client.database.addLog(`${message.author.tag} found a temporary present (${m.content}) in ${message.guild.name} - Uses left: ${--present.usesLeft}`);
 						await this.client.knex("presents").decrement("usesLeft", 1).where({ code: m.content }).transacting(trx);
 						tempPresent = true;
+					} else {
+						this.client.database.addLog(`${message.author.tag} found ${m.content} in ${message.guild.name}`);
 					}
 
 					await this.client.knex("foundPresents")
