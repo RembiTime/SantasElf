@@ -595,7 +595,7 @@ class Database {
 			await this.client.knex("items").where({ name: "mistletoe", userID: message.author.id }).decrement({ amount: 1 });
 			const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 			const [kissedCCAmt] = await this.client.knex("userData").select("candyCanes").where({userID: kissedID});
-			this.client.database.addLog(`${message.author.tag} (who now has ${ccAmt} candy canes) used a mistletoe to kiss ${mentionMsg.first().mentions.users.first().tag} (who now has ${kissedCCAmt} candy canes)`);
+			this.client.database.addLog(`${message.author.tag} (who now has ${ccAmt.candyCanes} candy canes) used a mistletoe to kiss ${mentionMsg.first().mentions.users.first().tag} (who now has ${kissedCCAmt.candyCanes} candy canes)`);
 			return;
 		} if (mentionMsg.first().mentions.users.size > 1) {
 			message.channel.send("Please only mention one user!");

@@ -35,3 +35,37 @@ RPS1222#5127 pinged!
 [2020-11-26T07:44:21.645Z] RPS1222#5127 sold a(n) pin. They now have 40 candy canes
 [2020-11-26T07:44:27.154Z] RPS1222#5127 sold a(n) pin. They now have 56 candy canes
 [2020-11-26T07:45:54.793Z] 224652587507384320 used a meme and got 19 candy canes. They now have 72 candy canes
+[2020-11-26T20:30:52.498Z] RPS1222#5127 sold a(n) pin. They now have 69 candy canes
+[2020-11-26T20:30:54.453Z] RPS1222#5127 sold a(n) pin. They now have 85 candy canes
+[2020-11-26T20:30:55.646Z] RPS1222#5127 sold a(n) pin. They now have 101 candy canes
+[2020-11-26T20:30:56.626Z] RPS1222#5127 sold a(n) pin. They now have 117 candy canes
+[2020-11-26T20:31:08.488Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:31:19.997Z] RPS1222#5127 submitted a present with the code ad and a level of 1 in RPS1222's server
+[2020-11-26T20:31:24.289Z] RPS1222#5127 accepted the code ad
+[2020-11-26T20:34:56.479Z] RPS1222#5127 deleted the present ad from RPS1222's server
+[2020-11-26T20:35:35.356Z] unexpected william ░#8124 submitted a present with the code radium and a level of 3 in wilsl test sdv
+[2020-11-26T20:35:44.355Z] RPS1222#5127 accepted the code radium
+[2020-11-26T20:39:21.640Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:22.620Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:22.869Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:23.308Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:24.595Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:24.962Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:25.263Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:25.790Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:26.091Z] RPS1222#5127 sold a(n) coal. They now have 117 candy canes
+[2020-11-26T20:39:45.915Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:39:47.060Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:41:06.839Z] unexpected william ░#8124 sold a(n) dirt. They now have 0 candy canes
+[2020-11-26T20:41:07.681Z] unexpected william ░#8124 sold a(n) dirt. They now have 0 candy canes
+[2020-11-26T20:41:08.866Z] unexpected william ░#8124 sold a(n) dirt. They now have 0 candy canes
+[2020-11-26T20:41:09.723Z] unexpected william ░#8124 sold a(n) dirt. They now have 0 candy canes
+[2020-11-26T20:45:20.840Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:21.590Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:22.252Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:22.640Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:23.327Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:23.375Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:45:25.188Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
+[2020-11-26T20:55:30.643Z] RPS1222#5127 sold a(n) headphones. They now have 130 candy canes
+[2020-11-26T20:55:38.359Z] RPS1222#5127 (who now has [object Object] candy canes) used a mistletoe to kiss unexpected william ░#8124 (who now has [object Object] candy canes)
