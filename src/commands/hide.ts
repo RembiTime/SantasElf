@@ -24,7 +24,7 @@ class HideCommand extends Command {
 				}
 			],
 			channel: "guild",
-			userPermissions: ["ADMINISTRATOR"],
+			userPermissions: ["MANAGE_GUILD"],
 			//regex: /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/ sam help, this doesn't work
 		});
 	}

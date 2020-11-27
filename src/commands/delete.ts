@@ -10,7 +10,7 @@ class DeleteCommand extends Command {
 				type: "string"
 			}],
 			channel: "guild",
-			userPermissions: ["ADMINISTRATOR"]
+			userPermissions: ["MANAGE_GUILD"]
 		});
 	}
 
