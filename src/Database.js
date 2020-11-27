@@ -472,6 +472,7 @@ class Database {
 				dragonAmt: 1,
 				bigTriangleAmt: -1
 			});
+		// Large Trilateral
 		await message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
 		return true;
 	}
