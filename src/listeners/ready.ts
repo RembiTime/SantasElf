@@ -1,4 +1,4 @@
-const { Listener } = require("discord-akairo");
+import { Listener } from "discord-akairo";
 
 class ReadyListener extends Listener {
 	constructor() {
@@ -9,7 +9,7 @@ class ReadyListener extends Listener {
 	}
 
 	exec() {
-		console.log(`Logged in as ${this.client.user.tag}!`);
+		console.log(`Logged in as ${this.client.user!.tag}!`);
 	}
 }
 

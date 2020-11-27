@@ -1,5 +1,5 @@
-const { Listener } = require("discord-akairo");
-const { MessageEmbed, TextChannel } = require("discord.js");
+import { Listener } from "discord-akairo";
+import { MessageEmbed, TextChannel } from "discord.js";
 import channels from "../channels.json";
 
 class StaffApprovalRemoveListener extends Listener {
