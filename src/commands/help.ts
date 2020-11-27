@@ -12,11 +12,12 @@ class HelpCommand extends Command {
 	}
 
 	async exec(message: Message) {
+		const hexColor = Math.random() < 0.5 ? "#FF5A5A" : "#8DFF5A";
 		const embedArr: MessageEmbed[] = [];
 		for (const commands of chunk(this.client.commandHandler.modules.filter(x => !x.ownerOnly).array(), 12)) {
 			const embed = new MessageEmbed()
 			.setTitle("Help Menu")
-			.setColor(0xFF1222);
+			.setColor(hexColor);
 			for (const command of commands) embed.addField(command.id, command.description, true);
 			embedArr.push(embed);
 		}

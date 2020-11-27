@@ -69,3 +69,4 @@ RPS1222#5127 pinged!
 [2020-11-26T20:45:25.188Z] RPS1222#5127 sold a(n) dirt. They now have 117 candy canes
 [2020-11-26T20:55:30.643Z] RPS1222#5127 sold a(n) headphones. They now have 130 candy canes
 [2020-11-26T20:55:38.359Z] RPS1222#5127 (who now has [object Object] candy canes) used a mistletoe to kiss unexpected william ░#8124 (who now has [object Object] candy canes)
+[2020-11-26T20:58:06.929Z] RPS1222#5127 (who now has 160 candy canes) used a mistletoe to kiss unexpected william ░#8124 (who now has 30 candy canes)
