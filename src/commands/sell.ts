@@ -1,4 +1,5 @@
 import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 import { items } from "../items";
 
 class SellCommand extends Command {
@@ -14,7 +15,7 @@ class SellCommand extends Command {
 	}
 
 
-	async exec(message, {itemName}) {
+	async exec(message: Message, {itemName}) {
 		await message.author.ensureDB();
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
 		if (!item) {
@@ -28,8 +29,9 @@ class SellCommand extends Command {
 			return;
 		}
 		if (item && "worth" in item) {
-			const itemCheck = await this.client.database.userHasItem({userID: message.author.id, itemName: item.id});
-			if (itemCheck) {
+			const userItem = await message.author.fetchItem(item);
+
+			if (userItem && userItem.amount > 0) {
 				await this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
 				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});

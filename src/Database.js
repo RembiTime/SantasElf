@@ -34,15 +34,6 @@ class Database {
 		}
 	}
 
-	async checkNewGuild({ guildID }) {
-		//if ("id" in options) {
-		const [results] = await this.client.knex.select("*").from("guildData").where({ guildID });
-		return results ?? null;
-		/*} else {
-			throw new Error("Invalid findIfDupe() call");
-		}*/
-	}
-
 	async addLog(msg) {
 		if ((!existsSync(join(__dirname,"../logs/")))) await mkdir(join(__dirname,"../logs/"));
 		await appendFile(join(__dirname,"../logs/log.txt"), `[${(new Date()).toISOString()}] ` + msg + "\n");
@@ -86,14 +77,8 @@ class Database {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
 	}
-	/**
-	 * @param {string} guildID
-	 * @returns {Promise<boolean>}
-	 */
-	async isPartner(guildID) {
-		const [results] = await this.client.knex.select("isPartner").from("guildData").where({ guildID, isPartner: true });
-		return results ?? null;
-	}
+
+
 	/**
 	 * @param {{guildID: string}} guildID
 	 * @returns {Promise<string?>}
@@ -170,23 +155,6 @@ class Database {
 		/*} else {
 			throw new Error("Invalid findIfDupe() call");
 		}*/
-	}
-	/**
-	 * @param {{ userID: string }} userID
-	 * @returns {Promise<UserDataRow?>}
-	 */
-	async userDataCheck({ userID }) {
-		//if ("id" in options) {
-		const [results] = await this.client.knex.select("*").from("userData").where({ userID });
-		return results ?? null;
-		/*} else {
-			throw new Error("Invalid findIfDupe() call");
-		}*/
-	}
-
-	async userHasItem({ userID, itemName }) {
-		const [results] = await this.client.knex("items").where({ name: itemName, userID: userID });
-		return results?.amount > 0;
 	}
 
 	async itemCheck({ userID, itemName }) {

@@ -276,7 +276,7 @@ export class SantasElf extends AkairoClient implements Extension {
 			.addField("Total Present Count", presents.length);
 		for (const [level, presents] of groupedPresents) embed.addField(`Level ${level} Presents`, presents.length, true);
 		embed.addField("Total Presents Found", presents.reduce((l, c: PresentRow) => l + c.timesFound, 0));
-		if (this.database.isPartner(guild.id)) {
+		if (await guild.isPartner()) {
 			embed.setColor(0x789fbf);
 		} else embed.setColor(0x949494);
 		return embed;
@@ -329,5 +329,3 @@ declare module "discord.js" {
 
 const client = new SantasElf();
 client.login(process.env.TOKEN!);
-
-

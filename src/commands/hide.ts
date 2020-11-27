@@ -1,5 +1,5 @@
 import { Argument, Command } from "discord-akairo";
-import { MessageEmbed, TextChannel, DMChannel } from "discord.js";
+import { Message, MessageEmbed, Guild, TextChannel, DMChannel } from "discord.js";
 import channels from "../channels.json";
 
 class HideCommand extends Command {
@@ -7,6 +7,9 @@ class HideCommand extends Command {
 		super("hide", {
 			aliases: ["hide"],
 			description: "(,hide code) Hide a present",
+			channel: "guild",
+			userPermissions: ["MANAGE_GUILD"],
+			//regex: /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/ sam help, this doesn't work
 			args: [
 				{
 					id: "code",
@@ -22,21 +25,18 @@ class HideCommand extends Command {
 					type: "string",
 					prompt: { start: "Please enter the steps of how to find your code! Please be as descriptive as possible, so it's easier for staff to find it or you might be denied!", retry: "Please enter the steps of how to find your code! Please be as descriptive as possible, so it's easier for staff to find it or you might be denied!" }
 				}
-			],
-			channel: "guild",
-			userPermissions: ["MANAGE_GUILD"],
-			//regex: /^[a-zA-Z\d~!@#$%^&*()-_=+\[\]{}|/;':",.<>]+$/ sam help, this doesn't work
+			]
 		});
 	}
 
-	async exec(message, { code, level, description }) {
+	async exec(message: Message & { guild: Guild }, { code, level, description }) {
 
 		const validChars = /^[a-zA-Z\d~!@#$%^&*()-_=+[\]{}|/;':",.<>]+$/;
 		if(!validChars.test(code)) {
 			await message.channel.send("Please only use English charaters");
 			return;
 		}
-		
+
 		if (message.guild.memberCount < 25 && message.guild.id !== "761076559813279754") {
 			await message.channel.send("Your server must have at least 25 members to submit a present");
 			return;
@@ -55,16 +55,15 @@ class HideCommand extends Command {
 		}
 		const present = await this.client.database.getPresent({ code });
 		const queuePresent = await this.client.database.checkOngoingIfCodeDupe({ code });
-		const checkNewGuild = await this.client.database.checkNewGuild({ guildID: message.guild.id });
-		const isPartner = await this.client.database.isPartner(message.guild.id);
+		const isPartner = await message.guild.isPartner();
 		let partnerStatus = true;
-		if (checkNewGuild === null) {
-			await this.client.database.addNewGuild({guildID: message.guild.id});
-		}
+
+		await message.guild.ensureDB();
+
 		if (present !== null || queuePresent !== null) {
 			await message.channel.send("That code already exists!");
 			return;
-		} 
+		}
 		if (isPartner === null) {
 			partnerStatus = false;
 			const presentAmount = await this.client.database.checkPresentAmount({ guildID: message.guild.id });
@@ -79,7 +78,7 @@ class HideCommand extends Command {
 		}
 		const guildDeniedAmount = await this.client.database.checkGuildDeniedAmount({ guildID: message.guild.id });
 		if (guildDeniedAmount >= 3) {
-			if (!checkNewGuild?.appealed3Deny) {
+			if (await message.guild.appealStatus() !== "ACCEPTED") {
 				await message.channel.send("Your server has been denied 3 times already. You have been blacklisted from submitting again. If you would like to appeal this, please do so with a support ticket on the main server.");
 				return;
 			} else if (guildDeniedAmount >= 5) {
@@ -109,7 +108,7 @@ class HideCommand extends Command {
 			.setThumbnail("https://images-ext-2.discordapp.net/external/ruZlz9t0ScVKeriIpD8l8mSsZ7ACks9CR7qz7aksJ4M/https/pbs.twimg.com/media/Dq3swg5W4AAnAXV.jpg%3Alarge?width=671&height=671")
 			.addField("Present Info:", "Present Code: " + code + "\nDifficulty: " + level)
 			.addField("Guild Info:", "Guild Name: " + message.guild.name + "\nPrevious Submits: " + guildDeniedAmount + "\nMembers: " + message.guild.memberCount + "\nDays Created: " + guildAge + "\n Are they a partner? " + String(partnerStatus))
-			.addField("Submitter Info:", "Submitted by: " + message.member.user.tag + "\nID: " + message.author.id)
+			.addField("Submitter Info:", "Submitted by: " + message.member!.user.tag + "\nID: " + message.author.id)
 			.addField("How to find:", description)
 			.addField("Invite:", invite);
 		const sent = await staffQueue.send("Pingrole", queueEmbed);

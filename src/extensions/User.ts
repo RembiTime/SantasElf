@@ -6,6 +6,8 @@ import { UserDataRow } from "../typings/tables";
 
 const itemMap = new Map(items.map(item => [item.id, item]));
 
+type UserItem = { item: Item, amount: number, record: number };
+
 declare module "discord.js" {
 	interface User {
 		ensureDB(transaction?: Knex): Promise<void>;
@@ -21,8 +23,9 @@ declare module "discord.js" {
 
 		fetchAchievements(transaction?: Knex): Promise<Array<{ achievement: AchievementEntry, tiers: number[] }>>;
 		fetchData(transaction?: Knex): Promise<UserDataRow>;
-		fetchItems(transaction?: Knex): Promise<Array<{ item: Item, amount: number, record: number }>>;
 
+		fetchItems(transaction?: Knex): Promise<UserItem[]>;
+		fetchItem(item: Item | string, transaction?: Knex): Promise<UserItem | null>;
 		giveItem(item: Item | string, transaction?: Knex): Promise<void>;
 
 		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>;
@@ -106,6 +109,22 @@ Structures.extend("User", OldUser =>
 				amount,
 				record
 			}));
+		}
+
+		async fetchItem(item: Item | string, transaction = this.client.knex) {
+			const result = await transaction("items")
+				.first("name", "amount", "record")
+				.from("items")
+				.where({
+					name: typeof item === "string" ? item : item.id,
+					userID: this.id })
+				.forUpdate();
+
+			return result ? {
+				item: itemMap.get(result.name)!,
+				amount: result.amount,
+				record: result.record
+			} : null;
 		}
 
 		async giveItem(item: Item | string, transaction = this.client.knex): Promise<void> {

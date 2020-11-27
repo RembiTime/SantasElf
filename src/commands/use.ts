@@ -15,10 +15,6 @@ class UseCommand extends Command {
 
 	async exec(message, { itemName }) {
 		await message.author.ensureDB();
-		const newUserCheck = this.client.database.userDataCheck({ userID: message.author.id });
-		if (newUserCheck === null) {
-			await this.client.database.addNewUser({userID: message.author.id});
-		}
 
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
 		if (item && "worth" in item) {
