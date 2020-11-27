@@ -1,4 +1,4 @@
-const { Listener } = require("discord-akairo");
+import { Listener } from "discord-akairo";
 
 class BlockedCmdListener extends Listener {
 	constructor() {
