@@ -1,5 +1,5 @@
-const { Listener } = require("discord-akairo");
-const { MessageEmbed, TextChannel } = require("discord.js");
+import { Listener } from "discord-akairo";
+import { MessageEmbed, TextChannel } from "discord.js";
 import channels from "../channels.json";
 
 class StaffApprovalListener extends Listener {
@@ -18,7 +18,7 @@ class StaffApprovalListener extends Listener {
 			return;
 		}
 
-		if (user.id === this.client.user.id) {
+		if (user.id === this.client.user?.id) {
 			return;
 		}
 
@@ -52,7 +52,7 @@ class StaffApprovalListener extends Listener {
 			this.client.database.addLog(`${user.tag} accepted the code ${checkStaffApproval.code}`);
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			// TODO: handle bot not in guild
-			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was accepted! Your server has been posted and your present has been added for people to find!");
+			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID)!.name + "** was accepted! Your server has been posted and your present has been added for people to find!");
 			await this.client.database.addPresent({
 				code: checkStaffApproval.code,
 				presentLevel: checkStaffApproval.presentLevel,
@@ -70,8 +70,8 @@ class StaffApprovalListener extends Listener {
 			approvalMessage.edit(editedEmbed);
 			const publicLogs = await this.client.channels.cache.get(channels.publicLogs);
 			if (!(publicLogs instanceof TextChannel)) throw new Error("Public logs channel was not a text channel.");
-			const guildName = await this.client.guilds.cache.get(checkStaffApproval.guildID);
-			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guildName.name + "**!");
+			const guild = await this.client.guilds.cache.get(checkStaffApproval.guildID)!;
+			publicLogs.send("A level " + checkStaffApproval.presentLevel + " present has been hidden in **" + guild.name + "**!");
 			await this.client.updateDisplayForGuild(checkStaffApproval.guildID);
 		}
 		if (reaction.emoji.name === "❌") {
@@ -80,7 +80,7 @@ class StaffApprovalListener extends Listener {
 			const deniedCount = await this.client.database.checkGuildDeniedAmount({ guildID: checkStaffApproval.guildID });
 			const hiddenBy = await this.client.users.fetch(checkStaffApproval.hiddenByID);
 			this.client.database.approvalStatusUpdate({ status: "DENIED", messageID: reaction.message.id });
-			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID).name + "** was denied. You have been denied **" + ++deniedCount + "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
+			hiddenBy.send("Your present with the code **" + checkStaffApproval.code + "** in the server **" + this.client.guilds.cache.get(checkStaffApproval.guildID)!.name + "** was denied. You have been denied **" + (+deniedCount + 1)+ "** times now. This could be because you provided an insufficient description or because your code just wasn't there. You can submit 3 times before your server is banned from submitting anymore, so please be more careful next time that you submit.");
 			const oldEmbed = approvalMessage.embeds[0];
 			const editedEmbed = new MessageEmbed(oldEmbed)
 				.setColor("#FF5A5A")

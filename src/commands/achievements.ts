@@ -1,7 +1,7 @@
 import { Command } from "discord-akairo";
-import { MessageEmbed, Message } from "discord.js";
-import { range } from "../util/array";
-import { showPages } from "../util/discord";
+import { Message /*, MessageEmbed */  } from "discord.js";
+// import { range } from "../util/array";
+// import { showPages } from "../util/discord";
 
 class AchievementCommand extends Command {
 	constructor() {
@@ -14,6 +14,7 @@ class AchievementCommand extends Command {
 	async exec(message: Message) {
 		message.channel.send("WIP");
 		return;
+		/*
 		const pages: MessageEmbed[] = [];
 
 		const achievements = await message.author.fetchAchievements();
@@ -41,6 +42,7 @@ class AchievementCommand extends Command {
 		} else {
 			await message.channel.send("You don't have any achievements yet!");
 		}
+		*/
 	}
 }
 
