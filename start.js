@@ -4,6 +4,7 @@ try {
 	console.log(execSync("npx tsc") + "");
 } catch (e) {
 	console.log(e.toString());
+	console.log(e.stderr + []);
 }
 console.log("Starting bot...");
 const child = fork("./dist/index.js");
