@@ -1,4 +1,5 @@
 import { Command } from "discord-akairo";
+import { Message } from "discord.js";
 import { items } from "../items";
 
 class UseCommand extends Command {
@@ -6,6 +7,7 @@ class UseCommand extends Command {
 		super("use", {
 			aliases: ["use"],
 			description: "(,use itemName) Uses an item",
+			channel: "guild",
 			args: [{
 				id: "itemName",
 				type: "string"
@@ -13,7 +15,7 @@ class UseCommand extends Command {
 		});
 	}
 
-	async exec(message, { itemName }) {
+	async exec(message: Message, { itemName }) {
 		await message.author.ensureDB();
 
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
@@ -69,20 +71,20 @@ class UseCommand extends Command {
 				if (itemCheck === null || itemCheck.amount < 1) {
 					message.channel.send("You don't have any of that item!");
 					return;
-				} if (message.guild.id !== "647915068767338509") {
+				} if (message.guild!.id !== "647915068767338509") {
 					message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
 					return;
-				} if (message.member.roles.cache.has("778022401858338846")) {
+				} if (message.member!.roles.cache.has("778022401858338846")) {
 					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 					this.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
 					message.channel.send("You already have the role, so take 150 candy canes instead!");
-					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
+					await message.author.giveCandyCanes(150);
 					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 					return;
 				} else {
 					this.client.database.addLog(`${message.author.id} used the role`);
 					message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
-					message.member.roles.add("778022401858338846");
+					message.member!.roles.add("778022401858338846");
 					await this.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 					return;
 				}
@@ -113,7 +115,7 @@ class UseCommand extends Command {
 					} else {
 						message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant.");
 					}
-					await this.client.database.addCandyCanes({ amount: 150, userID: message.author.id });
+					await message.author.giveCandyCanes(150);
 					await this.client.knex("eggData").where({eggID: eggData.eggID}).update({status: "CLAIMED"});
 					await this.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 					const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});

@@ -28,6 +28,8 @@ declare module "discord.js" {
 		fetchItem(item: Item | string, transaction?: Knex): Promise<UserItem | null>;
 		giveItem(item: Item | string, transaction?: Knex): Promise<void>;
 
+		giveCandyCanes(amount: number, transaction?: Knex): Promise<void>;
+
 		givePresents(level: number, amount: number, transaction?: Knex): Promise<void>;
 		/** @returns true if the presents were successfully removed, false if there were not enough presents in the inventory to take */
 		removePresents(level: number, amount: number, transaction?: Knex): Promise<boolean>;
@@ -140,6 +142,14 @@ Structures.extend("User", OldUser =>
 					amount: transaction.raw("amount + 1"),
 					record: transaction.raw("GREATEST(amount, record)")
 				});
+		}
+
+		async giveCandyCanes(amount: number, transaction = this.client.knex) {
+			await this.ensureDB(transaction);
+
+			await transaction("userData")
+				.increment("candyCanes", amount)
+				.where({ userID: this.id });
 		}
 
 		async givePresents(level, amount, transaction = this.client.knex): Promise<void> {

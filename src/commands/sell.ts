@@ -18,6 +18,7 @@ class SellCommand extends Command {
 	async exec(message: Message, {itemName}) {
 		await message.author.ensureDB();
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
+
 		if (!item) {
 			await message.channel.send("That item does not exist!");
 			return;
@@ -28,11 +29,12 @@ class SellCommand extends Command {
 			message.channel.send("You can't sell that item... Maybe you have to build something with it?");
 			return;
 		}
-		if (item && "worth" in item) {
+
+		if (typeof item.worth === "number") {
 			const userItem = await message.author.fetchItem(item);
 
 			if (userItem && userItem.amount > 0) {
-				await this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
+				await message.author.giveCandyCanes(item.worth);
 				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 				this.client.database.addLog(`${message.author.tag} sold a(n) ${item.id}. They now have ${ccAmt.candyCanes} candy canes`);

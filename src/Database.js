@@ -353,29 +353,6 @@ class Database {
 
 	// ITEM STUFF
 
-	async addCandyCanes({ amount, userID }) {
-		await this.client.knex("userData").where({ userID }).increment({ candyCanes: amount });
-	}
-
-	async addItem({ itemName, userID, presentLevel }) {
-		presentLevel = "lvl" + presentLevel + "Presents";
-		await this.client.knex("items")
-			.insert({ name: itemName, userID, amount: 1, record: 1 })
-			.onConflict("userID")
-			.merge({
-				amount: this.client.knex.raw("amount + 1"),
-				record: this.client.knex.raw("GREATEST(amount, record)")
-			});
-		/* Keeping just in case...
-		await this.pool.execute(`
-			INSERT INTO items (name, userID, amount, record) VALUES (?, ?, 1, 1)
-			ON DUPLICATE KEY UPDATE
-				amount = amount + 1,
-				record = GREATEST(amount, record)
-		`, [itemName, userID]); */
-		await this.client.knex("userData").where({ userID }).decrement({ [presentLevel]: 1 });
-	}
-
 	async foundAchievement({ achName, userID, message }) {
 		let present;
 
