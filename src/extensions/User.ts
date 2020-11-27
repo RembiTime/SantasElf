@@ -27,6 +27,7 @@ declare module "discord.js" {
 		fetchItems(transaction?: Knex): Promise<UserItem[]>;
 		fetchItem(item: Item | string, transaction?: Knex): Promise<UserItem | null>;
 		giveItem(item: Item | string, transaction?: Knex): Promise<void>;
+		removeItem(item: Item | string, transaction?: Knex): Promise<void>;
 
 		giveCandyCanes(amount: number, transaction?: Knex): Promise<void>;
 

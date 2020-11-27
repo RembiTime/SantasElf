@@ -12,6 +12,7 @@ export interface Item {
 	response?: string;
 	defaultBehavior?: boolean;
 	onFind?(client: Client & Extension, message: Message): unknown | Promise<unknown>;
+	use?(message: Message): Promise<void>
 }
 
 export const items: Item[] = [
@@ -213,7 +214,52 @@ export const items: Item[] = [
 		id: "mistletoe",
 		rank: 2,
 		displayName: "Mistletoe",
-		response: "Nice! You found some mistletoe! Who would've left this for you?\n**This is a minigame item! When you would like to play, send the command `,use mistletoe`!**"
+		response: "Nice! You found some mistletoe! Who would've left this for you?\n**This is a minigame item! When you would like to play, send the command `,use mistletoe`!**",
+		async use(message) {
+			let kissMessage = await message.channel.send("Who would you like to kiss?");
+			const filter = m => m.author.id === message.author.id;
+
+			const mentionMessage = (await message.channel.awaitMessages(filter, { max: 1, time: 120000 })).first();
+
+			if (!mentionMessage) {
+				await message.channel.send("You didn't answer in time! Please run the command again to try again.");
+				return;
+			}
+
+			const kissedUsers = mentionMessage.mentions.users;
+
+			if (kissedUsers.size > 1) {
+				await message.channel.send("Please only mention one user!");
+				return;
+			} else if (kissedUsers.size === 0) {
+				await message.channel.send("Please mention someone to kiss!");
+				return;
+			}
+
+			const kissed = kissedUsers.first()!;
+
+			if (kissed.id === message.author.id) {
+				message.channel.send("You can't kiss yourself!");
+				return;
+			}
+
+			await Promise.all([
+				message.delete(),
+				kissMessage.delete(),
+				mentionMessage.delete()
+			]);
+
+			await message.channel.send(`${message.author} kissed ${kissed}! Congrats! (You both get 15 candy canes!)`);
+
+			// TODO: transact
+			await message.author.giveCandyCanes(15);
+			await kissed.giveCandyCanes(15);
+
+			const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({userID: message.author.id});
+			const [kissedCCAmt] = await message.client.knex("userData").select("candyCanes").where({userID: kissed.id});
+
+			message.client.database.addLog(`${message.author.tag} (who now has ${ccAmt.candyCanes} candmentionMsgColly canes) used a mistletoe to kiss ${kissed.tag} (who now has ${kissedCCAmt.candyCanes} candy canes)`);
+		}
 	},
 	{
 		id: "meme",
