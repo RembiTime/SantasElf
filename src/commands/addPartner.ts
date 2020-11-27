@@ -22,7 +22,7 @@ class AddPartnerCommand extends Command {
 				await message.guild.setPartner(true, trx);
 				const publicLogs = await this.client.channels.cache.get(channels.publicLogs) as TextChannel;
 				let { guild } = message;
-				publicLogs.send("**" + guild.name + "** is not a partner!");
+				publicLogs.send("**" + guild.name + "** is now a partner!");
 				await message.channel.send(`**${Util.escapeMarkdown(message.guild.name)}** is now a partner!`);
 				this.client.database.addLog(`${message.guild.name} has been added as a partner`);
 			}
