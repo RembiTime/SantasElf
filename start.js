@@ -1,6 +1,10 @@
 const { execSync, fork } = require("child_process");
 console.log("Building TypeScript...");
-console.log(execSync("npx tsc") + "");
+try {
+	console.log(execSync("npx tsc") + "");
+} catch (e) {
+	console.log(e.toString());
+}
 console.log("Starting bot...");
 const child = fork("./dist/index.js");
 child.on("message", m => console.log(m.toString()));
