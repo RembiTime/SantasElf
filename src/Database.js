@@ -454,36 +454,26 @@ class Database {
 
 	async checkBigTriangle({ userID, message }) {
 		// this doesn't work yet
-		if (process.env.TOKEN) { return false; }
-		/** @type {*} */
-		const [result] = /** @type {HTMLElement} */ await this.pool.execute(`
-			START TRANSACTION;
-
-			SELECT (mysteriousPartAmt, fractalAmt, spannerAmt, slimeAmt, dragonAmt)
-				INTO (parts, fractals, spanners, slimes, dragon)
-				FROM userData WHERE userID = ?
-				FOR UPDATE;
-
-			IF (parts >= 3 AND fractals >= 1 AND spanners >= 1 AND slimes >= 1 AND dragon >= 1) THEN
-				UPDATE userData SET
-					mysteriousPartAmt = mysteriousPartAmt - 3,
-					fractalAmt = fractalAmt - 1,
-					spannerAmt = spannerAmt - 1,
-					slimeAmt = slimeAmt - 1,
-					dragonAmt = dragonAmt - 1
-					bigTriangleAmt = bigTriangleAmt + 1;
-
-				SELECT TRUE AS result;
-			ELSE
-				SELECT FALSE AS result;
-			END IF
-
-			COMMIT;
-		`, [userID]);
-
-		if (result.result) {
-			await message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
-		}
+		// if (process.env.TOKEN) { return false; }
+		const [parts] = await this.client.knex.select("mysteriousPartAmt", "fractalAmt", "spannerAmt", "slimeAmt", "dragonAmt")
+			.from("userData").where({ userID });
+		if (!parts) return false;
+		if (parts.mysteriousPartAmt <3) return false;
+		if (!parts.fractalAmt) return false;
+		if (!parts.spannerAmt) return false;
+		if (!parts.slimeAmt) return false;
+		if (!parts.dragonAmt) return false;
+		await this.client.knex("userData")
+			.decrement({
+				mysteriousPartAmt: 3,
+				fractalAmt: 1,
+				spannerAmt: 1,
+				slimeAmt: 1,
+				dragonAmt: 1,
+				bigTriangleAmt: -1
+			});
+		await message.channel.send("**What is happening? Your 3 mysterious parts, and fractal move together to form a weird looking 3D triangle shape. Once they are in position, the cyber dragon figurine awakens and upon seeing the parts, uses the slime and the spanner to secure the pieces into place. The object starts to glow and then floats up into the air. Congratulations, you've made the legendary Big Triangle!**");
+		return true;
 	}
 
 	generateRarity({ presentLevel }) {
@@ -752,7 +742,6 @@ class Database {
 module.exports = Database;
 
 util.deprecate(Database.prototype.findIfGuildExists, "findIfGuildExists is deprecated, use getGuildDataFromID instead.");
-util.deprecate(Database.prototype.checkNewGuild, "checkNewGuild is deprecated, use getGuildDataFromID instead.");
 util.deprecate(Database.prototype.checkPresentAmount, "checkPresentAmount is deprecated, use getPresentAmountForGuild.");
 util.deprecate(Database.prototype.checkIfPartner, "checkIfPartner is deprecated, use isPartner.");
 util.deprecate(Database.prototype.findIfClaimedBy, "findIfClaimedBy is deprecated, use getStaffApprovalFromMessageID.");
