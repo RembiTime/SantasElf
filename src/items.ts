@@ -496,7 +496,7 @@ export const items: Item[] = [
 		id: "glitch",
 		rank: 5,
 		displayName: "Glitch",
-		response: "YOU CAN'T BELIEVE YOUR EYES! You found a glitch! WHAT IS HAPPENING? YOU GOT 174 candy canes!",
+		response: "ďګԎó۾űԺȮֲޙؒҰśǙĻԷˡސߡglitchŲҙӢٶۏŮȆɞٍͱ֧ϙԯڇĞ۠͌ąդ܌ͱۍ܃ِۓĒčޗךۛфĈۥݭվަխ۵υˁڞáʴ۶ߟʛאç˓ֶٮ ߉ȧӨގҗ̗ʰώʑʂ͏݅ǏݦޡʞڄáÔΝ֋**174candycanes**ϑ͘͢՞ݫőئȻéՃՑؼۓ̀Ϯ֡ЬӄĦĖɸ߸՘ݣЉާԦܠ¥ɆġȐƅϡȲڑԦԧטБ׸ʘ˩̣΍ޟѶĥщωͪн՝ޭ˾χ߶֑أ̍ÿޕ݁˛áݘÈؾܳӋȲۇݭ¾ɩޗѣ֚˝ӎݮ֐ؼҔĬ޳̟̍ԐҚэٛ֜ЗŮʮşҝދȤֲ̀҅ܧދݡܔω̋Ư֤΃̘ǎڷ۫ƈŶ߼ň֤֡͐Ħʠ֧ӯŲҙӢáʴ۶ߟʛאç",
 		defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("userData").where({ userID: message.author.id }).increment("candyCanes", 174);
