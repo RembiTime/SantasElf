@@ -265,7 +265,25 @@ export const items: Item[] = [
 		id: "meme",
 		rank: 2,
 		displayName: "Meme",
-		response: "Nice! You found a fresh meme template! Time to rake in that sweet sweet intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**" //changed: reworded -Walrus
+		response: "Nice! You found a fresh meme template! Time to rake in that sweet sweet intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**", //changed: reworded -Walrus
+		async use(message) {
+			const candyCanes = Math.floor(Math.random() * 41) - 10;
+			await message.author.giveCandyCanes(candyCanes);
+
+			const ccAmt = await message.author.fetchCandyCanes();
+
+			await message.client.database.addLog(`${message.author.id} used a meme and got ${candyCanes} candy canes. They now have ${ccAmt} candy canes`);
+
+			if (candyCanes === 0) {
+				await message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
+			} if (candyCanes < 0) {
+				await message.channel.send("Wow, people did not like your meme! You lost " + -candyCanes + " candy canes! Welcome to controversial.");
+			} if (candyCanes > 0 && candyCanes <= 15) {
+				await message.channel.send("People liked your meme, which made it to hot! You gained " + candyCanes + " candy canes!");
+			} if (candyCanes > 15) {
+				await message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCanes + " candy canes!");
+			}
+		}
 	},
 	{
 		id: "pin",
