@@ -429,7 +429,7 @@ export const items: Item[] = [
 			} else if (rand < 7 / 10) {
 				answer = "All your base are belong to us!";
 			} else if (rand < 8 / 10) {
-				answer = "We’ve both said a lot of things that you’re going to regret.";
+				answer = "We've both said a lot of things that you're going to regret.";
 			} else if (rand < 9 / 10) {
 				answer = "I used to be an adventurer like you, until I took an arrow to the knee.";
 			} else {
