@@ -435,19 +435,21 @@ export const items: Item[] = [
 			} else {
 				answer = "Hey you, you're finally awake.";
 			}
-			prompt = prompt + answer
+			prompt = prompt + answer;
 			const filter = response => response.content === answer;
 
 			await message.channel.send(prompt);
-			try {
-				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
-				const response = collected.first()!;
+			const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000 });
+			const response = collected.first();
 
+			if (response) {
 				await client.knex("userData").where({ userID: response.author.id }).increment("candyCanes", 20);
-				await message.channel.send("<@" + response.author.id + "> was the first to type correctly and got 20 candy canes!");
-			} catch {
+				await message.channel.send(`${response.author} was the first to type correctly and got 20 candy canes!`);
+			} else {
 				await message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}
+
+
 		}
 	},
 	{
