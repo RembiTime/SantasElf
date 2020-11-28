@@ -417,13 +417,13 @@ export const items: Item[] = [
 			if (rand < 1 / 10) {
 				answer = "Snake? Snake?! SNAAAAKE!!";
 			} else if (rand < 2 / 10) {
-				answer = "You have died of dysentery";
+				answer = "You have died of dysentery.";
 			} else if (rand < 3 / 10) {
-				answer = "You must construct additional pylons";
+				answer = "You must construct additional pylons.";
 			} else if (rand < 4 / 10) {
-				answer = "Cake, and grief counseling, will be available at the conclusion of the test";
+				answer = "Cake, and grief counseling, will be available at the conclusion of the test.";
 			} else if (rand < 5 / 10) {
-				answer = "Rise and shine, Mister Freeman. Rise and... shine";
+				answer = "Rise and shine, Mister Freeman. Rise and... shine.";
 			} else if (rand < 6 / 10) {
 				answer = "Thank you Mario! But our Princess is in another castle!";
 			} else if (rand < 7 / 10) {
