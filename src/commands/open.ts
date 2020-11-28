@@ -63,7 +63,7 @@ class OpenCommand extends Command {
 
 				this.client.database.addLog(`${message.author.tag} opened a level ${presentLevel} present and found a(n) ${item.id}`);
 
-				if (item.defaultBehavior) {
+				if (item.defaultBehavior !== false) {
 					await message.author.giveItem(item, trx);
 				}
 
