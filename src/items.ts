@@ -208,7 +208,80 @@ export const items: Item[] = [
 		id: "palette",
 		rank: 2,
 		displayName: "Palette",
-		response: "Nice! You found an paint palette! Time to make some happy little trees!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**" //changed: Bob Ross -Walrus
+		response: "Nice! You found an paint palette! Time to make some happy little trees!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**", //changed: Bob Ross -Walrus
+		async use(message) {
+			message.client.minigamePlayers.add(message.author.id);
+			let colorArray = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬜", "⬛", "🟫",];
+			colorArray = colorArray.sort(() => Math.random() - 0.5);
+			let finalArray = message.client.database.stringInsert(colorArray, 3).map(x => x.join("")).join("\n");
+			let answer = Math.floor(Math.random() * 9);
+			const lookupMap = {
+				"🟥": "red",
+				"🟧": "orange",
+				"🟨": "yellow",
+				"🟩": "green",
+				"🟦": "blue",
+				"🟪": "purple",
+				"⬜": "white",
+				"⬛": "black",
+				"🟫": "brown",
+			};
+			const answerString = lookupMap[colorArray[answer]];
+			let sent = await message.channel.send(finalArray);
+			const botMessage = await message.channel.messages.fetch(sent.id);
+			let seconds = 10;
+			const msg = await message.channel.send(`Memorize these colors, they will disappear in ${seconds} seconds`);
+			const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+			for (const x of numberEmojis) botMessage.react(x);
+			const timer = setInterval(async () => {
+				seconds = seconds - 2;
+				await msg.edit(`Memorize these colors, they will disappear in ${seconds} seconds`);
+				if (seconds <= 0) {
+					clearInterval(timer);
+					sent.edit("1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣");
+					await msg.edit("Click which number " + answerString + " was");
+					const filter = (reaction, user) => {
+						return ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"].includes(reaction.emoji.name) && user.id === message.author.id;
+					};
+					const reaction = (await botMessage.awaitReactions(filter, { max: 1, time: 30000 }));
+					if (reaction.size === 0) {
+						message.client.minigamePlayers.delete(message.author.id);
+						msg.edit("You didn't answer in time! Please run the command again to try again.");
+						return;
+					}
+
+					const lookupMap = {
+						"1️⃣": 0,
+						"2️⃣": 1,
+						"3️⃣": 2,
+						"4️⃣": 3,
+						"5️⃣": 4,
+						"6️⃣": 5,
+						"7️⃣": 6,
+						"8️⃣": 7,
+						"9️⃣": 8,
+					};
+					const reactionAnswer = lookupMap[reaction.first()!.emoji.name];
+					if (reactionAnswer !== answer) {
+						message.client.minigamePlayers.delete(message.author.id);
+						message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+						answer = answer + 1;
+						message.client.database.addLog(`${message.author.id} guessed incorrectly when using a palette`);
+						msg.edit("That's incorrect, it was " + answer + ". Try again next time!");
+						return;
+					} else {
+						await message.author.giveCandyCanes(25);
+						await message.client.minigamePlayers.delete(message.author.id);
+						await message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+
+						const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+						await message.client.database.addLog(`${message.author.id} guessed correctly when using a palette. They now have ${ccAmt.candyCanes} candy canes`);
+						await msg.edit("That's correct! You got 25 candy canes!");
+						return;
+					}
+				}
+			}, 2000);
+		}
 	},
 	{
 		id: "mistletoe",
@@ -255,8 +328,8 @@ export const items: Item[] = [
 			await message.author.giveCandyCanes(15);
 			await kissed.giveCandyCanes(15);
 
-			const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({userID: message.author.id});
-			const [kissedCCAmt] = await message.client.knex("userData").select("candyCanes").where({userID: kissed.id});
+			const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+			const [kissedCCAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: kissed.id });
 
 			message.client.database.addLog(`${message.author.tag} (who now has ${ccAmt.candyCanes} candmentionMsgColly canes) used a mistletoe to kiss ${kissed.tag} (who now has ${kissedCCAmt.candyCanes} candy canes)`);
 		}
@@ -492,7 +565,7 @@ export const items: Item[] = [
 				});
 			let timestamp = Date.now();
 			await client.knex("eggData")
-				.insert({userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED"});
+				.insert({ userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED" });
 		}
 	},
 	{
