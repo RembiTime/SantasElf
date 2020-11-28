@@ -39,7 +39,8 @@ class OpenCommand extends Command {
 			description: "(,open #) Opens a present of level #",
 			args: [{
 				id: "presentLevel",
-				type: Argument.range("integer", 1, 5, true)
+				type: Argument.range("integer", 1, 5, true),
+				prompt: { start: "What level of present would you like to open?" }
 			}]
 		});
 	}
