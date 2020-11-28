@@ -422,19 +422,19 @@ export const items: Item[] = [
 			} else if (rand < 3 / 10) {
 				answer = "You must construct additional pylons.";
 			} else if (rand < 4 / 10) {
-				answer = "Cake, and grief counseling, will be available at the conclusion of the test.";
+				answer = "Cake and grief counseling will be available at the conclusion of the test.";
 			} else if (rand < 5 / 10) {
-				answer = "Rise and shine, Mister Freeman. Rise and... shine.";
+				answer = "Rise and shine Mister Freeman. Rise and... shine.";
 			} else if (rand < 6 / 10) {
 				answer = "Thank you Mario! But our Princess is in another castle!";
 			} else if (rand < 7 / 10) {
 				answer = "All your base are belong to us!";
 			} else if (rand < 8 / 10) {
-				answer = "We've both said a lot of things that you're going to regret.";
+				answer = "Weve both said a lot of things that youre going to regret.";
 			} else if (rand < 9 / 10) {
-				answer = "I used to be an adventurer like you, until I took an arrow to the knee.";
+				answer = "I used to be an adventurer like you until I took an arrow to the knee.";
 			} else {
-				answer = "Hey you, you're finally awake.";
+				answer = "Hey you, youre finally awake.";
 			}
 			prompt = prompt + answer;
 			const filter = response => response.content === answer;
