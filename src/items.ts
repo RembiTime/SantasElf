@@ -521,7 +521,7 @@ export const items: Item[] = [
 							const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
 								timeToReact < 500 ? 60 : 50);
 							message.author.giveCandyCanes(toAdd);
-							const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({userID: message.author.id});
+							const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
 							message.client.database.addLog(`${message.author.id} took ${timeToReact} when using a watch and got ${toAdd} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
 							stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
 							return;
@@ -603,25 +603,79 @@ export const items: Item[] = [
 		rank: 4,
 		displayName: "Dragon Egg",
 		response: "No way! You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
-		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("items")
-				.insert({ name: "dragonEgg", userID: message.author.id, amount: 1, record: 1 })
-				.onConflict("userID")
-				.merge({
-					amount: client.knex.raw("amount + 1"),
-					record: client.knex.raw("GREATEST(amount, record)")
-				});
 			let timestamp = Date.now();
 			await client.knex("eggData")
 				.insert({ userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED" });
+		},
+		async use(message) {
+			const itemCheck = await message.client.database.itemCheck({ userID: message.author.id, itemName: "dragonEgg" });
+			if (itemCheck === null || itemCheck.amount < 1) {
+				message.channel.send("You don't have any of that item!");
+				return;
+			}
+			const eggData = await message.client.knex("eggData").first("*").where({ userID: message.author.id, status: "UNCLAIMED" });
+			let eggAge = Date.now() - Number(eggData.timeFound);
+			if (eggAge < 86400000) {
+				let minsLeft = Math.floor((86400000 - eggAge) / 60000);
+				let hoursLeft = Math.round(minsLeft / 60);
+				minsLeft = minsLeft % 60;
+				message.channel.send("The egg is still hatching! Please wait " + hoursLeft + " hours and " + minsLeft + " minutes.");
+				return;
+			} else if (eggAge < 172800000) {
+				let eggCount = await message.client.knex("eggData")
+					.count("eggID", { as: "eggCount" })
+					.where({ userID: message.author.id, status: "UNCLAIMED" })
+					.then(([{ eggCount }]) => eggCount as number);
+				if (eggCount > 2) {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have " + --eggCount + " eggs left unhatched!");
+				} else if (eggCount === 2) {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have 1 egg left unhatched!");
+				} else {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant.");
+				}
+				await message.author.giveCandyCanes(150);
+				await message.client.knex("eggData").where({ eggID: eggData.eggID }).update({ status: "CLAIMED" });
+				await message.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+				message.client.database.addLog(`${message.author.id} hatched an egg successfully. They now have ${ccAmt} candy canes`);
+				return;
+			} else {
+				message.client.database.addLog(`${message.author.id} killed a dragon`);
+				message.channel.send("Sadly the egg has gone cold, and so has the life within. Well, at least you have breakfast!");
+				await message.client.knex("eggData").where({ eggID: eggData.eggID }).update({ status: "LOST" });
+				await message.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+			}
 		}
 	},
 	{
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP**"
+		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP**",
+		async use(message) {
+			const itemCheck = await message.client.database.itemCheck({ userID: message.author.id, itemName: "role" });
+			if (itemCheck === null || itemCheck.amount < 1) {
+				message.channel.send("You don't have any of that item!");
+				return;
+			} if (message.guild!.id !== "647915068767338509") {
+				message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
+				return;
+			} if (message.member!.roles.cache.has("778022401858338846")) {
+				const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+				message.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
+				message.channel.send("You already have the role, so take 150 candy canes instead!");
+				await message.author.giveCandyCanes(150);
+				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				return;
+			} else {
+				message.client.database.addLog(`${message.author.id} used the role`);
+				message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
+				message.member!.roles.add("778022401858338846");
+				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				return;
+			}
+		}
 		/*defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")
