@@ -12,7 +12,7 @@ class MissingPermsListener extends Listener {
 		if (type === "client") {
 			await message.channel.send("I don't have the permissions I need to do that!");
 		} else {
-			await message.channel.send("You don't have permissions to do that in this guils!");
+			await message.channel.send("You need the Manager Server permission in this guild to use that command!");
 		}
 
 	}

@@ -185,6 +185,7 @@ export const items: Item[] = [
 	{
 		id: "giftcard",
 		rank: 2,
+		worth: 20,
 		displayName: "Giftcard",
 		response: "Nice! You found a giftcard! It's worth 20 candy canes!"
 	},
