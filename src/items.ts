@@ -347,6 +347,7 @@ export const items: Item[] = [
 			const ccAmt = await message.author.fetchCandyCanes();
 
 			await message.client.database.addLog(`${message.author.id} used a meme and got ${candyCanes} candy canes. They now have ${ccAmt} candy canes`);
+			await message.client.database.removeItem({ itemName: "meme", userID: message.author.id });
 
 			if (candyCanes === 0) {
 				await message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
@@ -417,37 +418,39 @@ export const items: Item[] = [
 			if (rand < 1 / 10) {
 				answer = "Snake? Snake?! SNAAAAKE!!";
 			} else if (rand < 2 / 10) {
-				answer = "You have died of dysentery";
+				answer = "You have died of dysentery.";
 			} else if (rand < 3 / 10) {
-				answer = "You must construct additional pylons";
+				answer = "You must construct additional pylons.";
 			} else if (rand < 4 / 10) {
-				answer = "Cake, and grief counseling, will be available at the conclusion of the test";
+				answer = "Cake, and grief counseling, will be available at the conclusion of the test.";
 			} else if (rand < 5 / 10) {
-				answer = "Rise and shine, Mister Freeman. Rise and... shine";
+				answer = "Rise and shine, Mister Freeman. Rise and... shine.";
 			} else if (rand < 6 / 10) {
 				answer = "Thank you Mario! But our Princess is in another castle!";
 			} else if (rand < 7 / 10) {
 				answer = "All your base are belong to us!";
 			} else if (rand < 8 / 10) {
-				answer = "We’ve both said a lot of things that you’re going to regret.";
+				answer = "We've both said a lot of things that you're going to regret.";
 			} else if (rand < 9 / 10) {
 				answer = "I used to be an adventurer like you, until I took an arrow to the knee.";
 			} else {
 				answer = "Hey you, you're finally awake.";
 			}
-			prompt = prompt + answer
+			prompt = prompt + answer;
 			const filter = response => response.content === answer;
 
 			await message.channel.send(prompt);
-			try {
-				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
-				const response = collected.first()!;
+			const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000 });
+			const response = collected.first();
 
+			if (response) {
 				await client.knex("userData").where({ userID: response.author.id }).increment("candyCanes", 20);
-				await message.channel.send("<@" + response.author.id + "> was the first to type correctly and got 20 candy canes!");
-			} catch {
+				await message.channel.send(`${response.author} was the first to type correctly and got 20 candy canes!`);
+			} else {
 				await message.channel.send("It looks like no one could amuse the keyboard this time. It somehow grew legs and walked away");
 			}
+
+
 		}
 	},
 	{
