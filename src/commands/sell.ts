@@ -38,16 +38,16 @@ class SellCommand extends Command {
 				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 				this.client.database.addLog(`${message.author.tag} sold a(n) ${item.id}. They now have ${ccAmt.candyCanes} candy canes`);
-				message.channel.send("You sold " + item.messageName + " for " + item.worth + " candy canes");
+				await message.channel.send("You sold " + item.messageName + " for " + item.worth + " candy canes");
 				return;
 			} else {
-				message.channel.send("You don't have any of this item");
+				await message.channel.send("You don't have any of this item");
 				return;
 			}
 		} else if (item && "rank" in item) {
-			message.channel.send("This item can't be sold! Try `,use`ing it instead.");
+			await message.channel.send("This item can't be sold! Try `,use`ing it instead.");
 		} else {
-			message.channel.send("This item does not exist!");
+			await message.channel.send("This item does not exist!");
 		}
 	}
 }

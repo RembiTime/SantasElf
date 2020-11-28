@@ -263,10 +263,10 @@ export const items: Item[] = [
 					};
 					const reactionAnswer = lookupMap[reaction.first()!.emoji.name];
 					if (reactionAnswer !== answer) {
-						message.client.minigamePlayers.delete(message.author.id);
-						message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+						await message.client.minigamePlayers.delete(message.author.id);
+						await message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
 						answer = answer + 1;
-						message.client.database.addLog(`${message.author.id} guessed incorrectly when using a palette`);
+						await message.client.database.addLog(`${message.author.id} guessed incorrectly when using a palette`);
 						msg.edit("That's incorrect, it was " + answer + ". Try again next time!");
 						return;
 					} else {
@@ -446,7 +446,7 @@ export const items: Item[] = [
 			}
 			const filter = response => response.content === answer;
 
-			message.channel.send(prompt);
+			await message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
 				const response = collected.first()!;
@@ -656,22 +656,22 @@ export const items: Item[] = [
 		async use(message) {
 			const itemCheck = await message.client.database.itemCheck({ userID: message.author.id, itemName: "role" });
 			if (itemCheck === null || itemCheck.amount < 1) {
-				message.channel.send("You don't have any of that item!");
+				await message.channel.send("You don't have any of that item!");
 				return;
 			} if (message.guild!.id !== "647915068767338509") {
-				message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
+				await message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
 				return;
 			} if (message.member!.roles.cache.has("778022401858338846")) {
 				const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
-				message.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
-				message.channel.send("You already have the role, so take 150 candy canes instead!");
+				await message.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
+				await message.channel.send("You already have the role, so take 150 candy canes instead!");
 				await message.author.giveCandyCanes(150);
 				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 				return;
 			} else {
-				message.client.database.addLog(`${message.author.id} used the role`);
-				message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
-				message.member!.roles.add("778022401858338846");
+				await message.client.database.addLog(`${message.author.id} used the role`);
+				await message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
+				await message.member!.roles.add("778022401858338846");
 				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
 				return;
 			}
