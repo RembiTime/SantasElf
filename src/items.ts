@@ -486,7 +486,56 @@ export const items: Item[] = [
 		id: "watch",
 		rank: 3,
 		displayName: "Watch",
-		response: "Wow! You found a nice watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**" // changed: reworded -Walrus
+		response: "Wow! You found a nice watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**", // changed: reworded -Walrus
+		async use(message) {
+			message.client.minigamePlayers.add(message.author.id);
+			let timeRed = (Math.floor(Math.random() * 9) + 2) * 1000;
+			let seconds = 6;
+			let stopMsg = await message.channel.send(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+			stopMsg.react("🛑");
+			const timer = setInterval(async () => {
+				seconds = seconds - 2;
+				await stopMsg.edit(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+				if (seconds <= 0) {
+					clearInterval(timer);
+					await stopMsg.edit("🟥");
+					const filter = (reaction, user) => {
+						return reaction.emoji.name === "🛑" && user.id === message.author.id;
+					};
+					const redReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: timeRed }));
+					if (redReaction.size === 0) {
+						await stopMsg.edit("🟩");
+						let startGreen = new Date();
+						const greenReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: 8000 }));
+						if (greenReaction.size === 0) {
+							message.client.minigamePlayers.delete(message.author.id);
+							message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+							message.client.database.addLog(`${message.author.id} was too slow when using a watch`);
+							stopMsg.edit("You were too slow! Click it as soon as it turns green next time.");
+							return;
+						} else {
+							let endGreen = new Date();
+							let timeToReact = endGreen.getTime() - startGreen.getTime();
+							message.client.minigamePlayers.delete(message.author.id);
+							message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+							const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
+								timeToReact < 500 ? 60 : 50);
+							message.author.giveCandyCanes(toAdd);
+							const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({userID: message.author.id});
+							message.client.database.addLog(`${message.author.id} took ${timeToReact} when using a watch and got ${toAdd} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
+							stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
+							return;
+						}
+					} else {
+						message.client.minigamePlayers.delete(message.author.id);
+						message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+						message.client.database.addLog(`${message.author.id} was too quick when using a watch`);
+						stopMsg.edit("You were too quick! Wait for it to turn green next time.");
+						return;
+					}
+				}
+			}, 2000);
+		}
 	},
 	{
 		id: "mysteriousPart",
