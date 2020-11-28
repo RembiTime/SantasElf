@@ -346,6 +346,7 @@ export const items: Item[] = [
 			const ccAmt = await message.author.fetchCandyCanes();
 
 			await message.client.database.addLog(`${message.author.id} used a meme and got ${candyCanes} candy canes. They now have ${ccAmt} candy canes`);
+			await message.client.database.removeItem({ itemName: "meme", userID: message.author.id });
 
 			if (candyCanes === 0) {
 				await message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
