@@ -18,6 +18,7 @@ class SellCommand extends Command {
 	async exec(message: Message, {itemName}) {
 		await message.author.ensureDB();
 		const item = items.find(item => item.id === itemName || item.displayName === itemName);
+
 		if (!item) {
 			await message.channel.send("That item does not exist!");
 			return;
@@ -28,24 +29,25 @@ class SellCommand extends Command {
 			message.channel.send("You can't sell that item... Maybe you have to build something with it?");
 			return;
 		}
-		if (item && "worth" in item) {
+
+		if (typeof item.worth === "number") {
 			const userItem = await message.author.fetchItem(item);
 
 			if (userItem && userItem.amount > 0) {
-				await this.client.database.addCandyCanes({amount: item.worth, userID: message.author.id});
+				await message.author.giveCandyCanes(item.worth);
 				await this.client.database.removeItem({itemName: item.id, userID: message.author.id});
 				const [ccAmt] = await this.client.knex("userData").select("candyCanes").where({userID: message.author.id});
 				this.client.database.addLog(`${message.author.tag} sold a(n) ${item.id}. They now have ${ccAmt.candyCanes} candy canes`);
-				message.channel.send("You sold " + item.messageName + " for " + item.worth + " candy canes");
+				await message.channel.send("You sold " + item.messageName + " for " + item.worth + " candy canes");
 				return;
 			} else {
-				message.channel.send("You don't have any of this item");
+				await message.channel.send("You don't have any of this item");
 				return;
 			}
 		} else if (item && "rank" in item) {
-			message.channel.send("This item can't be sold! Try `,use`ing it instead.");
+			await message.channel.send("This item can't be sold! Try `,use`ing it instead.");
 		} else {
-			message.channel.send("This item does not exist!");
+			await message.channel.send("This item does not exist!");
 		}
 	}
 }

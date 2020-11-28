@@ -12,6 +12,7 @@ export interface Item {
 	response?: string;
 	defaultBehavior?: boolean;
 	onFind?(client: Client & Extension, message: Message): unknown | Promise<unknown>;
+	use?(message: Message): Promise<void>
 }
 
 export const items: Item[] = [
@@ -207,19 +208,155 @@ export const items: Item[] = [
 		id: "palette",
 		rank: 2,
 		displayName: "Palette",
-		response: "Nice! You found an paint palette! Time to make some happy little trees!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**" //changed: Bob Ross -Walrus
+		response: "Nice! You found an paint palette! Time to make some happy little trees!\n**This is a minigame item! When you would like to play, send the command `,use palette`!**", //changed: Bob Ross -Walrus
+		async use(message) {
+			message.client.minigamePlayers.add(message.author.id);
+			let colorArray = ["🟥", "🟧", "🟨", "🟩", "🟦", "🟪", "⬜", "⬛", "🟫",];
+			colorArray = colorArray.sort(() => Math.random() - 0.5);
+			let finalArray = message.client.database.stringInsert(colorArray, 3).map(x => x.join("")).join("\n");
+			let answer = Math.floor(Math.random() * 9);
+			const lookupMap = {
+				"🟥": "red",
+				"🟧": "orange",
+				"🟨": "yellow",
+				"🟩": "green",
+				"🟦": "blue",
+				"🟪": "purple",
+				"⬜": "white",
+				"⬛": "black",
+				"🟫": "brown",
+			};
+			const answerString = lookupMap[colorArray[answer]];
+			let sent = await message.channel.send(finalArray);
+			const botMessage = await message.channel.messages.fetch(sent.id);
+			let seconds = 10;
+			const msg = await message.channel.send(`Memorize these colors, they will disappear in ${seconds} seconds`);
+			const numberEmojis = ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"];
+			for (const x of numberEmojis) botMessage.react(x);
+			const timer = setInterval(async () => {
+				seconds = seconds - 2;
+				await msg.edit(`Memorize these colors, they will disappear in ${seconds} seconds`);
+				if (seconds <= 0) {
+					clearInterval(timer);
+					sent.edit("1️⃣2️⃣3️⃣\n4️⃣5️⃣6️⃣\n7️⃣8️⃣9️⃣");
+					await msg.edit("Click which number " + answerString + " was");
+					const filter = (reaction, user) => {
+						return ["1️⃣", "2️⃣", "3️⃣", "4️⃣", "5️⃣", "6️⃣", "7️⃣", "8️⃣", "9️⃣"].includes(reaction.emoji.name) && user.id === message.author.id;
+					};
+					const reaction = (await botMessage.awaitReactions(filter, { max: 1, time: 30000 }));
+					if (reaction.size === 0) {
+						message.client.minigamePlayers.delete(message.author.id);
+						msg.edit("You didn't answer in time! Please run the command again to try again.");
+						return;
+					}
+
+					const lookupMap = {
+						"1️⃣": 0,
+						"2️⃣": 1,
+						"3️⃣": 2,
+						"4️⃣": 3,
+						"5️⃣": 4,
+						"6️⃣": 5,
+						"7️⃣": 6,
+						"8️⃣": 7,
+						"9️⃣": 8,
+					};
+					const reactionAnswer = lookupMap[reaction.first()!.emoji.name];
+					if (reactionAnswer !== answer) {
+						await message.client.minigamePlayers.delete(message.author.id);
+						await message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+						answer = answer + 1;
+						await message.client.database.addLog(`${message.author.id} guessed incorrectly when using a palette`);
+						msg.edit("That's incorrect, it was " + answer + ". Try again next time!");
+						return;
+					} else {
+						await message.author.giveCandyCanes(25);
+						await message.client.minigamePlayers.delete(message.author.id);
+						await message.client.database.removeItem({ itemName: "palette", userID: message.author.id });
+
+						const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+						await message.client.database.addLog(`${message.author.id} guessed correctly when using a palette. They now have ${ccAmt.candyCanes} candy canes`);
+						await msg.edit("That's correct! You got 25 candy canes!");
+						return;
+					}
+				}
+			}, 2000);
+		}
 	},
 	{
 		id: "mistletoe",
 		rank: 2,
 		displayName: "Mistletoe",
-		response: "Nice! You found some mistletoe! Who would've left this for you?\n**This is a minigame item! When you would like to play, send the command `,use mistletoe`!**"
+		response: "Nice! You found some mistletoe! Who would've left this for you?\n**This is a minigame item! When you would like to play, send the command `,use mistletoe`!**",
+		async use(message) {
+			let kissMessage = await message.channel.send("Who would you like to kiss?");
+			const filter = m => m.author.id === message.author.id;
+
+			const mentionMessage = (await message.channel.awaitMessages(filter, { max: 1, time: 120000 })).first();
+
+			if (!mentionMessage) {
+				await message.channel.send("You didn't answer in time! Please run the command again to try again.");
+				return;
+			}
+
+			const kissedUsers = mentionMessage.mentions.users;
+
+			if (kissedUsers.size > 1) {
+				await message.channel.send("Please only mention one user!");
+				return;
+			} else if (kissedUsers.size === 0) {
+				await message.channel.send("Please mention someone to kiss!");
+				return;
+			}
+
+			const kissed = kissedUsers.first()!;
+
+			if (kissed.id === message.author.id) {
+				message.channel.send("You can't kiss yourself!");
+				return;
+			}
+
+			await Promise.all([
+				message.delete(),
+				kissMessage.delete(),
+				mentionMessage.delete()
+			]);
+
+			await message.channel.send(`${message.author} kissed ${kissed}! Congrats! (You both get 15 candy canes!)`);
+
+			// TODO: transact
+			await message.author.giveCandyCanes(15);
+			await kissed.giveCandyCanes(15);
+
+			const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+			const [kissedCCAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: kissed.id });
+
+			message.client.database.addLog(`${message.author.tag} (who now has ${ccAmt.candyCanes} candmentionMsgColly canes) used a mistletoe to kiss ${kissed.tag} (who now has ${kissedCCAmt.candyCanes} candy canes)`);
+		}
 	},
 	{
 		id: "meme",
 		rank: 2,
 		displayName: "Meme",
-		response: "Nice! You found a fresh meme template! Time to rake in that sweet sweet intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**" //changed: reworded -Walrus
+		response: "Nice! You found a fresh meme template! Time to rake in that sweet sweet intenet fame!\n**This is a minigame item! When you would like to play, send the command `,use meme`!**", //changed: reworded -Walrus
+		async use(message) {
+			const candyCanes = Math.floor(Math.random() * 41) - 10;
+			await message.author.giveCandyCanes(candyCanes);
+
+			const ccAmt = await message.author.fetchCandyCanes();
+
+			await message.client.database.addLog(`${message.author.id} used a meme and got ${candyCanes} candy canes. They now have ${ccAmt} candy canes`);
+
+			if (candyCanes === 0) {
+				await message.channel.send("Well, looks like your meme got lost in new and nobody saw it.");
+			} if (candyCanes < 0) {
+				await message.channel.send("Wow, people did not like your meme! You lost " + -candyCanes + " candy canes! Welcome to controversial.");
+			} if (candyCanes > 0 && candyCanes <= 15) {
+				await message.channel.send("People liked your meme, which made it to hot! You gained " + candyCanes + " candy canes!");
+			} if (candyCanes > 15) {
+				await message.channel.send("People loved your meme, which made it to the top posts! You gained " + candyCanes + " candy canes!");
+			}
+		}
 	},
 	{
 		id: "pin",
@@ -300,7 +437,7 @@ export const items: Item[] = [
 			prompt = prompt + answer
 			const filter = response => response.content === answer;
 
-			message.channel.send(prompt);
+			await message.channel.send(prompt);
 			try {
 				const collected = await message.channel.awaitMessages(filter, { max: 1, time: 30000, errors: ["time"] });
 				const response = collected.first()!;
@@ -340,7 +477,56 @@ export const items: Item[] = [
 		id: "watch",
 		rank: 3,
 		displayName: "Watch",
-		response: "Wow! You found a nice watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**" // changed: reworded -Walrus
+		response: "Wow! You found a nice watch! It seems to need some tuning, though.\n**This is a minigame item! When you would like to play, send the command `,use watch`!**", // changed: reworded -Walrus
+		async use(message) {
+			message.client.minigamePlayers.add(message.author.id);
+			let timeRed = (Math.floor(Math.random() * 9) + 2) * 1000;
+			let seconds = 6;
+			let stopMsg = await message.channel.send(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+			stopMsg.react("🛑");
+			const timer = setInterval(async () => {
+				seconds = seconds - 2;
+				await stopMsg.edit(`Click the 🛑 reaction as quickly as you can when the box turns green. Starting in ${seconds} seconds`);
+				if (seconds <= 0) {
+					clearInterval(timer);
+					await stopMsg.edit("🟥");
+					const filter = (reaction, user) => {
+						return reaction.emoji.name === "🛑" && user.id === message.author.id;
+					};
+					const redReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: timeRed }));
+					if (redReaction.size === 0) {
+						await stopMsg.edit("🟩");
+						let startGreen = new Date();
+						const greenReaction = (await stopMsg.awaitReactions(filter, { max: 1, time: 8000 }));
+						if (greenReaction.size === 0) {
+							message.client.minigamePlayers.delete(message.author.id);
+							message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+							message.client.database.addLog(`${message.author.id} was too slow when using a watch`);
+							stopMsg.edit("You were too slow! Click it as soon as it turns green next time.");
+							return;
+						} else {
+							let endGreen = new Date();
+							let timeToReact = endGreen.getTime() - startGreen.getTime();
+							message.client.minigamePlayers.delete(message.author.id);
+							message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+							const toAdd = Math.floor(timeToReact >= 550 ? Math.max(5, 95 - (timeToReact / 10)) :
+								timeToReact < 500 ? 60 : 50);
+							message.author.giveCandyCanes(toAdd);
+							const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+							message.client.database.addLog(`${message.author.id} took ${timeToReact} when using a watch and got ${toAdd} candy canes. They now have ${ccAmt.candyCanes} candy canes`);
+							stopMsg.edit(`You took ${timeToReact} ms to react, so you got ${toAdd} candy canes!`);
+							return;
+						}
+					} else {
+						message.client.minigamePlayers.delete(message.author.id);
+						message.client.database.removeItem({ itemName: "watch", userID: message.author.id });
+						message.client.database.addLog(`${message.author.id} was too quick when using a watch`);
+						stopMsg.edit("You were too quick! Wait for it to turn green next time.");
+						return;
+					}
+				}
+			}, 2000);
+		}
 	},
 	{
 		id: "mysteriousPart",
@@ -408,25 +594,79 @@ export const items: Item[] = [
 		rank: 4,
 		displayName: "Dragon Egg",
 		response: "No way! You found a dragon egg! Did it just wobble a little?\n**This is a minigame item! When you would like to play, send the command `,use dragonEgg`!**", //changed: NORBERT!! -Walrus
-		defaultBehavior: false,
 		onFind: async (client, message) => {
-			await client.knex("items")
-				.insert({ name: "dragonEgg", userID: message.author.id, amount: 1, record: 1 })
-				.onConflict("userID")
-				.merge({
-					amount: client.knex.raw("amount + 1"),
-					record: client.knex.raw("GREATEST(amount, record)")
-				});
 			let timestamp = Date.now();
 			await client.knex("eggData")
-				.insert({userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED"});
+				.insert({ userID: message.author.id, timeFound: String(timestamp), status: "UNCLAIMED" });
+		},
+		async use(message) {
+			const itemCheck = await message.client.database.itemCheck({ userID: message.author.id, itemName: "dragonEgg" });
+			if (itemCheck === null || itemCheck.amount < 1) {
+				message.channel.send("You don't have any of that item!");
+				return;
+			}
+			const eggData = await message.client.knex("eggData").first("*").where({ userID: message.author.id, status: "UNCLAIMED" });
+			let eggAge = Date.now() - Number(eggData.timeFound);
+			if (eggAge < 86400000) {
+				let minsLeft = Math.floor((86400000 - eggAge) / 60000);
+				let hoursLeft = Math.round(minsLeft / 60);
+				minsLeft = minsLeft % 60;
+				message.channel.send("The egg is still hatching! Please wait " + hoursLeft + " hours and " + minsLeft + " minutes.");
+				return;
+			} else if (eggAge < 172800000) {
+				let eggCount = await message.client.knex("eggData")
+					.count("eggID", { as: "eggCount" })
+					.where({ userID: message.author.id, status: "UNCLAIMED" })
+					.then(([{ eggCount }]) => eggCount as number);
+				if (eggCount > 2) {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have " + --eggCount + " eggs left unhatched!");
+				} else if (eggCount === 2) {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant. You have 1 egg left unhatched!");
+				} else {
+					message.channel.send("You hear an unsettling crack. You dragon egg has hatched! I hope you and your home are fire resistant.");
+				}
+				await message.author.giveCandyCanes(150);
+				await message.client.knex("eggData").where({ eggID: eggData.eggID }).update({ status: "CLAIMED" });
+				await message.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+				message.client.database.addLog(`${message.author.id} hatched an egg successfully. They now have ${ccAmt} candy canes`);
+				return;
+			} else {
+				message.client.database.addLog(`${message.author.id} killed a dragon`);
+				message.channel.send("Sadly the egg has gone cold, and so has the life within. Well, at least you have breakfast!");
+				await message.client.knex("eggData").where({ eggID: eggData.eggID }).update({ status: "LOST" });
+				await message.client.knex("items").where({ name: "dragonEgg", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+			}
 		}
 	},
 	{
 		id: "role",
 		rank: 4,
 		displayName: "Role",
-		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP**"
+		response: "No way! You found a role! You feel special-er.\n**This item can be used in SMPEarth for an exclusive role (or candy canes if you already have the role). Please join the server and run `,use role` for your role. https://discord.gg/y5BfFjP**",
+		async use(message) {
+			const itemCheck = await message.client.database.itemCheck({ userID: message.author.id, itemName: "role" });
+			if (itemCheck === null || itemCheck.amount < 1) {
+				await message.channel.send("You don't have any of that item!");
+				return;
+			} if (message.guild!.id !== "647915068767338509") {
+				await message.channel.send("Please send this command SMPEarth Discord to use this item. https://discord.gg/y5BfFjP");
+				return;
+			} if (message.member!.roles.cache.has("778022401858338846")) {
+				const [ccAmt] = await message.client.knex("userData").select("candyCanes").where({ userID: message.author.id });
+				await message.client.database.addLog(`${message.author.id} already had the role and got candy canes instead. They now have ${ccAmt} candy canes`);
+				await message.channel.send("You already have the role, so take 150 candy canes instead!");
+				await message.author.giveCandyCanes(150);
+				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				return;
+			} else {
+				await message.client.database.addLog(`${message.author.id} used the role`);
+				await message.channel.send("Hey, you special snowflake. Take this exclusive role and keep being special.");
+				await message.member!.roles.add("778022401858338846");
+				await message.client.knex("items").where({ name: "role", userID: message.author.id }).decrement({ amount: 1 } as any, undefined as any);
+				return;
+			}
+		}
 		/*defaultBehavior: false,
 		onFind: async (client, message) => {
 			await client.knex("items")

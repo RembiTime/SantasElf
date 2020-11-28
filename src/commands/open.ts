@@ -39,7 +39,8 @@ class OpenCommand extends Command {
 			description: "(,open #) Opens a present of level #",
 			args: [{
 				id: "presentLevel",
-				type: Argument.range("integer", 1, 5, true)
+				type: Argument.range("integer", 1, 5, true),
+				prompt: { start: "What level of present would you like to open?" }
 			}]
 		});
 	}
@@ -62,7 +63,7 @@ class OpenCommand extends Command {
 
 				this.client.database.addLog(`${message.author.tag} opened a level ${presentLevel} present and found a(n) ${item.id}`);
 
-				if (item.defaultBehavior) {
+				if (item.defaultBehavior !== false) {
 					await message.author.giveItem(item, trx);
 				}
 
