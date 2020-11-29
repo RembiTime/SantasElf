@@ -114,6 +114,7 @@ class GuessCommand extends Command {
 					await this.client.knex("userData")
 						.increment(presentAmt, 1)
 						.increment(presentTotal, 1)
+						.where({ userID: m.author.id })
 						.transacting(trx);
 
 					if (present.timesFound === 0) {
